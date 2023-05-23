@@ -10,6 +10,9 @@ on:
       - '**.md'
       - '**.org'
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
