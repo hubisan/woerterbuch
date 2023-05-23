@@ -1,0 +1,63 @@
+#+STARTUP: showall
+* Contributing
+
+** Bugs, Improvements and new Features
+
+Go to issues page and make a new issue.
+
+Make sure to:
+
+- Check that the issue has not already been reported (open and closed issues).
+- Check that the issue is not part of an active pull request.
+
+** Pull Requests
+
+Cool that you want to contribute your code :-)
+
+Remember to:
+
+- Include only one feature in a pull request.
+- Open an issue and mention your planned pull request.
+- Add/update tests if needed.
+- The tests must pass (see [[#testing][Testing]]).
+- Update [[./README.org][README.org]] if needed.
+- Update the documentation in the [[./README.org][README.org]] if needed.
+- Update [[./CHANGELOG.org][CHANGELOG.org]].
+
+*** Testing
+:PROPERTIES:
+:CUSTOM_ID: testing
+:END:
+
+Uses [[https://github.com/doublep/eldev][Eldev]] which needs to be [[https://github.com/doublep/eldev#installation][installed]]. The tests are written with [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]]. After pushing GitHub an action is triggered to automatically lint and runtests.
+
+**** Testing locally
+
+To test the package locally call the Makefile targets:
+
+| Target            | Description                                           |
+|-------------------+-------------------------------------------------------|
+| make help         | Show help for targets available                       |
+| make all          | Run tests, lint and compile                           |
+| make test         | Run project’s regression/unit tests                   |
+| make lint         | Run standard linters on the project’s source code     |
+| make compile      | Byte-compile ‘.el’ files to check for errors/warnings |
+| make clean        | Clean everything                                      |
+| make run-emacs    | Launch Emacs with package and dependencies installed  |
+
+The output of Eldev is set to ~--quiet~. To produce more verbose output, run the make targets by setting the verbose parameter:
+
+#+BEGIN_SRC shell
+make all verbose=--trace # very verbose
+make all verbose=--verbose # verbose
+#+END_SRC
+
+
+It is also possible to run the test with another Emacs version like so (Docker needs to be installed):
+
+#+BEGIN_SRC shell
+  # Run the test with Emacs version 25.3
+  eldev docker 25.3 test
+  # Launch Emacs 27.2 to test your package.
+  eldev docker 27.2 emacs
+#+END_SRC

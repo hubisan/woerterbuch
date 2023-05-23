@@ -1,0 +1,96 @@
+#+STARTUP: content
+
+* German Woerterbuch for Emacs                                   :Noexport_2:
+
+[[https://www.gnu.org/licenses/gpl-3.0][https://img.shields.io/badge/License-GPL%20v3-blue.svg]] [[https://github.com/hubisan/woerterbuch/actions/workflows/tests.yml][https://github.com/hubisan/woerterbuch/actions/workflows/tests.yml/badge.svg]]
+
+Lookup definitions and synonyms for German words with Emacs.
+
+** Main features                                                :noexport_0:
+
+- Lookup synonyms for a word and insert one into the current buffer.
+- Show definitions for a word in an Org-mode buffer.
+- Show synonyms for a word in an Org-mode buffer.
+- Show both in an Org-mode buffer.
+
+Definitions are retrieved from [[https://www.dwds.de/]] and synonyms from [[https://www.openthesaurus.de/]].
+
+-----
+
+** Contents
+
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+- [[#customization][Customization]]
+- [[#key-bindings][Key Bindings]]
+- [[#changelog][Changelog]]
+- [[#contributing][Contributing]]
+
+** Installation
+:PROPERTIES:
+:CUSTOM_ID: installation
+:END:
+
+# Describe how to install this package.
+
+This package is hosted on Github only. Use your favourite way to install like [[https://github.com/radian-software/straight.el][Straight]], [[https://github.com/quelpa/quelpa][Quelpa]]. Starting with Emacs 29 ~package-vc-install~ may be used. 
+
+** Usage
+:PROPERTIES:
+:CUSTOM_ID: usage
+:END:
+
+# Describe the usage.
+
+** Customization
+:PROPERTIES:
+:CUSTOM_ID: customization
+:END:
+
+*** Variables
+
+Set the following variables to change the behaviour of the package:
+
+| Variable | Default | Description |
+|----------+---------+-------------|
+|          |         |             |
+
+*** Faces
+
+The following faces are defined:
+
+| Face | Description |
+|------+-------------|
+|      |             |
+|      |             |
+
+** Key Bindings
+:PROPERTIES:
+:CUSTOM_ID: key-bindings
+:END:
+
+# Whatever needs to be said about that.
+
+| Key | Action | Description |
+|-----+--------+-------------|
+|     |        |             |
+
+*** Hydra
+
+# Example of a hydra definition.
+
+** Changelog
+:PROPERTIES:
+:CUSTOM_ID: changelog
+:END:
+
+See the [[./CHANGELOG.org][changelog]].
+
+** Contributing
+:PROPERTIES:
+:CUSTOM_ID: contributing
+:END:
+
+Use the issue tracker to reports bugs, suggest improvements or propose new features. If you want to contribute please open a pull request after having opened a new issue.
+
+In any case please check out the [[./CONTRIBUTING.org::*Contributing][contributing guidelines]] beforehand.

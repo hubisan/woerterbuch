@@ -1,0 +1,22 @@
+# -*- mode: gitignore; -*-
+
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Eldev
+/.eldev/
+
+# Flycheck
+flycheck_*.el
+
+# Flymake
+*_flymake.*
+
+# Projectiles
+.projectile

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**.org'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - '**.org'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.emacs_version == 'snapshot' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        emacs_version:
+          # Add more lines like this if you want to test on different Emacs versions.
+          - 28.1
+          - 28.2
+          - snapshot
+
+    steps:
+    - name: Set up Emacs
+      uses: purcell/setup-emacs@master
+      with:
+        version: ${{matrix.emacs_version}}
+
+    - name: Install Eldev
+      run: curl -fsSL https://raw.github.com/doublep/eldev/master/webinstall/github-eldev | sh
+
+    - name: Check out the source code
+      uses: actions/checkout@v3
+
+    - name: Clean
+      run: eldev clean all
+
+    - name: Test
+      if: ${{ matrix.emacs_version != 'snapshot' }}
+      run: make test verbose=--trace
+
+    - name: Test Snapshot
+      # For some reason snapshot was not working with eldev if using packaged.
+      if: ${{ matrix.emacs_version == 'snapshot' }}
+      run: make test-as-is verbose=--trace
+
+  lint_and_compile:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        emacs_version:
+          - 28.2
+
+    steps:
+    - name: Set up Emacs
+      uses: purcell/setup-emacs@master
+      with:
+        version: ${{matrix.emacs_version}}
+
+    - name: Install Eldev
+      run: curl -fsSL https://raw.github.com/doublep/eldev/master/webinstall/github-eldev | sh
+
+    - name: Check out the source code
+      uses: actions/checkout@v3
+
+    - name: Clean
+      run: eldev clean all
+
+    - name: Lint
+      run: make lint verbose=--trace
+
+    - name: Compile
+      run: make compile verbose=--trace
