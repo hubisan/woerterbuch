@@ -55,7 +55,9 @@
   "Url to retrieve the synonyms for a word as JSON from openthesaurus.")
 
 (defun woerterbuch--synonyms-retrieve (word)
-  "docstring"
+  "Retrieve the synonyms for WORD as a list of lists.
+Each list consist of the synonyms for one meaning of the word.
+Returns nil if no synonyms are retrieved."
   (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
          (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
     ;; If a baseform was found use that to retrieve the synonyms.
@@ -77,7 +79,7 @@
         (json-parse-buffer :object-type 'plist)))))
 
 (defun woerterbuch--synonyms-to-list (raw-synonyms)
-  "Convert the raw SYNONYMS retrieved with the API to a list of lists.
+  "Convert the RAW-SYNONYMS retrieved with the API to a list of lists.
 Each list consist of the synonyms for one meaning of the word."
   (let* ((synsets (seq-into (plist-get raw-synonyms :synsets) 'list)))
     (mapcar (lambda (synomys-group)
@@ -85,7 +87,8 @@ Each list consist of the synonyms for one meaning of the word."
             synsets)))
 
 (defun woerterbuch--synonyms-baseform (raw-synonyms)
-  "Get the baseform of the word. Returns nil if not found."
+  "Try to get the baseform of the word from RAW-SYNONYMS.
+Returns nil if not found."
   (car-safe (seq-into (plist-get raw-synonyms :baseforms) 'list)))
 
 (provide 'woerterbuch)
