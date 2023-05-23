@@ -1,0 +1,83 @@
+#+STARTUP: showall
+* Contributing
+
+** Bugs, Improvements and new Features
+
+Go to the issues page and create a new issue.
+
+Make sure to:
+
+- Check that the issue has not already been reported (open and closed issues).
+- Check that the issue is not part of an active pull request.
+
+** Pull Requests
+
+Cool that you want to contribute your code :-)
+
+Remember to:
+
+- Include only one feature in a pull request.
+- Open an issue and mention your planned pull request.
+- Add/update tests if needed.
+- Ensure the tests pass (see [[#testing][Testing]]).
+- Update [[./README.org][README.org]] if needed.
+- Update the documentation in the [[./README.org][README.org]] if needed.
+- Update [[./CHANGELOG.org][CHANGELOG.org]].
+
+*** Testing
+:PROPERTIES:
+:CUSTOM_ID: testing
+:END:
+
+Uses [[https://emacs-eask.github.io/Getting-Started/Introduction/][Eask]], which needs to be [[https://emacs-eask.github.io/Getting-Started/Install-Eask/#-npm-cross-platform][installed]]. The tests are written with [[https://github.com/jorgenschaefer/emacs-buttercup][Buttercup]]. After pushing to GitHub, an action is triggered which calls ~make all~. 
+
+**** Testing locally
+
+To test the package locally, call the Makefile target ~make test-local~.
+
+To open Emacs with just the package installed run ~make emacs~. Like this you can test it interactively.
+
+To see all make targets run ~make~.
+
+***** Linters
+
+When using ~make lint~, the following linters are used:
+
+- package-lint
+- elint
+- checkdoc
+- indent-lint 
+- relint
+
+If you want to use another linter or call a linter separately, use ~eask lint <name of linter>~. To get the names just run ~eask lint~.
+
+***** Test in Specific Emacs Version
+
+It is possible to run an Eask command with specific Emacs version in a Docker container (Docker needs to be installed and configured to run without sudo).
+
+To run the tests in a container use ~make docker-test emacs=29.4~.
+
+To run an eask command in a docker container use:
+
+#+BEGIN_SRC shell
+  eask docker 29.4 test buttercup
+#+END_SRC
+
+- Unfortunately, I have not found a way to run the make targets (tried ~eask docker 29.4 exec make test~). 
+
+- Sometimes after using a docker image ~eask clean all~ gives a long error with ~permission denied~ or ~No such file or directory~ at the end. If this happens run ~eask docker 29.4 clean all~.
+  
+- ~eask docker 29.4 emacs~ doesn't seem to work. I was able to launch an Emacs with the following command. The volumne has to be changed depending on where your have cloned the repository to:
+
+  #+BEGIN_SRC shell
+    eask docker 29.4 package
+    eask docker 29.4 install
+    docker run --interactive --tty \
+        --volume ~/projects/coding/woerterbuch:/woerterbuch \
+        --workdir /woerterbuch \
+        --rm \
+        silex/emacs:29.4-ci-eask emacs \
+        --init-directory /woerterbuch/.eask/29.4
+  #+END_SRC
+
+

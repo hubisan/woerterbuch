@@ -1,0 +1,11 @@
+HTTP/1.1 200 
+Server: nginx/1.14.0 (Ubuntu)
+Date: Thu, 06 Jul 2023 19:02:02 GMT
+Content-Type: application/json;charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+X-Application-Context: application:production
+Set-Cookie: JSESSIONID=A37F38FEFC5B5B1BBBEF98A4159C6957; Path=/; HttpOnly
+Access-Control-Allow-Origin: *
+
+{"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2022 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Thu Jul 06 21:02:02 CEST 2023"},"synsets":[]}

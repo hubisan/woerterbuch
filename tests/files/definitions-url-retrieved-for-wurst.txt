@@ -1,0 +1,1784 @@
+HTTP/1.1 200 OK
+Date: Sun, 28 Apr 2024 14:12:13 GMT
+Server: Apache
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Cache-Control: max-age=109124
+Content-Type: text/html; charset=UTF-8
+Expires: Mon, 29 Apr 2024 20:30:57 GMT
+Last-Modified: Fri, 26 Apr 2024 20:30:57 GMT
+Vary: Accept-Encoding
+Content-Length: 23518
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+
+
+<!DOCTYPE html>
+<html lang="de" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    <meta charset="utf-8">
+    <meta name="tdm-reservation" content="1">
+    <meta name="tdm-policy" content="https://www.dwds.de/dwds_static/tdm-policy.json">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/">
+
+
+    <title>Wurst – Schreibung, Definition, Bedeutung, Etymologie, Synonyme, Beispiele | DWDS</title>
+
+    <!-- preloading CSS and fonts -->
+    <link href="https://www.dwds.de/dwds_static/fonts/crimson-text-v8-latin-regular.woff2" as="font" rel="preload" crossorigin="anonymous">
+    <link href="https://www.dwds.de/dwds_static/fonts/source-sans-pro-v21-latin-ext_latin-italic.woff2" as="font" rel="preload" crossorigin="anonymous">
+    <link href="https://www.dwds.de/dwds_static/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.woff2" as="font" rel="preload" crossorigin="anonymous">
+    <link href="https://www.dwds.de/dwds_static/fonts.css" rel="preload" as="style" onload="this.rel='stylesheet'" crossorigin="anonymous">
+    <link href="https://www.dwds.de/dwds_static/fonts.css" rel="stylesheet preload" as="style" crossorigin="anonymous">
+
+
+    <!-- feeds -->
+    <link rel="search" type="application/opensearchdescription+xml" title="DWDS Suche" href="/search.xml">
+    <link rel="alternate" type="application/atom+xml" title="DWDS: Artikel des Tages" href="/api/feed/adt"/>
+    <link rel="alternate" type="application/atom+xml" title="DWDS: Neueste Artikel" href="/api/feed/latest"/>
+    <!-- //feeds -->
+
+    <meta property="og:description" content="DWDS – Digitales Wörterbuch der deutschen Sprache"/>
+    <meta name="twitter:title" content="DWDS – Digitales Wörterbuch der deutschen Sprache"/>
+    <meta itemprop="name" content="DWDS – Digitales Wörterbuch der deutschen Sprache"/><meta name="description" content="Wurst – Schreibung, Definition, Bedeutung, Etymologie, Synonyme, Beispiele | DWDS"/>
+      <meta property="og:title" content="Wurst – Schreibung, Definition, Bedeutung, Etymologie, Synonyme, Beispiele | DWDS"/>
+      <meta name="twitter:description" content="Wurst – Schreibung, Definition, Bedeutung, Etymologie, Synonyme, Beispiele | DWDS"/>
+      <link rel="canonical" href="https://www.dwds.de/wb/wurscht"/><meta property="og:image" content="https://www.dwds.de/dwds_static/images/dwds-og.png"/><meta property="og:url" content="https://www.dwds.de/wb/Wurst"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:locale" content="de"/>
+    <meta property="og:site_name" content="DWDS"/>
+
+    <meta name="twitter:card" content="summary_large_image"/><meta property="twitter:image:src" content="https://www.dwds.de/dwds_static/images/d-200.png"/><meta name="twitter:site" content="@dwds_de"/><meta property="image" content="https://www.dwds.de/dwds_static/images/dwds_601_141.png"/><meta itemprop="url" content="https://www.dwds.de/wb/Wurst"/>
+
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=QEJw5qWp5M">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=QEJw5qWp5M">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=QEJw5qWp5M">
+    <link rel="manifest" href="/site.webmanifest?v=QEJw5qWp5M" crossorigin="use-credentials">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=QEJw5qWp5M" color="#125993">
+    <link rel="shortcut icon" href="/favicon.ico?v=QEJw5qWp5M">
+    <meta name="msapplication-TileColor" content="#125993">
+    <meta name="theme-color" content="#ffffff">
+    <!-- //favicon -->
+
+
+    <!-- Bootstrap -->
+    <link href="https://www.dwds.de/dwds_static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"><script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "url": "/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "/",
+      "logo": "https://www.dwds.de/dwds_static/images/dwds_601_141.png",
+      "sameAs" : [
+        "https://twitter.com/dwds_de"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+4930203700",
+        "email": "dwds@bbaw.de"
+      }
+    }
+  ]
+</script>
+</head>
+
+  <body>
+    <header>
+
+        <noscript>
+          <div class="alert alert-danger sans" style="text-align:center;margin-bottom:5px" data-nosnippet>
+            Um den vollen Funktionsumfang dieser Webseite nutzen zu können, muss JavaScript aktiviert sein.<br />
+            <a href="https://www.enable-javascript.com/de/" target="_blank">Hier finden Sie Hinweise, wie Sie JavaScript in Ihrem Browser aktivieren können.</a>
+          </div>
+        </noscript>
+
+
+      <div id="top"></div>
+
+
+        <!-- spinner -->
+        <div id="spinner" style="display:none">Bitte warten Sie einen Moment &hellip;</div>
+
+
+
+
+
+
+
+        <nav class="navbar navbar-default navbar-static-top dwds-top">
+  <div class="container-fluid" style="padding-left:0">
+    <div class="navbar-header">
+      <a class="navbar-brand visible-xs-inline" href="/" style="margin:1px;padding:0 0 0 15px"><img src="https://www.dwds.de/dwds_static/images/dwds.svg" width="210" height="50" alt="DWDS-Logo" /></a>
+      <a class="navbar-brand hidden-xs" href="/" style="margin:1px;padding:0"><img src="https://www.dwds.de/dwds_static/images/dwds.svg" width="210" height="50" data-toggle="tooltip" data-placement="right" title="Digitales Wörterbuch der deutschen Sprache" alt="DWDS-Logo" /></a>
+
+
+        <div class="visible-xs-inline-block navbar-right-mobile">
+
+
+              <a href="https://www.dwds.de/profile/login?c=wb%2FWurst" class="btn btn-sm btn-default" rel="nofollow"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+
+
+        </div>
+
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-left">
+        <li class="hidden-xs hidden-sm sf dwds-header-link-li">
+
+
+            <span class="dwds-claim">
+
+            Der deutsche Wortschatz von 1600 bis heute.
+
+
+            </span>
+
+        </li>
+
+      </ul>
+
+        <ul class="nav navbar-nav navbar-right hidden-xs">
+
+
+              <li>
+                <p class="navbar-btn">
+                  <a href="https://www.dwds.de/profile/login?c=wb%2FWurst" class="btn btn-sm btn-default dwds-login-button" rel="nofollow"><span class="glyphicon glyphicon-log-in"></span> Anmelden</a>
+                </p>
+              </li>
+
+
+        </ul>
+
+    </div>
+  </div>
+</nav>
+
+<div class="visible-xs-block visible-sm-block sans">
+
+    <div style="color:#666; font-weight:normal; text-align:center; font-size:14px; margin-top:0; margin-bottom:10px; border-bottom:1px solid #e0e0e0" class="dwds-claim">
+
+            Der deutsche Wortschatz von 1600 bis heute.
+
+
+    </div>
+
+
+</div>
+
+
+
+
+    </header>
+
+    <main>
+
+        <div class="container-fluid" style="max-width:1400px">
+
+
+
+
+<div class="row">
+  <div class="col-md-9 article-leftcol">
+    <div class="row" style="margin-top:0px;margin-bottom:20px">
+      <div class="col-md-12">
+
+        <ol class="breadcrumb " itemscope itemtype="https://schema.org/BreadcrumbList">
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="/" itemprop="item"><span itemprop="name">Startseite</span></a>
+            <meta itemprop="position" content="1" />
+          </li>
+          <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a href="/sitemap" itemprop="item"><span itemprop="name">Wörterbuch</span></a>
+            <meta itemprop="position" content="2" />
+          </li>
+          <li class="active" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">Wurst – Schreibung, Definition, Bedeutung, Etymologie, Synonyme, Beispiele</span>
+            <meta itemprop="position" content="3" />
+          </li>
+        </ol>
+
+
+          <form method="get" action="/" class="form-horizontal autosubmit">
+            <div class="input-group">
+              <span class="sr-only">
+                <label for="q">Sucheingabe</label>
+              </span>
+              <input type="search" class="form-control input-lg" placeholder="Suche im Digitalen Wörterbuch" name="q" id="q" value="Wurst" />
+              <input type="hidden" name="from" value="wb" />
+              <div class="input-group-btn" style="vertical-align:top">
+                <button class="btn btn-primary btn-lg" type="submit" aria-label="suchen"><i class="glyphicon glyphicon-search"></i></button>
+                <a class="btn btn-default btn-lg" href="/d/suche"><i class="glyphicon glyphicon-question-sign"></i><span class="sr-only">Hilfe zur Suche</span></a>
+              </div>
+            </div>
+          </form>
+
+
+
+
+      </div>
+    </div>
+
+
+
+
+
+    <div class="row">
+      <div class="col-md-12">
+
+          <ul class="nav nav-tabs" role="tablist" id="dwdswb-tabs" style="margin-bottom:-1px">
+            <li role="presentation" class="active">
+              <a href="https://www.dwds.de/wb/Wurst#0" aria-controls="0" role="tab" data-toggle="tab">Übersicht</a>
+            </li>
+
+              <li role="presentation">
+                <a href="https://www.dwds.de/wb/Wurst#1" aria-controls="1" role="tab" data-toggle="tab">
+
+
+
+
+                      <sup>1</sup>Wurst
+
+
+
+                </a>
+              </li>
+
+              <li role="presentation">
+                <a href="https://www.dwds.de/wb/Wurst#2" aria-controls="2" role="tab" data-toggle="tab">
+
+
+
+
+
+
+
+                    wurscht
+
+                </a>
+              </li>
+
+          </ul>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="0" data-nosnippet>
+              <div class="dwds-info-box sans hyphenate" data-nosnippet>
+                Für Ihre Abfrage nach <strong>Wurst</strong> gibt es mehrere  Wörterbuchartikel.
+              </div>
+              <ul class="hom-entry-list">
+
+                  <li class="sans hom-entry">
+                    <span class="hom-entry-lemma">
+
+
+                            <a href="/wb/Wurst#1" class="intern"><sup>1</sup>Wurst</a>, die
+                    </span>
+                    <div class="bedeutungsuebersicht"><ol style="list-style-type:none"><li>1. Lebensmittel mit einer länglichen Form aus einer gewürzten Masse, die traditionell aus zerkleinertem Fleisch, Gewürzen und anderen Zutaten besteht, die in eine dünne Hülle aus Tierdarm, Kunstdarm <abbr title="oder Ähnliche(s)" data-toggle="tooltip">o. Ä.</abbr> gepresst und anschließend gegart oder durch Trocknen oder Räuchern haltbar gemacht wird<ol style="list-style-type:none"><li>a)  [<span class="dwdswb-bedeutungsebene">spezieller</span>] Wurstart, die meist kalt, in Scheiben geschnitten oder als streichfähige Masse als Brotbelag oder in kleinen Stücken zu Brot, verzehrt wird</li><li>b) Wurstart, die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt wird</li></ol></li><li>2.  [<span class="dwdswb-bedeutungsebene">übertragen</span>] <abbr title="etwas" data-toggle="tooltip">etw.</abbr>, das mit seiner länglichen Form an eine <span class="dwdswb-verweis" data-lemma="Wurst" data-hidx="1" data-lesart="1 b" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;Wurstart, die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt wird&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover"><a class="intern" href="/wb/Wurst#d-1-1-2">¹Wurst</a><span class="dwdswb-la"> (1 b)</span></span> erinnert<ol style="list-style-type:none"><li>●  [<span class="dwdswb-bedeutungsebene">spezieller</span>, <span class="dwdswb-stilebene">salopp</span>] länglich geformte Exkremente</li></ol></li></ol></div>
+
+                    <hr/>
+                  </li>
+
+                  <li class="sans hom-entry">
+                    <span class="hom-entry-lemma">
+
+
+                            <a href="/wb/wurscht" class="intern">wurscht</a>, 
+                            <a href="/wb/wurst" class="intern">wurst</a>, Adjektiv
+                    </span>
+                    <div class="bedeutungsuebersicht"><ol style="list-style-type:none"><li> [<span class="dwdswb-stilebene">salopp</span>] völlig unwichtig, gleichgültig</li></ol></div>
+
+
+                  </li>
+
+              </ul>
+            </div>
+
+              <div role="tabpanel" class="tab-pane" id="1">
+
+
+
+  <div class="sidebar-wrapper hidden-xs hidden-sm hidden-md">
+    <nav class="sidebar-spy" id="spy-1">
+      <ul class="sidebar-nav nav" data-spy="affix" data-offset-top="10" data-offset-bottom="200">
+        <li>
+          <a href="/wb/Wurst#top" data-target="#top">Seitenanfang</a>
+        </li><li>
+          <a href="/wb/Wurst#wb-1" data-target="#wb-1" data-scroll>Bedeutungen</a>
+        </li><li>
+          <a href="/wb/Wurst#etymwb-1" data-target="#etymwb-1" data-scroll>Etymologie</a>
+        </li><li>
+          <a href="/wb/Wurst#wp-1" data-target="#wp-1" data-scroll>Typische Verbindungen</a>
+        </li></ul>
+    </nav>
+  </div>
+
+
+<div id="start-1"></div>
+
+<div class="dwdswb-artikel"><div class="dwdswb-ft" data-track-content="" data-content-name="DWDSWB Artikel" data-content-piece="Formteil"><h1 class="dwdswb-ft-lemmaansatz"><b>Wurst</b>, die</h1>
+<div class="dwds-article-icons-wrapper"><a class="btn btn-default btn-xs btn-primary dwds-bookmark-button dwds-bookmark-add" data-toggle="tooltip" title="Lesezeichen für diesen Artikel anlegen" data-id="Wurst" data-hidx="1"><i class="bi bi-bookmark-fill"></i> Lesezeichen
+    </a><a class="btn btn-default btn-xs btn-primary dwds-scroll-to-citation" data-article-no="1" data-toggle="tooltip" title="Artikel zitieren/teilen"><i class="bi bi-share-fill"></i> zitieren/teilen
+    </a><a class="btn btn-default btn-xs btn-primary dwds-toc dwds-collapse-button" style="display:none" data-article-no="1" data-toggle="tooltip" title="alle zusätzlich eingeblendeten Informationen zuklappen"><i class="bi bi-dash" style="-webkit-text-stroke-width:2px"></i> zuklappen
+    </a><a class="btn btn-default btn-xs btn-primary dwds-toc dwds-expand-button" data-article-no="1" data-toggle="tooltip" title="alle ausgeblendeten Informationen ausklappen" style="padding-left:6px"><i class="bi bi-plus" style="-webkit-text-stroke-width:2px"></i> ausklappen
+    </a></div><div class="dwdswb-ft-blocks-wrapper"><div class="dwdswb-ft-blocks"><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Grammatik</span><span class="dwdswb-ft-blocktext"><span>Substantiv (Femininum)</span> · Genitiv Singular: <b>Wurst</b> · Nominativ Plural: <b>Würste</b></span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Aussprache </span><span class="dwdswb-ft-blocktext"><span class="btn-link glyphicon glyphicon-volume-up" style="cursor:pointer;top:4px" onclick="$(this).next('audio').trigger('play')"></span><audio><source type="audio/mpeg" src="https://www.dwds.de/audio/006/die_Wurst.mp3"><span title="Ihr Browser unterstützt kein Audio-Element.">Fehler</span></audio> <span class="dwdswb-ipa" data-id="Wurst-1">[vʊʁst]</span></span></div><div class="dwdswb-ft-block"></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Wortbildung </span><span class="dwdswb-ft-blocktext">
+
+  <span class="sans" id="relation-block-1-1">
+
+      mit ›Wurst‹ als Erstglied:
+
+
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstaufschnitt">Wurstaufschnitt</a></span>
+        <button type="button" class="btn btn-default btn-xs more-button" onclick="showRel('#relation-is-1-1')" id="relation-is-1-1-button-show"><span style="color:#000">...</span> 39 weitere</button>
+        <span id="relation-is-1-1" class="more-relations" data-id="1-1"> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstbemme">Wurstbemme</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstblatt">Wurstblatt</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstbrot">Wurstbrot</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstbr%C3%B6tchen">Wurstbrötchen</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstbr%C3%BChe">Wurstbrühe</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstende">Wurstende</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurster">Wurster</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wursterei">Wursterei</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstfinger">Wurstfinger</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstf%C3%BClle">Wurstfülle</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wursthaut">Wursthaut</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstkammer">Wurstkammer</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstkessel">Wurstkessel</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstkn%C3%B6del">Wurstknödel</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstkraut">Wurstkraut</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstk%C3%BCche">Wurstküche</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstmasse">Wurstmasse</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstpelle">Wurstpelle</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstportion">Wurstportion</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstring">Wurstring</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstsalat">Wurstsalat</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstscheibe">Wurstscheibe</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstschnitte">Wurstschnitte</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstsemmel">Wurstsemmel</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstsorte">Wurstsorte</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstspeil">Wurstspeil</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstspezialit%C3%A4t">Wurstspezialität</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurststulle">Wurststulle</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstst%C3%BCck">Wurststück</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstsuppe">Wurstsuppe</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wursttheke">Wursttheke</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstverbrauch">Wurstverbrauch</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstvergiftung">Wurstvergiftung</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstware">Wurstware</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurstzipfel">Wurstzipfel</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/W%C3%BCrstchen">Würstchen</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/W%C3%BCrstel">Würstel</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/W%C3%BCrstl">Würstl</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/W%C3%BCrstlein">Würstlein</a></span>
+        <button type="button" class="btn btn-default btn-xs more-button" onclick="showRel('#relation-is-1-1')" id="relation-is-1-1-button-hide" style="display:none"><span style="color:#000">...</span> weniger</button>
+        <br />
+        </span>
+  </span>
+  <span id="relation-sep-1-1"> &nbsp;·&nbsp; </span>
+
+  <span class="sans" id="relation-block-1-2">
+
+      mit ›Wurst‹ als Letztglied:
+
+
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Bettwurst">Bettwurst</a></span>
+        <button type="button" class="btn btn-default btn-xs more-button" onclick="showRel('#relation-is-1-2')" id="relation-is-1-2-button-show"><span style="color:#000">...</span> 53 weitere</button>
+        <span id="relation-is-1-2" class="more-relations" data-id="1-2"> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Bierwurst">Bierwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Blutwurst">Blutwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Bockwurst">Bockwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Bratwurst">Bratwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Bregenwurst">Bregenwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Br%C3%BChwurst">Brühwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Burenwurst">Burenwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Cervelatswurst">Cervelatswurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Cervelatwurst">Cervelatwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Currywurst">Currywurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Dampfwurst">Dampfwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Dauerwurst">Dauerwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Dosenwurst">Dosenwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Erbswurst">Erbswurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Extrawurst">Extrawurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Fleischwurst">Fleischwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Gefl%C3%BCgelwurst">Geflügelwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Gelbwurst">Gelbwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Grillwurst">Grillwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Gr%C3%BCtzwurst">Grützwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Hartwurst">Hartwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Hausmacherwurst">Hausmacherwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Jagdwurst">Jagdwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Kackwurst">Kackwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Katenrauchwurst">Katenrauchwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Katenwurst">Katenwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Ketwurst">Ketwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Knackwurst">Knackwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Knoblauchwurst">Knoblauchwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Kochwurst">Kochwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Leberwurst">Leberwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Mettwurst">Mettwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Pferdewurst">Pferdewurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Pinkelwurst">Pinkelwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Plockwurst">Plockwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Presswurst">Presswurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Rauchwurst">Rauchwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Rindswurst">Rindswurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Rohwurst">Rohwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Rotwurst">Rotwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/R%C3%A4ucherwurst">Räucherwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Salamiwurst">Salamiwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Schinkenwurst">Schinkenwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Schlackwurst">Schlackwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Schmierwurst">Schmierwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Schweinswurst">Schweinswurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Streichwurst">Streichwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/S%C3%BClzwurst">Sülzwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Teewurst">Teewurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wei%C3%9Fwurst">Weißwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Zervelatswurst">Zervelatswurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Zervelatwurst">Zervelatwurst</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Zungenwurst">Zungenwurst</a></span>
+        <button type="button" class="btn btn-default btn-xs more-button" onclick="showRel('#relation-is-1-2')" id="relation-is-1-2-button-hide" style="display:none"><span style="color:#000">...</span> weniger</button>
+        <br />
+        </span>
+  </span>
+  <span id="relation-sep-1-2"> &nbsp;·&nbsp; </span>
+
+  <span class="sans" id="relation-block-1-3">
+
+      mit ›Wurst‹ als Grundform:
+
+
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/wurscht">wurscht</a></span> &middot; <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/wurst">wurst</a></span>
+  </span>
+  <span id="relation-sep-1-3"></span>
+
+</span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Mehrwortausdrücke </span><span class="dwdswb-ft-blocktext">
+<span class="sans" id="relation-block-1-mwa">
+  <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/alles%20hat%20ein%20Ende%2C%20nur%20die%20Wurst%20hat%20zwei">alles hat ein Ende, nur die Wurst hat zwei</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/die%20Wurst%20hoch%20h%C3%A4ngen">die Wurst hoch hängen</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/die%20Wurst%20h%C3%A4ngt%20hoch">die Wurst hängt hoch</a></span><button type="button" class="btn btn-default btn-xs more-button" onclick="showRel('#relation-is-1-mwa')" id="relation-is-1-mwa-button-show"><span style="color:#000">...</span> 11 weitere</button>
+      <span id="relation-is-1-mwa" class="more-relations" data-id="1-mwa"> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/dolle%20Wurst">dolle Wurst</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/es%20geht%20um%20die%20Wurscht">es geht um die Wurscht</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/es%20geht%20um%20die%20Wurst">es geht um die Wurst</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/in%20der%20Not%20schmeckt%20die%20Wurst%20auch%20ohne%20Brot">in der Not schmeckt die Wurst auch ohne Brot</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/mit%20dem%20Schinken%20nach%20der%20Wurst%20werfen">mit dem Schinken nach der Wurst werfen</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/mit%20der%20Wurst%20nach%20dem%20Schinken%20schmei%C3%9Fen">mit der Wurst nach dem Schinken schmeißen</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/mit%20der%20Wurst%20nach%20dem%20Schinken%20werfen">mit der Wurst nach dem Schinken werfen</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/mit%20der%20Wurst%20nach%20der%20Speckseite%20schmei%C3%9Fen">mit der Wurst nach der Speckseite schmeißen</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/mit%20der%20Wurst%20nach%20der%20Speckseite%20werfen">mit der Wurst nach der Speckseite werfen</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/tolle%20Wurst">tolle Wurst</a></span> &middot; 
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurst%20wider%20Wurst">Wurst wider Wurst</a></span>
+
+      <button type="button" class="btn btn-default btn-xs more-button" onclick="showRel('#relation-is-1-mwa')" id="relation-is-1-mwa-button-hide" style="display:none"><span style="color:#000">...</span> weniger</button>
+      <br />
+      </span></span>
+</span></div></div></div></div><div class="bedeutungsuebersicht" data-track-content="" data-content-name="DWDSWB Artikel" data-content-piece="Bedeutungsübersicht"><h2>Bedeutungsübersicht</h2><ol><li>1. <a href="/wb/Wurst#d-1-1">Lebensmittel mit einer länglichen Form aus einer gewürzten
+                Masse, die traditionell aus
+                zerkleinertem
+                Fleisch, Gewürzen und anderen Zutaten besteht, die in eine dünne Hülle aus Tierdarm,
+                Kunstdarm o. Ä. gepresst
+                und anschließend gegart oder durch Trocknen oder
+                Räuchern haltbar gemacht wird</a><ol style="list-style-type:none"><li>a)  [<span class="dwdswb-bedeutungsebene">spezieller</span>] <a href="/wb/Wurst#d-1-1-1">Wurstart,
+                    die meist kalt, in Scheiben geschnitten oder als streichfähige Masse als
+                    Brotbelag oder in kleinen Stücken zu Brot, verzehrt
+                    wird</a></li><li>b) <a href="/wb/Wurst#d-1-1-2">Wurstart,
+                    die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt
+                    wird</a></li></ol></li><li>2.  [<span class="dwdswb-bedeutungsebene">übertragen</span>] <a href="/wb/Wurst#d-1-2">etw., das mit seiner länglichen Form an eine ¹Wurst erinnert</a><ol style="list-style-type:none"><li>●  [<span class="dwdswb-bedeutungsebene">spezieller</span>, <span class="dwdswb-stilebene">salopp</span>] <a href="/wb/Wurst#d-1-2-1">länglich geformte Exkremente</a></li></ol></li></ol></div><div class="dwdswb-lesarten" data-track-content="" data-content-name="DWDSWB Artikel" data-content-piece="Bedeutungsteil"><div class="dwdswb-quelle"><abbr data-toggle="tooltip" title="vom ZDL-Team ausgearbeiteter Artikel, 2022">ZDL-Vollartikel
+            </abbr></div><h2 id="wb-1">Bedeutungen</h2><div class="dwdswb-lesart" id="d-1-1"><div class="dwdswb-lesart-n" data-n="1.">1.</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"><span class="dwdswb-definitionen"><span class="dwdswb-definition">Lebensmittel mit einer länglichen Form aus einer gewürzten Masse, die traditionell aus zerkleinertem Fleisch, Gewürzen und anderen Zutaten besteht, die in eine dünne Hülle aus Tierdarm, Kunstdarm <abbr title="oder Ähnliche(s)" data-toggle="tooltip">o. Ä.</abbr> gepresst und anschließend gegart oder durch Trocknen oder Räuchern haltbar gemacht wird</span></span></div><div class="dwdswb-kollokationen"><div class="dwdswb-block-label">Kollokationen: </div><div class="dwdswb-kollokation"><span class="dwdswb-relation">mit Adjektivattribut: </span><span class="dwdswb-belegtext">fettarme, fette, fettige, magere, leckere, würzige <span class="dwdswb-stichwort">Wurst</span></span>; <span class="dwdswb-belegtext">geräucherte, luftgetrocknete <span class="dwdswb-stichwort">Wurst</span></span>; <span class="dwdswb-belegtext">hausgemachte <span class="dwdswb-stichwort">Wurst</span></span>; <span class="dwdswb-belegtext">fleischfreie, vegane, vegetarische <span class="dwdswb-stichwort">Wurst</span></span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">in Präpositionalgruppe/-objekt: </span><span class="dwdswb-belegtext"><abbr title="etwas" data-toggle="tooltip">etw.</abbr> zu <span class="dwdswb-stichwort">Wurst</span> verarbeiten</span></div></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> In der historischen Schlachtküche zerlegt Metzger Frank
+                            W<span data-toggle="tooltip" title="agner aus Schöffengrund">[…]</span> ein geschlachtetes
+                        Schwein und verarbeitet es zu <span class="dwdswb-stichwort">Wurst</span>, so wie es bei
+                        Hausschlachtungen früher auf dem Land üblich war.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Frankfurter Rundschau, 05.11.2021]</span> </div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Dass <span class="dwdswb-stichwort">Wurst</span> als deutsch wahrgenommen wird,
+                        liegt an den mehr als 1500 verschiedenen Sorten in Deutschland, aber auch an
+                        den hiesigen Metzgerschulen, in denen Metzger aus aller Welt für alle Welt
+                        ausgebildet werden.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Süddeutsche Zeitung, 18.09.2021]</span> </div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">
+                        <span data-toggle="tooltip" title="Ja,">[…]</span> es sind sogar mehrere
+                            <span class="dwdswb-stichwort">Würste</span>, die da an Haken vor der weiß gekachelten
+                        Wand einer Metzgerei hängen.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Münchner Merkur, 04.06.2019]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Adrian O<span data-toggle="tooltip" title="schwald (12 Jahre)">[…]</span> nutzt die
+                        Fastenzeit, um Fleisch und <span class="dwdswb-stichwort">Wurst</span> weitgehend aus
+                        seinem Speiseplan zu streichen.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Südkurier, 27.02.2018]</span></div><div class="dwdswb-beleg"><span class="dwdswb-diasystematik" style="margin-right:10px"><span class="dwdswb-bedeutungsebene">allgemeiner</span></span><span class="dwdswb-belegtext"> Der Rohstoff für die fleischfreie <span class="dwdswb-stichwort">Wurst</span>, die
+                        im Dezember in den Handel kommen soll, soll aus Eiern und Rapsöl bestehen.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Westfälische, 08.12.2014]</span></div></div><div class="dwdswb-lesart" id="d-1-1-1"><div class="dwdswb-lesart-n" data-n="1a.">a)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">spezieller</span></span> <span class="dwdswb-definitionen"><span class="dwdswb-definition">Wurstart, die meist kalt, in Scheiben geschnitten oder als streichfähige Masse als Brotbelag oder in kleinen Stücken zu Brot, verzehrt wird</span></span></div><div class="dwdswb-ft-la"><div>Grammatik: meist im Singular</div></div><div class="dwdswb-verweise"><span class="dwdswb-verweis" data-lemma="Dauerwurst" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;aus rohem Fleisch, Speck, Salz und Gewürzen hergestellte Wurst, deren Haltbarkeit durch Räuchern, Lufttrocknung und Feuchtigkeitsentzug erhöht wurde; z. B. Plockwurst, Salami o. Ä.&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover">Oberbegriff zu <a class="intern" href="/wb/Dauerwurst">Dauerwurst</a></span>, <span class="dwdswb-verweis" data-lemma="Hartwurst" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;sehr feste, lange haltbare Rohwurst&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover"><a class="intern" href="/wb/Hartwurst">Hartwurst</a></span>, <span class="dwdswb-verweis" data-lemma="Streichwurst" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;streichfähige, als Brotaufstrich verwendete Wurst&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover"><a class="intern" href="/wb/Streichwurst">Streichwurst</a></span></div><div class="dwdswb-kollokationen"><div class="dwdswb-block-label">Kollokationen: </div><div class="dwdswb-kollokation"><span class="dwdswb-relation">mit Adjektivattribut: </span><span class="dwdswb-belegtext">streichfähige <span class="dwdswb-stichwort">Wurst</span></span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">in Präpositionalgruppe/-objekt: </span><span class="dwdswb-belegtext">ein Brot, ein Brötchen mit <span class="dwdswb-stichwort">Wurst</span></span>; <span class="dwdswb-belegtext"><abbr title="etwas" data-toggle="tooltip">etw.</abbr> mit <span class="dwdswb-stichwort">Wurst</span> belegen</span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">in Koordination: </span><span class="dwdswb-belegtext"><span class="dwdswb-stichwort">Wurst</span> und Käse, und Schinken</span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">mit vergleichender Wort-/Nominalgruppe: </span><span class="dwdswb-belegtext">eine Scheibe, ein Stück, ein Zipfel <span class="dwdswb-stichwort">Wurst</span></span></div></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Ein gesundes Pausenbrot, bestehend aus einem mit
+                                <span class="dwdswb-stichwort">Wurst</span> oder Käse belegtem Brot, einem Stück
+                            Obst oder Gemüse[…] sowie einem Getränk (Wasser
+                            oder Saftschorle) ist die Basis für konzentriertes Lernen.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Fränkischer Tag, 14.09.2021]</span> </div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Dadurch, dass <span data-toggle="tooltip" title="er">[…]</span>
+                            <span class="dwdswb-autorenzusatz">[der Allesschneider außer Brot]</span> aber auch
+                            wahnsinnig gut <span class="dwdswb-stichwort">Wurst</span> in schöne dünne Scheiben
+                            schneiden kann, haben wir nun auch vermehrt <span class="dwdswb-stichwort">Wurst</span>
+                            am Stück zuhause und schneiden bei Bedarf frische Scheiben runter.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span><a href="https://testgiraffe.de/allesschneider-ritter/" target="_blank"><span>Frisch aufgeschnittenes Brot zum Abendessen</span></a>, 01.10.2018, aufgerufen am 31.08.2020]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Er nahm sich eine Scheibe <span class="dwdswb-stichwort">Wurst</span>, rollte
+                            sie auf und steckte sie in den Mund.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Boie, Kirsten: Skogland. Ort: Hamburg 2005, S. 187]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Doch der Großvater hört ihm nicht zu, er ist damit beschäftigt,
+                            eine Scheibe Brot mit <span class="dwdswb-stichwort">Wurst</span> in mundgerechte
+                            Häppchen zu schneiden.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Dückers, Tanja: Spielzone. Berlin: Aufbau-Taschenbuch-Verl. 2002 [1999], S. 169]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Die Leber dieser <span class="dwdswb-autorenzusatz">[zwangsgemästeten]</span>
+                            Gänse sieht ganz weiß aus und wird zur Fabrikation von Gänseleberpastete
+                            und <span class="dwdswb-stichwort">Wurst</span> verwandt.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Die Landfrau, 29.08.1925]</span></div></div></div></div><div class="dwdswb-lesart" id="d-1-1-2"><div class="dwdswb-lesart-n" data-n="1b.">b)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"><span class="dwdswb-definitionen"><span class="dwdswb-definition">Wurstart, die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt wird</span></span></div><div class="dwdswb-verweise"><span class="dwdswb-verweis" data-lemma="Würstchen" data-hidx="" data-lesart="1" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;Wurst, die meist heiß verzehrt wird&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover">siehe auch <a class="intern" href="/wb/W%C3%BCrstchen#d-1-1">Würstchen<span class="dwdswb-la"> (1)</span></a></span>, <span class="dwdswb-verweis"><a class="intern" href="/wb/W%C3%BCrstel">Würstel</a></span>, <span class="dwdswb-verweis" data-lemma="Bratwurst" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;(meist aus (Schweine-)‍Fleisch und anderen Zutaten gefertigte) längliche Wurst zum Braten oder Grillen; verzehrfertige, gebratene oder gegrillte Bratwurst&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover">Oberbegriff zu <a class="intern" href="/wb/Bratwurst">Bratwurst</a></span>, <span class="dwdswb-verweis" data-lemma="Brühwurst" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;Wurst, die in einer kochenden Flüssigkeit erhitzt wird&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover"><a class="intern" href="/wb/Br%C3%BChwurst">Brühwurst</a></span></div><div class="dwdswb-kollokationen"><div class="dwdswb-block-label">Kollokationen: </div><div class="dwdswb-kollokation"><span class="dwdswb-relation">mit Adjektivattribut: </span><span class="dwdswb-belegtext">eine heiße <span class="dwdswb-stichwort">Wurst</span></span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">als Akkusativobjekt: </span><span class="dwdswb-belegtext"><span class="dwdswb-stichwort">Würste</span> braten, grillen</span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">in Präpositionalgruppe/-objekt: </span><span class="dwdswb-belegtext">in eine <span class="dwdswb-stichwort">Wurst</span> beißen</span>; <span class="dwdswb-belegtext">von einer <span class="dwdswb-stichwort">Wurst</span> abbeißen</span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">als partitive Apposition: </span><span class="dwdswb-belegtext"><span class="dwdswb-autorenzusatz">[ein, zwei, drei, …]</span> Paar <span class="dwdswb-stichwort">Würste</span></span></div><button type="button" class="btn btn-default btn-xs more-button expansion-button" style="margin-left:5px;margin-top:-10px" onclick="showKollokationen('#kollokation-idm141kollokation')" id="kollokation-idm141kollokation-button-show"><span style="color:#000">...</span> 3 weitere Kollokationen</button><div id="kollokation-idm141kollokation" class="more-block" data-id="idm141kollokation"><div class="dwdswb-kollokation"><span class="dwdswb-relation">in Koordination: </span><span class="dwdswb-belegtext"><span class="dwdswb-stichwort">Würste</span> und Schnitzel, Steaks</span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">als Aktivsubjekt: </span><span class="dwdswb-belegtext"><span class="dwdswb-stichwort">Würste</span> brutzeln <span class="dwdswb-autorenzusatz">[auf dem Grill, in der Pfanne]</span></span>; <span class="dwdswb-belegtext">eine <span class="dwdswb-stichwort">Wurst</span> platzt</span></div><div class="dwdswb-kollokation"><span class="dwdswb-relation">hat Präpositionalgruppe/-objekt: </span><span class="dwdswb-belegtext"><span class="dwdswb-stichwort">Würste</span> mit Senf</span></div><button type="button" class="btn btn-default btn-xs more-button collapse-button" onclick="showKollokationen('#kollokation-idm141kollokation')" id="kollokation-idm141kollokation-button-hide" style="display:none;margin-left:5px;margin-top:-10px"><span style="color:#000">...</span> weniger Kollokationen</button></div></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Typisch für die mittelgrobe <span class="dwdswb-stichwort">Wurst</span> aus
+                            Schweinefleisch <span class="dwdswb-autorenzusatz">[die original Nürnberger Bratwurst]</span> sei die Majoran‑Note, die man immer
+                            rausschmecken müsse, egal, welche Gewürze verwendet würden.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Frankfurter Rundschau, 20.11.2021]</span> </div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> »Jetzt geht’s los!«, singen <span data-toggle="tooltip" title="dann">[…]</span> die
+                            Fans im Stadion, tunken die <span class="dwdswb-stichwort">Wurst</span> in den Senf und
+                            spülen mit Bier nach – im fast unerschütterlichen Vertrauen darauf, dass
+                            die Ehre der Nation auf dem Rasen nicht von elf Würstchen
+                                <span class="dwdswb-paraphrase">(= leistungsschwachen Spielern)</span> verteidigt
+                            wird.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Zürcher Zeitung, 12.06.2008]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Gestern war wieder Treffen des Weißwurstrings, allerdings mit
+                            einem besonderen Ereignis. Franzi hat den seit drei Jahren bestehenden
+                                <span class="dwdswb-autorenzusatz">[Verzehr-]</span>Rekord von 5 Paar
+                                <span class="dwdswb-stichwort">Würsten</span> und 5 Brezeln um ein paar Würstchen
+                            und eine Brezel überboten und lag dabei unter der dafür vorgesehenen
+                            Zeitvorgabe von zwei Stunden.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span><a href="https://www.winzipp.org/was-gab-es-denn-nun-gestern/" target="_blank">Fluffis Blog</a>, 21.04.2006, aufgerufen am 01.09.2020]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Wer sich mal eine Tanz‑Pause gönnt, kann sich in der Küche
+                            verpflegen. Dort ist »s Laglers Rosi« fleissig am
+                            Würstesieden.
+                            Diese gehen weg wie frische Weggli. Kein Wunder, denn ein Paar
+                                <span class="dwdswb-stichwort">Würste</span> mit Brot und ein zünftiges
+                            Kaffee‑Schnaps kosten gerade mal sieben Franken.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Luzerner Zeitung, 19.02.2004]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> An einem Stand mitten auf dem Marktplatz bestellt Beata viermal
+                                <span class="dwdswb-stichwort">Wurst</span> und viermal Bier.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Kuckart, Judith: Lenas Liebe. Köln: DuMont Literatur und Kunst Verlag 2002, S. 287]</span></div></div></div></div></div></div><div class="dwdswb-lesart" id="d-1-2"><div class="dwdswb-lesart-n" data-n="2.">2.</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">übertragen</span></span> <span class="dwdswb-definitionen"><span class="dwdswb-definition"><abbr title="etwas" data-toggle="tooltip">etw.</abbr>, das mit seiner länglichen Form an eine <span class="dwdswb-verweis" data-lemma="Wurst" data-hidx="1" data-lesart="1 b" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;Wurstart, die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt wird&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover"><a class="intern" href="/wb/Wurst#d-1-1-2">¹Wurst</a></span> erinnert</span></span></div><div class="dwdswb-kollokationen"><div class="dwdswb-block-label">Kollokationen: </div><div class="dwdswb-kollokation"><span class="dwdswb-relation">in Präpositionalgruppe/-objekt: </span><span class="dwdswb-belegtext"><abbr title="etwas" data-toggle="tooltip">etw.</abbr> zu einer <span class="dwdswb-stichwort">Wurst</span> rollen</span></div></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Anschließend kommt die zu einer <span class="dwdswb-stichwort">Wurst</span>
+                        geformte <span class="dwdswb-autorenzusatz">[Teig-]</span>Masse <span class="dwdswb-autorenzusatz">[für die Brötchen]</span> auf ein Förderband und wird vom Teigteiler in
+                        gleich große Stückchen zerschnitten.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Süddeutsche Zeitung, 08.05.2000]</span> </div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">
+                        <span data-toggle="tooltip" title="In der Mitte mit der Hand eine Kerbe in den Teig
+                            machen,">[…]</span> 400 g Marzipan zu einer
+                            <span class="dwdswb-stichwort">Wurst</span> rollen.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Bild, 03.12.2015]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Ritz und Schlitz an Haustür dichten: Pfeift der Wind unter der
+                        Haustür herein, rollen Sie eine alte Decke zusammen und legen die
+                            <span class="dwdswb-stichwort">Wurst</span> innen vor die Tür.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span><a href="http://www.haus.de/sammelrubrikbildformat/der-winter-kann-kommen-so-bleibt-das-haus-warm.htm" target="_blank">Der Winter kann kommen: So bleibt das Haus warm</a>, 23.04.2013, aufgerufen am 31.08.2020]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Im Schatten großer Weiden verkaufen alte Frauen in geblümten Kitteln
+                        Wodka und vor allem Sudschuch, die in Obstsirup getauchten, zu
+                            <span class="dwdswb-stichwort">Würsten</span> getrockneten Walnusskernketten, eine
+                        Spezialität des Landes.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Die Zeit, 05.01.2000]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Neben dem Schrank ein Kabel, das vom Herumtragen des Telefons durch
+                        die Wohnung zu vielen kleinen <span class="dwdswb-stichwort">Würsten</span> verdreht war.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Goosen, Frank: Liegen lernen. Frankfurt a. M.: Eichborn 2000, S. 204]</span></div></div><div class="dwdswb-lesart" id="d-1-2-1"><div class="dwdswb-lesart-n" data-n="2●">●</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">spezieller</span>, <span class="dwdswb-stilebene">salopp</span></span> <span class="dwdswb-definitionen"><span class="dwdswb-definition">länglich geformte Exkremente</span></span></div><div class="dwdswb-kollokationen"><div class="dwdswb-block-label">Kollokationen: </div><div class="dwdswb-kollokation"><span class="dwdswb-relation">als Akkusativobjekt: </span><span class="dwdswb-belegtext">eine <span class="dwdswb-stichwort">Wurst</span> machen <span class="dwdswb-paraphrase">(= den Darm entleeren)</span></span></div></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-kompetenzbeispiel"><span class="dwdswb-belegtext">Hunde haben <span class="dwdswb-stichwort">Würste</span> im Sandkasten hinterlassen</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">
+                            <span data-toggle="tooltip" title="Das stimmt aber absolut nicht,">[…]</span> man kann den
+                            Katzen hier live zusehen, wie sie ihre <span class="dwdswb-stichwort">Wurst</span> auf
+                            die Wiese drücken.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span><a href="https://www.alternativ-gesund-leben.de/ein-ultraschallgeraet-zur-katzenvertreibung-im-garten-funktioniert-das-wirklich/" target="_blank"><span>Ein Ultraschallgerät zur Katzenvertreibung</span></a>, 24.10.2015, aufgerufen am 31.08.2020]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Also geht im Showdown von »Kops« die Männlichkeit in die Knie,
+                            macht eine <span class="dwdswb-stichwort">Wurst</span> in den Wald und verliert dabei
+                            das Toupet.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Berliner Zeitung, 13.11.2003]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> »Wir wollen, dass Kinder in den Parks spielen können, ohne
+                            ständig auf Tretminen <span class="dwdswb-paraphrase">(= Hundehaufen)</span> zu landen
+                            oder sich vor den Tieren zu fürchten«, sagt
+                                L<span data-toggle="tooltip" title="ehmann">[…]</span>. Schäferhundmischling Tobi leistet
+                            seinen Beitrag zum Thema und legt während der Präsentation eine
+                            beachtliche <span class="dwdswb-stichwort">Wurst</span> auf die Wiese.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Berliner Morgenpost, 19.04.2000]</span></div></div></div></div></div></div></div><p class="text-right dwds-last-change"><span>letzte Änderung: <time datetime="2022-08-02">02.08.2022</time></span></p></div><p class="goethe sans"><i class="bi bi-mortarboard" aria-hidden="true" style="margin-right:5px"></i>
+      Dieses Wort ist Teil des Wortschatzes für das
+      <a href="https://www.dwds.de/lemma/wortschatz-goethe-zertifikat/A2"><i class="bi-file-earmark-text"></i> Goethe-Zertifikat A2</a>.
+        </p>
+
+
+
+
+<span class="hyphinput" data-id="Wurst-1" style="display:none">Wurst | wurscht | wurst</span>
+
+
+
+
+  <div class="ext-separator"></div>
+  <div class="ext-quelle ext-quelle-sm" data-nosnippet><a href="/d/wb-etymwb">Etymologisches Wörterbuch</a> (Wolfgang Pfeifer)</div>
+  <h2 id="etymwb-1">Etymologie</h2>
+  <div class="ext-quelle ext-quelle-xs" data-nosnippet><a href="/d/wb-etymwb">Etymologisches Wörterbuch</a> (Wolfgang Pfeifer)</div>
+
+  <div style="position:relative" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Etymologie">
+    <div class="glyphicon glyphicon-chevron-down btn-link" style="cursor:pointer;position:absolute;left:-25px;top:5px; display:none" aria-hidden="true" data-toggle="tooltip" title="Etymologie aufklappen"></div>
+
+      <div style="position:relative">
+
+
+
+
+
+          <div style="font-family:'Source Sans Pro',sans-serif;font-size:10pt;color:#979797">
+            Wurst · wursteln · wurstig
+          </div>
+
+        <div class="etymwb-wrapper"><div class="etymwb-entry"> <span class="etymwb-headword"> <span class="etymwb-orth">Wurst</span> <span class="etymwb-gramgrp"> <abbr data-toggle="tooltip" title="Femininum">f.</abbr> </span> </span> ‘in Därme gefüllte, gewürzte Fleischspeise’, ein <abbr title="deutsch" data-toggle="tooltip">dt.</abbr> und <abbr title="niederländisch" data-toggle="tooltip">nl.</abbr> Wort, <abbr title="althochdeutsch" data-toggle="tooltip">ahd.</abbr> (11. Jh.), <abbr title="mittelhochdeutsch" data-toggle="tooltip">mhd.</abbr> <span class="etymwb-mentioned">wurst</span> (<abbr title="mitteldeutsch" data-toggle="tooltip">md.</abbr> auch <span class="etymwb-mentioned">worst</span>), <abbr title="altsächsisch" data-toggle="tooltip">asächs.</abbr> <span class="etymwb-mentioned">wurst</span>, <abbr title="mittelniederdeutsch" data-toggle="tooltip">mnd.</abbr> <abbr title="mittelniederländisch" data-toggle="tooltip">mnl.</abbr> <abbr title="niederländisch" data-toggle="tooltip">nl.</abbr> <span class="etymwb-mentioned">worst</span>. Herkunft ungewiß. Am besten ist wohl Anschluß (ausgehend von <abbr title="indoeuropäisch" data-toggle="tooltip">ie.</abbr> <span class="etymwb-mentioned">*u̯ṛtsti-</span>) im Sinne von ‘Gedrehtes’ an <abbr title="indoeuropäisch" data-toggle="tooltip">ie.</abbr> <span class="etymwb-mentioned">*u̯ert-</span> ‘drehen, wenden’ (s. <i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/etymwb/werden" class="intern">werden</a>, <i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/etymwb/-w%C3%A4rts" class="intern">-wärts</a>), Dentalerweiterung der Wurzel <abbr title="indoeuropäisch" data-toggle="tooltip">ie.</abbr> <span class="etymwb-mentioned">*u̯er-</span> ‘drehen, biegen’. Möglich ist ferner die Auffassung des Substantivs als ‘Durcheinandergemengtes, Gemengsel’ und Zusammenhang mit <i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/etymwb/wirr" class="intern">wirr</a> (s. d.), das (wenngleich unsicher) zu <abbr title="indoeuropäisch" data-toggle="tooltip">ie.</abbr> <span class="etymwb-mentioned">*u̯ers-</span> gestellt werden kann. In jedem Fall handelt es sich bei <abbr title="germanisch" data-toggle="tooltip">germ.</abbr> <span class="etymwb-mentioned">*wursti-</span> um eine schwundstufige Bildung mit (s)ti-Suffix. Redensartlich <span class="etymwb-mentioned">mit der Wurst nach dem Schinken werfen</span> (18. Jh.), älter <span class="etymwb-mentioned">mit einer Wurst eine Speckseite abwerfen</span> (Anfang 17. Jh.) ‘mit geringem Einsatz etw. Großes zu erreichen suchen’; <span class="etymwb-mentioned">es geht um die Wurst</span> ‘es geht um die Entscheidung, kommt darauf an’ (19. Jh.); <span class="etymwb-mentioned">das ist mir Wurst</span> (umgangssprachlich <span class="etymwb-mentioned">Wurscht</span>) ‘gleichgültig’ (Anfang 19. Jh., aus der Studentensprache), im Hinblick auf die beiden sich einander gleichenden Enden der Wurst. – <span class="etymwb-headword"> <span class="etymwb-orth">wursteln</span> <span class="etymwb-gramgrp"> Vb. </span> </span> ‘langsam, im alten Trott leben, arbeiten, wirtschaften’, auch ‘nicht ordentlich arbeiten’, meist (umgangssprachlich) <span class="etymwb-mentioned">wurschteln</span>, Iterativbildung (Anfang 19. Jh.) zu <span class="etymwb-mentioned">wursten</span> ‘Wurst machen’ (15. Jh.), ‘unordentlich, ungeschickt drehen, durcheinanderbringen, verwirren’ (17. Jh.), <abbr title="mittelniederdeutsch" data-toggle="tooltip">mnd.</abbr> <span class="etymwb-mentioned">worstelen</span> ‘ringen’. <span class="etymwb-headword"> <span class="etymwb-orth">wurstig</span> <span class="etymwb-gramgrp"> Adj. </span> </span> ‘gleichgültig’ (1. Hälfte 19. Jh., Studentensprache), älter ‘dick wie eine Wurst’ (18. Jh.), zuvor <span class="etymwb-mentioned">wursticht</span> (vgl. <span class="etymwb-mentioned">würstet</span>, 16. Jh.). </div> </div>
+
+      </div>
+
+  </div>
+
+
+
+
+
+
+
+  <div class="ext-separator"></div>
+  <div class="ext-quelle ext-quelle-sm" data-nosnippet><a href="/d/ressources#wortprofil">DWDS-Wortprofil</a></div>
+  <h2 id="wp-1">Typische Verbindungen zu ›Wurst‹ (berechnet)</h2>
+  <div class="ext-quelle ext-quelle-xs" data-nosnippet><a href="/d/ressources#wortprofil">DWDS-Wortprofil</a></div>
+
+  <div class="dwds-wp-beam">
+    <p class="bg-info sans">
+      Detailliertere Informationen bietet das DWDS-Wortprofil zu
+
+        <a href="https://www.dwds.de/wp/Wurst">›Wurst‹</a>.
+    </p>
+  </div>
+
+  <div class="row" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Wortprofil">
+    <div class="col-md-10 col-md-offset-1" style="padding:10px;font-size:400%"><div class="htmltagcloud">
+<span class="wp-t7"><a href="/wb/Brot">Brot</a></span>
+<span class="wp-t18"><a href="/wb/Fleisch">Fleisch</a></span>
+<span class="wp-t7"><a href="/wb/Fleischware">Fleischware</a></span>
+<span class="wp-t22"><a href="/wb/K%C3%A4se">Käse</a></span>
+<span class="wp-t0"><a href="/wb/Pommes">Pommes</a></span>
+<span class="wp-t24"><a href="/wb/Schinken">Schinken</a></span>
+<span class="wp-t11"><a href="/wb/Schnitzel">Schnitzel</a></span>
+<span class="wp-t0"><a href="/wb/Speck">Speck</a></span>
+<span class="wp-t16"><a href="/wb/Steak">Steak</a></span>
+<span class="wp-t14">abgepackt</span>
+<span class="wp-t11"><a href="/wb/braten">braten</a></span>
+<span class="wp-t0"><a href="/wb/deftig">deftig</a></span>
+<span class="wp-t14"><a href="/wb/essen">essen</a></span>
+<span class="wp-t0">etikettiert</span>
+<span class="wp-t0"><a href="/wb/fett">fett</a></span>
+<span class="wp-t7"><a href="/wb/fettig">fettig</a></span>
+<span class="wp-t11">gebraten</span>
+<span class="wp-t7">gegrillt</span>
+<span class="wp-t18">geräuchert</span>
+<span class="wp-t7"><a href="/wb/hausgemacht">hausgemacht</a></span>
+<span class="wp-t11">keimbelastet</span>
+<span class="wp-t0">krakauer</span>
+<span class="wp-t7">luftgetrocknet</span>
+<span class="wp-t7">lyoner</span>
+<span class="wp-t7"><a href="/wb/schmecken">schmecken</a></span>
+<span class="wp-t7">thüringer</span>
+<span class="wp-t11"><a href="/wb/vegan">vegan</a></span>
+<span class="wp-t0"><a href="/wb/vegetarisch">vegetarisch</a></span>
+<span class="wp-t0">verdorben</span>
+<span class="wp-t7"><a href="/wb/w%C3%BCrzig">würzig</a></span>
+</div></div>
+  </div>
+
+
+
+
+
+<script type="application/ld+json">
+    [
+   {
+      "@context" : "http://schema.org/",
+      "@type" : "WebPage",
+      "inlanguage" : "de",
+      "isPartOf" : "dwds.de",
+      "url" : "https://www.dwds.de/wb/Wurst"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "BreadcrumbList",
+      "itemListElement" : [
+         {
+            "@type" : "ListItem",
+            "item" : {
+               "@id" : "https://www.dwds.de/",
+               "name" : "Startseite"
+            },
+            "position" : 1
+         },
+         {
+            "@type" : "ListItem",
+            "item" : {
+               "@id" : "https://www.dwds.de/wb/Wurst",
+               "name" : "Wortinformation zu „Wurst“"
+            },
+            "position" : 2
+         }
+      ]
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "AudioObject",
+      "caption" : "Aussprache Wurst",
+      "contentUrl" : "https://www.dwds.de/audio/006/die_Wurst.mp3",
+      "encodingFormat" : "audio/mpeg",
+      "name" : "die_Wurst.mp3"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "DefinedTerm",
+      "description" : "Lebensmittel mit einer länglichen Form aus einer gewürzten Masse, die traditionell aus zerkleinertem Fleisch, Gewürzen und anderen Zutaten besteht, die in eine dünne Hülle aus Tierdarm, Kunstdarm o. Ä. gepresst und anschließend gegart oder durch Trocknen oder Räuchern haltbar gemacht wird",
+      "name" : "Wurst"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "DefinedTerm",
+      "description" : "[spezieller] Wurstart, die meist kalt, in Scheiben geschnitten oder als streichfähige Masse als Brotbelag oder in kleinen Stücken zu Brot, verzehrt wird",
+      "name" : "Wurst"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "DefinedTerm",
+      "description" : "Wurstart, die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt wird",
+      "name" : "Wurst"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "DefinedTerm",
+      "description" : "[übertragen] etw., das mit seiner länglichen Form an eine Wurst erinnert",
+      "name" : "Wurst"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "DefinedTerm",
+      "description" : "[spezieller, salopp] länglich geformte Exkremente",
+      "name" : "Wurst"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Frankfurter Rundschau, 05.11.2021"
+      },
+      "text" : "In der historischen Schlachtküche zerlegt Metzger Frank W[...] ein geschlachtetes Schwein und verarbeitet es zu Wurst, so wie es bei Hausschlachtungen früher auf dem Land üblich war."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Süddeutsche Zeitung, 18.09.2021"
+      },
+      "text" : "Dass Wurst als deutsch wahrgenommen wird, liegt an den mehr als 1500 verschiedenen Sorten in Deutschland, aber auch an den hiesigen Metzgerschulen, in denen Metzger aus aller Welt für alle Welt ausgebildet werden."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Münchner Merkur, 04.06.2019"
+      },
+      "text" : "[...] es sind sogar mehrere Würste, die da an Haken vor der weiß gekachelten Wand einer Metzgerei hängen."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Südkurier, 27.02.2018"
+      },
+      "text" : "Adrian O[...] nutzt die Fastenzeit, um Fleisch und Wurst weitgehend aus seinem Speiseplan zu streichen."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Neue Westfälische, 08.12.2014"
+      },
+      "text" : "Der Rohstoff für die fleischfreie Wurst, die im Dezember in den Handel kommen soll, soll aus Eiern und Rapsöl bestehen."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Fränkischer Tag, 14.09.2021"
+      },
+      "text" : "Ein gesundes Pausenbrot, bestehend aus einem mit Wurst oder Käse belegtem Brot, einem Stück Obst oder Gemüse[...] sowie einem Getränk (Wasser oder Saftschorle) ist die Basis für konzentriertes Lernen."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "author" : {
+         "@type" : "Person",
+         "name" : "Sarah_Testgiraffe"
+      },
+      "datePublished" : "2018-10-01",
+      "isPartOf" : {
+         "@type" : "URL",
+         "headline" : "Frisch aufgeschnittenes Brot zum Abendessen – Der Allesschneider von Ritter im Produkttest",
+         "name" : "https://testgiraffe.de/allesschneider-ritter/"
+      },
+      "text" : "Dadurch, dass [...] der Allesschneider außer Brot aber auch wahnsinnig gut Wurst in schöne dünne Scheiben schneiden kann, haben wir nun auch vermehrt Wurst am Stück zuhause und schneiden bei Bedarf frische Scheiben runter."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Boie, Kirsten: Skogland. Ort: Hamburg 2005, S. 187"
+      },
+      "text" : "Er nahm sich eine Scheibe Wurst, rollte sie auf und steckte sie in den Mund."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Dückers, Tanja: Spielzone. Berlin: Aufbau-Taschenbuch-Verl. 2002 [1999], S. 169"
+      },
+      "text" : "Doch der Großvater hört ihm nicht zu, er ist damit beschäftigt, eine Scheibe Brot mit Wurst in mundgerechte Häppchen zu schneiden."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Die Landfrau, 29.08.1925"
+      },
+      "text" : "Die Leber dieser zwangsgemästeten Gänse sieht ganz weiß aus und wird zur Fabrikation von Gänseleberpastete und Wurst verwandt."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Frankfurter Rundschau, 20.11.2021"
+      },
+      "text" : "Typisch für die mittelgrobe Wurst aus Schweinefleisch die original Nürnberger Bratwurst sei die Majoran-Note, die man immer rausschmecken müsse, egal, welche Gewürze verwendet würden."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Neue Zürcher Zeitung, 12.06.2008"
+      },
+      "text" : "»Jetzt geht’s los!«, singen [...] die Fans im Stadion, tunken die Wurst in den Senf und spülen mit Bier nach – im fast unerschütterlichen Vertrauen darauf, dass die Ehre der Nation auf dem Rasen nicht von elf Würstchen leistungsschwachen Spielern verteidigt wird."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "author" : {
+         "@type" : "Person",
+         "name" : "Daniel Sagt"
+      },
+      "datePublished" : "2006-04-21",
+      "isPartOf" : {
+         "@type" : "URL",
+         "headline" : "Fluffis Blog",
+         "name" : "https://www.winzipp.org/was-gab-es-denn-nun-gestern/"
+      },
+      "text" : "Gestern war wieder Treffen des Weißwurstrings, allerdings mit einem besonderen Ereignis. Franzi hat den seit drei Jahren bestehenden Verzehr-Rekord von 5 Paar Würsten und 5 Brezeln um ein paar Würstchen und eine Brezel überboten und lag dabei unter der dafür vorgesehenen Zeitvorgabe von zwei Stunden."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Luzerner Zeitung, 19.02.2004"
+      },
+      "text" : "Wer sich mal eine Tanz-Pause gönnt, kann sich in der Küche verpflegen. Dort ist »s Laglers Rosi« fleissig am Würstesieden. Diese gehen weg wie frische Weggli. Kein Wunder, denn ein Paar Würste mit Brot und ein zünftiges Kaffee-Schnaps kosten gerade mal sieben Franken."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Kuckart, Judith: Lenas Liebe. Köln: DuMont Literatur und Kunst Verlag 2002, S. 287"
+      },
+      "text" : "An einem Stand mitten auf dem Marktplatz bestellt Beata viermal Wurst und viermal Bier."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Bild, 03.12.2015"
+      },
+      "text" : "[...] 400 g Marzipan zu einer Wurst rollen."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "datePublished" : "2013-04-23",
+      "isPartOf" : {
+         "@type" : "URL",
+         "headline" : "Der Winter kann kommen: So bleibt das Haus warm",
+         "name" : "http://www.haus.de/sammelrubrikbildformat/der-winter-kann-kommen-so-bleibt-das-haus-warm.htm"
+      },
+      "text" : "Ritz und Schlitz an Haustür dichten: Pfeift der Wind unter der Haustür herein, rollen Sie eine alte Decke zusammen und legen die Wurst innen vor die Tür."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Süddeutsche Zeitung, 08.05.2000"
+      },
+      "text" : "Anschließend kommt die zu einer Wurst geformte Teig-Masse für die Brötchen auf ein Förderband und wird vom Teigteiler in gleich große Stückchen zerschnitten."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Die Zeit, 05.01.2000"
+      },
+      "text" : "Im Schatten großer Weiden verkaufen alte Frauen in geblümten Kitteln Wodka und vor allem Sudschuch, die in Obstsirup getauchten, zu Würsten getrockneten Walnusskernketten, eine Spezialität des Landes."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Goosen, Frank: Liegen lernen. Frankfurt a. M.: Eichborn 2000, S. 204"
+      },
+      "text" : "Neben dem Schrank ein Kabel, das vom Herumtragen des Telefons durch die Wohnung zu vielen kleinen Würsten verdreht war."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "author" : {
+         "@type" : "Person",
+         "name" : "Marco Eitelmann"
+      },
+      "datePublished" : "2015-10-24",
+      "isPartOf" : {
+         "@type" : "URL",
+         "headline" : "Ein Ultraschallgerät zur Katzenvertreibung im Garten funktioniert das wirklich?",
+         "name" : "https://www.alternativ-gesund-leben.de/ein-ultraschallgeraet-zur-katzenvertreibung-im-garten-funktioniert-das-wirklich/"
+      },
+      "text" : "[...] man kann den Katzen hier live zusehen, wie sie ihre Wurst auf die Wiese drücken."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Berliner Zeitung, 13.11.2003"
+      },
+      "text" : "Also geht im Showdown von »Kops« die Männlichkeit in die Knie, macht eine Wurst in den Wald und verliert dabei das Toupet."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Berliner Morgenpost, 19.04.2000"
+      },
+      "text" : "»Wir wollen, dass Kinder in den Parks spielen können, ohne ständig auf Tretminen Hundehaufen zu landen oder sich vor den Tieren zu fürchten«, sagt L[...]. Schäferhundmischling Tobi leistet seinen Beitrag zum Thema und legt während der Präsentation eine beachtliche Wurst auf die Wiese."
+   }
+]
+
+  </script>
+                <div class="citation-help" id="cite-1">
+                  <span class="label label-default">Zitationshilfe</span>
+                  <blockquote>
+                    <cite>
+                      „Wurst“, bereitgestellt durch das Digitale Wörterbuch
+                      der deutschen Sprache, &lt;https://www.dwds.de/wb/Wurst#1&gt;<span class="today-cit"></span>.
+                    </cite>
+                    <p><a href="/d/zitieren">Weitere Informationen &hellip;</a></p>
+                  </blockquote>
+                </div>
+
+                  <div class="article-share-container">
+  <p>Diesen Artikel teilen:</p>
+  <div class="article-share sans"><span class="share-facebook ">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%231"
+            target="_blank" title="bei Facebook teilen" aria-label="bei Facebook teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Facebook">
+        </a>
+      </span>
+    <span class="share-x ">
+        <a href="https://x.com/intent/tweet?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%231&amp;text=%C2%BBWurst%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29"
+            target="_blank" title="bei X teilen" aria-label="bei X teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="X">
+        </a>
+      </span>
+    <span class="share-reddit ">
+        <a href="https://reddit.com/submit?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%231&amp;title=%C2%BBWurst%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29"
+            target="_blank" title="bei Reddit teilen" aria-label="bei Reddit teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Reddit">
+        </a>
+      </span>
+    <span class="share-pocket ">
+        <a href="https://getpocket.com/save?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%231"
+            target="_blank" title="später lesen bei Pocket" aria-label="später lesen bei Pocket"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Pocket">
+        </a>
+      </span>
+    <span class="share-whatsapp touch-only">
+        <a href="whatsapp://send?text=%C2%BBWurst%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29%20https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%231"
+            target="_blank" title="bei WhatsApp teilen" aria-label="bei WhatsApp teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="WhatsApp">
+        </a>
+      </span>
+    <span class="share-telegram touch-only">
+        <a href="https://t.me/share/url?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%231&amp;text=%C2%BBWurst%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29"
+            target="_blank" title="bei Telegram teilen" aria-label="bei Telegram teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Telegram">
+        </a>
+      </span>
+    <span class="share-nodes ">
+        <a 
+            style="cursor:pointer" data-clipboard-action="copy" data-clipboard-text="https://www.dwds.de/wb/Wurst#1"
+           title="Link zu dieser Seite in Zwischenablage kopieren" aria-label="Link zu dieser Seite in Zwischenablage kopieren" class="share-url" data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Nodes">
+        </a>
+      </span>
+
+  </div>
+</div>
+
+
+              </div>
+
+              <div role="tabpanel" class="tab-pane" id="2">
+
+
+
+  <div class="sidebar-wrapper hidden-xs hidden-sm hidden-md">
+    <nav class="sidebar-spy" id="spy-2">
+      <ul class="sidebar-nav nav" data-spy="affix" data-offset-top="10" data-offset-bottom="200">
+        <li>
+          <a href="/wb/Wurst#top" data-target="#top">Seitenanfang</a>
+        </li><li>
+          <a href="/wb/Wurst#wb-2" data-target="#wb-2" data-scroll>Bedeutungen</a>
+        </li><li>
+          <a href="/wb/Wurst#wp-2" data-target="#wp-2" data-scroll>Typische Verbindungen</a>
+        </li></ul>
+    </nav>
+  </div>
+
+
+<div id="start-2"></div>
+
+<div class="dwdswb-artikel"><div class="dwdswb-ft" data-track-content="" data-content-name="DWDSWB Artikel" data-content-piece="Formteil"><h1 class="dwdswb-ft-lemmaansatz"><b>wurscht</b></h1>
+<div class="dwds-article-icons-wrapper"><a class="btn btn-default btn-xs btn-primary dwds-bookmark-button dwds-bookmark-add" data-toggle="tooltip" title="Lesezeichen für diesen Artikel anlegen" data-id="wurscht" data-hidx=""><i class="bi bi-bookmark-fill"></i> Lesezeichen
+    </a><a class="btn btn-default btn-xs btn-primary dwds-scroll-to-citation" data-article-no="2" data-toggle="tooltip" title="Artikel zitieren/teilen"><i class="bi bi-share-fill"></i> zitieren/teilen
+    </a><a class="btn btn-default btn-xs btn-primary dwds-toc dwds-collapse-button" style="display:none" data-article-no="2" data-toggle="tooltip" title="alle zusätzlich eingeblendeten Informationen zuklappen"><i class="bi bi-dash" style="-webkit-text-stroke-width:2px"></i> zuklappen
+    </a><a class="btn btn-default btn-xs btn-primary dwds-toc dwds-expand-button" data-article-no="2" data-toggle="tooltip" title="alle ausgeblendeten Informationen ausklappen" style="padding-left:6px"><i class="bi bi-plus" style="-webkit-text-stroke-width:2px"></i> ausklappen
+    </a></div><div class="dwdswb-ft-blocks-wrapper"><div class="dwdswb-ft-blocks"><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Grammatik</span><span class="dwdswb-ft-blocktext"><span>Adjektiv</span> · indeklinabel (<span class="dwdswb-einschraenkung">nur prädikativ</span>)</span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic ft-nebenform-label">Nebenform </span><span class="dwdswb-ft-blocktext"><b>wurst</b> · <span><span>Adjektiv</span></span></span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Aussprache </span><span class="dwdswb-ft-blocktext"><span class="btn-link glyphicon glyphicon-volume-up" style="cursor:pointer;top:4px" onclick="$(this).next('audio').trigger('play')"></span><audio><source type="audio/mpeg" src="https://www.dwds.de/audio/125/wurscht.mp3"><span title="Ihr Browser unterstützt kein Audio-Element.">Fehler</span></audio> <span class="btn-link glyphicon glyphicon-volume-up" style="cursor:pointer;top:4px" onclick="$(this).next('audio').trigger('play')"></span><audio><source type="audio/mpeg" src="https://www.dwds.de/audio/130/wurst.mp3"><span title="Ihr Browser unterstützt kein Audio-Element.">Fehler</span></audio> <span class="dwdswb-ipa" data-id="wurscht-2">[vʊʁʃt] · [vʊʁst]</span></span></div><div class="dwdswb-ft-block"></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Grundform</span><span class="dwdswb-ft-blocktext"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/Wurst#1"><sup>1</sup>Wurst</a></span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Ungültige Schreibungen </span><span class="dwdswb-ft-blocktext">Wurscht, Wurst</span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Rechtschreibregel </span><span class="dwdswb-ft-blocktext"><span class="dwdswb-regelverweis"><a title="Amtliches Regelwerk, bereitgestellt durch das IDS (grammis)" data-toggle="tooltip" target="_blank" href="https://www.rechtschreibrat.com/regelwerk/6193">§ 56 (1)</a></span></span></div><div class="dwdswb-ft-block"><span class="dwdswb-ft-blocklabel serif italic">Wortbildung </span><span class="dwdswb-ft-blocktext">
+
+  <span class="sans" id="relation-block-2-1">
+
+      mit ›wurscht‹/›wurst‹ als Erstglied:
+
+
+    <span class="no-wrap"><i class="bi bi-arrow-up-right dwds-aur"></i><a href="/wb/wurschtig">wurschtig</a></span>
+  </span>
+  <span id="relation-sep-2-1"></span>
+
+</span></div></div></div></div><div class="dwdswb-lesarten" data-track-content="" data-content-name="DWDSWB Artikel" data-content-piece="Bedeutungsteil"><div class="dwdswb-quelle"><abbr data-toggle="tooltip" title="vom ZDL-Team ausgearbeiteter Artikel, 2022">ZDL-Vollartikel
+            </abbr></div><h2 id="wb-2">Bedeutung</h2><div class="dwdswb-lesart" id="d-2-1"><div class="dwdswb-lesart-n" data-n=""><div class="glyphicon glyphicon-chevron-down" style="opacity:.5;font-size:14px"></div></div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-stilebene">salopp</span></span> <span class="dwdswb-definitionen"><span class="dwdswb-definition">völlig unwichtig, gleichgültig</span></span></div><div class="dwdswb-verweise"><span class="dwdswb-verweis" data-lemma="schnurz" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;ziemlich, völlig, komplett egal&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover">Synonym zu <a class="intern" href="/wb/schnurz">schnurz</a></span>, <span class="dwdswb-verweis" data-lemma="schnurzegal" data-hidx="" data-lesart="" data-popover-def="1" data-content='&lt;span style="color:#000;font-style:normal"&gt;ziemlich, völlig, komplett egal&lt;/span&gt;' data-html="true" data-toggle="popover" data-trigger="hover"><a class="intern" href="/wb/schnurzegal">schnurzegal</a></span></div><div class="dwdswb-kollokationen"><div class="dwdswb-block-label">Kollokationen: </div><div class="dwdswb-kollokation"><span class="dwdswb-relation">mit Adverbialbestimmung: </span><span class="dwdswb-belegtext">völlig, ziemlich, vollkommen, ganz <span class="dwdswb-stichwort">wurscht</span></span></div></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Ich bin Gott sein dank alt genug, so dass ich anderen gegenüber kein
+                        Geltungsbedürfnis mehr habe und
+                            denke<span class="dwdswb-autorenzusatz">[:]</span>
+                        »Ist mir doch <span class="dwdswb-stichwort">wurscht</span>, was die anderen
+                        denken.«</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span><a href="https://www.christineneder.com/warum-ich-gluecklicher-bin/" target="_blank">7 Gründe warum ich glücklicher bin als andere</a>, 19.06.2019, aufgerufen am 20.08.2020]</span> </div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Er sagte: »Es ist <span class="dwdswb-stichwort">wurst</span>, was über einen
+                        geschrieben wird, der Name muss richtig geschrieben sein, und es muss ein
+                        gutes Foto dabei sein.«</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Bote der Urschweiz, 13.11.2021]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Es ist mir jetzt scheißegal, ich spring einfach,
+                            <span class="dwdswb-stichwort">wurscht</span>, was dabei herauskommt.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Welt am Sonntag, 27.12.2020]</span></div><button type="button" class="btn btn-default btn-xs more-button expansion-button" style="margin-left:5px;margin-top:-10px" onclick="showBelege('#beleg-2idm38beleg')" id="beleg-2idm38beleg-button-show"><span style="color:#000">...</span> 5 weitere Belege</button><div id="beleg-2idm38beleg" class="more-block" data-id="2idm38beleg"><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Der Mehrzahl <span class="dwdswb-autorenzusatz">[der Fahrgäste]</span> ist es
+                        völlig <span class="dwdswb-stichwort">wurscht</span>, ob sie mit einem schadstoffarmen
+                        Dieselbus fahren oder mit einem Elektrobus, Hauptsache, sie kommen gut und
+                        pünktlich an.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Berliner Morgenpost, 09.01.2020]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Unvorteilhaft? Mir doch <span class="dwdswb-stichwort">wurscht</span>!</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Bild, 04.11.2019]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"><span data-toggle="tooltip" title="Noch hat das dem Absatz nicht geschadet,
+                            aber">[…]</span> sie ist da ohnehin nicht so materiell eingestellt.
+                        »Ich kann ja nichts mitnehmen, Geld ist mir eigentlich ziemlich
+                            <span class="dwdswb-stichwort">wurscht</span>.«</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Hamburger Abendblatt, 22.05.1999]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">… Ist mir ganz <span class="dwdswb-stichwort">wurscht</span>, wer Sie
+                        sind!</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Kempowski, Walter: Tadellöser &amp; Wolff. München: Hanser 1971, S. 343]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">Hitler und Ludendorff wollten ihre eigene Diktatur, die dem Norden
+                        mit Gewalt aufgezwungen werden sollte. Bayern war für sie nur eine
+                        Plattform, ein Mittel zum Zweck, was Poehner wörtlich so formulierte:
+                        »Bayern ist mir <span class="dwdswb-stichwort">wurscht</span>, ich kümmere mich nur um das
+                        Reich.«</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Berliner Tageblatt (Abend-Ausgabe), 12.03.1924]</span></div><button type="button" class="btn btn-default btn-xs more-button collapse-button" onclick="showBelege('#beleg-2idm38beleg')" id="beleg-2idm38beleg-button-hide" style="display:none;margin-left:5px;margin-top:-10px"><span style="color:#000">...</span> weniger Belege</button></div></div></div></div></div><p class="text-right dwds-last-change"><span>letzte Änderung: <time datetime="2022-02-08">08.02.2022</time></span></p></div><p class="goethe sans"><i class="bi bi-mortarboard" aria-hidden="true" style="margin-right:5px"></i>
+      Dieses Wort ist Teil des Wortschatzes für das
+      <a href="https://www.dwds.de/lemma/wortschatz-goethe-zertifikat/A2"><i class="bi-file-earmark-text"></i> Goethe-Zertifikat A2</a>.
+        </p>
+
+
+
+
+<span class="hyphinput" data-id="wurscht-2" style="display:none">Wurst | wurscht | wurst</span>
+
+
+
+
+
+
+
+
+
+
+  <div class="ext-separator"></div>
+  <div class="ext-quelle ext-quelle-sm" data-nosnippet><a href="/d/ressources#wortprofil">DWDS-Wortprofil</a></div>
+  <h2 id="wp-2">Typische Verbindungen zu ›wurscht‹ (berechnet)</h2>
+  <div class="ext-quelle ext-quelle-xs" data-nosnippet><a href="/d/ressources#wortprofil">DWDS-Wortprofil</a></div>
+
+  <div class="dwds-wp-beam">
+    <p class="bg-info sans">
+      Detailliertere Informationen bieten die DWDS-Wortprofile zu
+
+        <a href="https://www.dwds.de/wp/wurscht">›wurscht‹</a>, 
+        <a href="https://www.dwds.de/wp/wurst">›wurst‹</a> und 
+        <a href="https://www.dwds.de/wp/Wurst">›Wurst‹</a>.
+    </p>
+  </div>
+
+  <div class="row" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Wortprofil">
+    <div class="col-md-10 col-md-offset-1" style="padding:10px;font-size:400%"><div class="htmltagcloud">
+<span class="wp-t11"><a href="/wb/Geld">Geld</a></span>
+<span class="wp-t18"><a href="/wb/Inhalt">Inhalt</a></span>
+<span class="wp-t14"><a href="/wb/Politik">Politik</a></span>
+<span class="wp-t7"><a href="/wb/auch">auch</a></span>
+<span class="wp-t11"><a href="/wb/doch">doch</a></span>
+<span class="wp-t24"><a href="/wb/eh">eh</a></span>
+<span class="wp-t0"><a href="/wb/eher">eher</a></span>
+<span class="wp-t14"><a href="/wb/eigentlich">eigentlich</a></span>
+<span class="wp-t0"><a href="/wb/ganz">ganz</a></span>
+<span class="wp-t16"><a href="/wb/herzlich">herzlich</a></span>
+<span class="wp-t7"><a href="/wb/irgendwie">irgendwie</a></span>
+<span class="wp-t7"><a href="/wb/ja">ja</a></span>
+<span class="wp-t11"><a href="/wb/letztlich">letztlich</a></span>
+<span class="wp-t7"><a href="/wb/ohnehin">ohnehin</a></span>
+<span class="wp-t14"><a href="/wb/relativ">relativ</a></span>
+<span class="wp-t0"><a href="/wb/schon">schon</a></span>
+<span class="wp-t14"><a href="/wb/sowieso">sowieso</a></span>
+<span class="wp-t14"><a href="/wb/total">total</a></span>
+<span class="wp-t7"><a href="/wb/vergleichsweise">vergleichsweise</a></span>
+<span class="wp-t0"><a href="/wb/vermutlich">vermutlich</a></span>
+<span class="wp-t20">voellig</span>
+<span class="wp-t20"><a href="/wb/vollkommen">vollkommen</a></span>
+<span class="wp-t18"><a href="/wb/v%C3%B6llig">völlig</a></span>
+<span class="wp-t18"><a href="/wb/ziemlich">ziemlich</a></span>
+<span class="wp-t0"><a href="/wb/%C3%BCbrigens">übrigens</a></span>
+</div></div>
+  </div>
+
+
+
+
+
+<script type="application/ld+json">
+    [
+   {
+      "@context" : "http://schema.org/",
+      "@type" : "WebPage",
+      "inlanguage" : "de",
+      "isPartOf" : "dwds.de",
+      "url" : "https://www.dwds.de/wb/wurscht"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "BreadcrumbList",
+      "itemListElement" : [
+         {
+            "@type" : "ListItem",
+            "item" : {
+               "@id" : "https://www.dwds.de/",
+               "name" : "Startseite"
+            },
+            "position" : 1
+         },
+         {
+            "@type" : "ListItem",
+            "item" : {
+               "@id" : "https://www.dwds.de/wb/wurscht",
+               "name" : "Wortinformation zu „wurscht“"
+            },
+            "position" : 2
+         }
+      ]
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "AudioObject",
+      "caption" : "Aussprache wurscht",
+      "contentUrl" : "https://www.dwds.de/audio/125/wurscht.mp3",
+      "encodingFormat" : "audio/mpeg",
+      "name" : "wurscht.mp3"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "AudioObject",
+      "caption" : "Aussprache wurscht",
+      "contentUrl" : "https://www.dwds.de/audio/130/wurst.mp3",
+      "encodingFormat" : "audio/mpeg",
+      "name" : "wurst.mp3"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "DefinedTerm",
+      "description" : "[salopp] völlig unwichtig, gleichgültig",
+      "name" : "wurscht"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Bote der Urschweiz, 13.11.2021"
+      },
+      "text" : "Er sagte: »Es ist wurst, was über einen geschrieben wird, der Name muss richtig geschrieben sein, und es muss ein gutes Foto dabei sein.«"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Welt am Sonntag, 27.12.2020"
+      },
+      "text" : "Es ist mir jetzt scheißegal, ich spring einfach, wurscht, was dabei herauskommt."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Berliner Morgenpost, 09.01.2020"
+      },
+      "text" : "Der Mehrzahl der Fahrgäste ist es völlig wurscht, ob sie mit einem schadstoffarmen Dieselbus fahren oder mit einem Elektrobus, Hauptsache, sie kommen gut und pünktlich an."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Bild, 04.11.2019"
+      },
+      "text" : "Unvorteilhaft? Mir doch wurscht!"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "author" : {
+         "@type" : "Person",
+         "name" : "Christineneder"
+      },
+      "datePublished" : "2019-06-19",
+      "isPartOf" : {
+         "@type" : "URL",
+         "headline" : "7 Gründe warum ich glücklicher bin als andere",
+         "name" : "https://www.christineneder.com/warum-ich-gluecklicher-bin/"
+      },
+      "text" : "Ich bin Gott sein dank alt genug, so dass ich anderen gegenüber kein Geltungsbedürfnis mehr habe und denke: »Ist mir doch wurscht, was die anderen denken.«"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Hamburger Abendblatt, 22.05.1999"
+      },
+      "text" : "[...] sie ist da ohnehin nicht so materiell eingestellt. »Ich kann ja nichts mitnehmen, Geld ist mir eigentlich ziemlich wurscht.«"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Kempowski, Walter: Tadellöser & Wolff. München: Hanser 1971, S. 343"
+      },
+      "text" : "… Ist mir ganz wurscht, wer Sie sind!"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Berliner Tageblatt (Abend-Ausgabe), 12.03.1924"
+      },
+      "text" : "Hitler und Ludendorff wollten ihre eigene Diktatur, die dem Norden mit Gewalt aufgezwungen werden sollte. Bayern war für sie nur eine Plattform, ein Mittel zum Zweck, was Poehner wörtlich so formulierte: »Bayern ist mir wurscht, ich kümmere mich nur um das Reich.«"
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Bravo, 25.08.1977"
+      },
+      "text" : "Weil ihr alles so wurscht ist, ist sie auch überhaupt nicht nervös."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "konkret, 1989"
+      },
+      "text" : "Diese 5000 Mark sagen, daß nichts mehr gilt, daß alles wurscht ist."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Der Spiegel, 17.09.1990"
+      },
+      "text" : "Aber ob der Teamkollege nun gewinne oder verliere, das sei ihm vollkommen »wurscht«."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Bieler, Manfred: Der Bär, Hamburg: Hoffmann und Campe 1983, S. 210"
+      },
+      "text" : "Ob Ralf im Mai oder im September verdonnert wurde, ist den Kameraden absolut wurscht."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Wildgans, Anton: Musik der Kindheit, Ein Heimatbuch aus Wien. In: Simons, Oliver (Hg.) Deutsche Autobiographien 1690-1930, Berlin: Directmedia Publ. 2004 [1928], S. 2796"
+      },
+      "text" : "Da aber war einem schon alles »wurscht«; denn entweder man hatte seinen »Sechser« in Mathematik bereits oder man hatte ihn nicht."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Der Spiegel, 07.09.1987"
+      },
+      "text" : "Die hat gesagt, ihr ist das Wurscht, wenn wir draufgehen, gehen wir alle zwei drauf."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Der Tagesspiegel, 26.08.2003"
+      },
+      "text" : "Ich kann es nicht ändern, insofern ist es mir auf deutsch gesagt Wurscht."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Der Spiegel, 19.03.2001"
+      },
+      "text" : "Der Film ist verrissen worden, aber jeder Adam-Sandler-Film wird verrissen, die Kritiken sind völlig Wurscht."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Reimann, Hans: Vergnügliches Handbuch der Deutschen Sprache, Düsseldorf: Econ-Verl. 1964 [1931], S. 31"
+      },
+      "text" : "Wenn jemand in Ihrer Gegenwart sagt, es sei ihm wurscht, ob man ihm Dampfnudeln oder Rohrnudeln anbietet, lachen Sie bestimmt nicht."
+   },
+   {
+      "@context" : "https://schema.org",
+      "@type" : "Quotation",
+      "isPartOf" : {
+         "@type" : "Periodical",
+         "name" : "Scheerbart, Paul: Immer mutig! In: Deutsche Literatur von Lessing bis Kafka, Berlin: Directmedia Publ. 2000 [1902], S. 10379"
+      },
+      "text" : "Mir ist die ganze Welt einfach Wurscht – wenn ich zu Hause bin – bei Mir zu Hause!"
+   }
+]
+
+  </script>
+                <div class="citation-help" id="cite-2">
+                  <span class="label label-default">Zitationshilfe</span>
+                  <blockquote>
+                    <cite>
+                      „wurscht“, bereitgestellt durch das Digitale Wörterbuch
+                      der deutschen Sprache, &lt;https://www.dwds.de/wb/Wurst#2&gt;<span class="today-cit"></span>.
+                    </cite>
+                    <p><a href="/d/zitieren">Weitere Informationen &hellip;</a></p>
+                  </blockquote>
+                </div>
+
+                  <div class="article-share-container">
+  <p>Diesen Artikel teilen:</p>
+  <div class="article-share sans"><span class="share-facebook ">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%232"
+            target="_blank" title="bei Facebook teilen" aria-label="bei Facebook teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Facebook">
+        </a>
+      </span>
+    <span class="share-x ">
+        <a href="https://x.com/intent/tweet?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%232&amp;text=%C2%BBwurscht%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29"
+            target="_blank" title="bei X teilen" aria-label="bei X teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="X">
+        </a>
+      </span>
+    <span class="share-reddit ">
+        <a href="https://reddit.com/submit?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%232&amp;title=%C2%BBwurscht%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29"
+            target="_blank" title="bei Reddit teilen" aria-label="bei Reddit teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Reddit">
+        </a>
+      </span>
+    <span class="share-pocket ">
+        <a href="https://getpocket.com/save?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%232"
+            target="_blank" title="später lesen bei Pocket" aria-label="später lesen bei Pocket"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Pocket">
+        </a>
+      </span>
+    <span class="share-whatsapp touch-only">
+        <a href="whatsapp://send?text=%C2%BBwurscht%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29%20https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%232"
+            target="_blank" title="bei WhatsApp teilen" aria-label="bei WhatsApp teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="WhatsApp">
+        </a>
+      </span>
+    <span class="share-telegram touch-only">
+        <a href="https://t.me/share/url?url=https%3A%2F%2Fwww.dwds.de%2Fwb%2FWurst%232&amp;text=%C2%BBwurscht%C2%AB%20im%20Digitalen%20W%C3%B6rterbuch%20der%20deutschen%20Sprache%20%28DWDS%29"
+            target="_blank" title="bei Telegram teilen" aria-label="bei Telegram teilen"  data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Telegram">
+        </a>
+      </span>
+    <span class="share-nodes ">
+        <a 
+            style="cursor:pointer" data-clipboard-action="copy" data-clipboard-text="https://www.dwds.de/wb/Wurst#2"
+           title="Link zu dieser Seite in Zwischenablage kopieren" aria-label="Link zu dieser Seite in Zwischenablage kopieren" class="share-url" data-toggle="tooltip" data-track-content data-content-name="DWDS-WB-Artikel teilen" data-content-piece="Nodes">
+        </a>
+      </span>
+
+  </div>
+</div>
+
+
+              </div>
+
+          </div>
+
+
+
+
+      </div>
+    </div>
+  </div><div class="col-md-3 rightcol">
+  <div>
+
+
+        <p class="h3">Worthäufigkeit <sup><a href="/d/worthaeufigkeit"><i class="glyphicon glyphicon-question-sign" style="opacity:.5" title="Dokumentation zu Worthäufigkeiten im DWDS" data-toggle="tooltip" data-placement="bottom"></i></a></sup></p>
+
+
+          <table class="serif italic word-frequency">
+            <tr>
+              <td>selten</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td style="text-align:right">häufig</td>
+            </tr>
+            <tr>
+              <td style="text-align:center"><div class="word-frequency-active"></div></td><td style="text-align:center"><div class="word-frequency-active"></div></td><td style="text-align:center"><div class="word-frequency-active"></div></td><td style="text-align:center"><div class="word-frequency-active"></div></td><td style="text-align:center"><div class="word-frequency-inactive"></div></td><td style="text-align:center"><div class="word-frequency-inactive"></div></td><td style="text-align:center"><div class="word-frequency-inactive"></div></td>
+            </tr>
+          </table>
+
+
+
+
+          <div id="plot-box" style="font-size:smaller; margin-top:5px; text-align:left" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Verlaufskurve">
+            <p class="h3">Wortverlaufskurve <a href="/d/plot#wb" class="hidden-xs whatis" data-nosnippet>Was ist das?</a></p>
+            <ul class="nav nav-tabs" role="tablist" id="plot-tabs" style="bottom:-20px;position:relative;margin-top:-20px;padding-left:0">
+              <li role="presentation">
+                <a href="https://www.dwds.de/wb/Wurst#plot-1" aria-controls="plot-1" role="tab" data-toggle="tab" style="padding:5px 15px">ab 1600</a>
+              </li>
+              <li role="presentation" class="active">
+                <a href="https://www.dwds.de/wb/Wurst#plot-2" aria-controls="plot-2" role="tab" data-toggle="tab" style="padding:5px 15px">ab 1946</a>
+              </li>
+            </ul>
+            <div style="float:none;clear:both"></div>
+
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane" id="plot-1">
+                  <a href="https://www.dwds.de/r/plot/?xrange=1600:1999&amp;window=10&amp;slice=3&amp;q={'wurscht','Wurscht','wurst','Wurst'}&amp;corpus=dta%2Bdwds"><img src="/r/plot/image/?v=hist&amp;q={'wurscht','Wurscht','wurst','Wurst'}" style="width:100%" alt="Wortverlaufskurve 1600−1999" title="Wortverlaufskurve 1600−1999" data-toggle="tooltip" data-placement="bottom" width="300" height="180" loading="lazy" /></a>
+                </div>
+                <div role="tabpanel" class="tab-pane active" id="plot-2">
+                  <a href="https://www.dwds.de/r/plot/?xrange=1946:2024&amp;window=3&amp;slice=1&amp;q={'wurscht','Wurscht','wurst','Wurst'}&amp;corpus=zeitungenxl"><img src="/r/plot/image/?v=pres&amp;q={'wurscht','Wurscht','wurst','Wurst'}" style="width:100%" alt="Wortverlaufskurve ab 1946" title="Wortverlaufskurve ab 1946" data-toggle="tooltip" data-placement="bottom" width="300" height="180" /></a>
+                </div>
+              </div>
+
+          </div>
+
+
+
+
+        <div id="map-box" style="font-size:smaller; margin-top:5px; text-align:left" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Geografische Verteilung">
+          <p class="h3" style="margin-top:30px">
+            Geografische Verteilung
+            <sup><a href="/d/regionalangaben"><i class="glyphicon glyphicon-question-sign" style="opacity:.5" title="Dokumentation zu den Regionalangaben im DWDS" data-toggle="tooltip" data-placement="bottom"></i></a></sup>
+          </p>
+          <ul class="nav nav-tabs" role="tablist" id="map-tabs" style="bottom:-20px;position:relative;margin-top:-20px;padding-left:0">
+
+
+              <li role="presentation" class="active">
+                <a href="https://www.dwds.de/wb/Wurst#map-1" aria-controls="map-1" role="tab" data-toggle="tab" style="padding:5px 15px">ZDL-Regionalkorpus</a>
+              </li>
+
+
+              <li role="presentation" >
+                <a href="https://www.dwds.de/wb/Wurst#map-2" aria-controls="map-2" role="tab" data-toggle="tab" style="padding:5px 15px">Webmonitor</a>
+              </li>
+
+          </ul>
+
+          <div style="float:none;clear:both"></div>
+
+
+            <div class="tab-content">
+
+
+
+
+
+
+
+
+
+  <div role="tabpanel" class="tab-pane active" id="map-1" style="position:relative">
+
+      <div id="carousel-maps-regional" class="carousel slide" data-ride="carousel" data-interval="false">
+        <div class="carousel-inner" role="listbox">
+
+            <div class="item active">
+
+  <p class="text-center" style="margin-top:20px; font-size:11pt"><strong>Verteilung über Areale</strong></p>
+  <div style="height:460px; width:100%" class="text-center">
+    <a data-toggle="modal" data-target="#regional-map-regional-areale-modal" style="cursor:pointer">
+      <img src="/r/svg/thumbnail/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=areale&amp;from=wb" alt="regionale Verteilung im ZDL-Regionalkorpus (relative Häufigkeiten)" title="Regionale Verteilung im ZDL-Regionalkorpus (relative Häufigkeiten).
+Klicken Sie auf die Karte, um eine vergrößerte Ansicht zu erhalten." width="320" height="443" loading="lazy" />
+    </a>
+  </div>
+
+            </div>
+
+            <div class="item">
+
+  <p class="text-center" style="margin-top:20px; font-size:11pt"><strong>Verteilung über Zeitungen</strong></p>
+  <div style="height:460px; width:100%" class="text-center">
+    <a data-toggle="modal" data-target="#regional-map-regional-zeitungen-modal" style="cursor:pointer">
+      <img src="/r/svg/thumbnail/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=zeitungen&amp;from=wb" alt="regionale Verteilung im ZDL-Regionalkorpus (relative Häufigkeiten)" title="Regionale Verteilung im ZDL-Regionalkorpus (relative Häufigkeiten).
+Klicken Sie auf die Karte, um eine vergrößerte Ansicht zu erhalten." width="320" height="443" loading="lazy" />
+    </a>
+  </div>
+
+            </div>
+
+        </div>
+        <a class="left carousel-control" href="#carousel-maps-regional" role="button" data-slide="prev">
+          <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" style="color:#000; left:0%"></span>
+          <span class="sr-only">vorheriges</span>
+        </a>
+        <a class="right carousel-control" href="#carousel-maps-regional" role="button" data-slide="next">
+          <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" style="color:#000; right:0%"></span>
+          <span class="sr-only">nächstes</span>
+        </a>
+      </div>
+
+
+  <div class="modal fade" id="regional-map-regional-areale-modal" tabindex="-1" role="dialog" aria-labelledby="#regional-map-regional-areale-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg regional-modal-dialog" role="document">
+      <div class="modal-content regional-modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title text-center" id="regional-map-regional-areale-modal-label">ZDL-Regionalkorpus: Verteilung über Areale</h4>
+        </div>
+        <div class="modal-body">
+          <div class="regional-svg regional-svg-areale">
+            <object data="/r/svg/thumbnail/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=areale&amp;mode=map" type="image/svg+xml" aria-label="Geografische Verteilung der Treffer über Areale" loading="lazy"></object>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-default" href="/r/svg/thumbnail/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=areale&amp;mode=map&amp;dl=1">Karte herunterladen</a>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="modal fade" id="regional-map-regional-zeitungen-modal" tabindex="-1" role="dialog" aria-labelledby="#regional-map-regional-zeitungen-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg regional-modal-dialog" role="document">
+      <div class="modal-content regional-modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title text-center" id="regional-map-regional-zeitungen-modal-label">ZDL-Regionalkorpus: Verteilung über Zeitungen</h4>
+        </div>
+        <div class="modal-body">
+          <div class="regional-svg regional-svg-areale">
+            <object data="/r/svg/thumbnail/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=zeitungen&amp;mode=map" type="image/svg+xml" aria-label="Geografische Verteilung der Treffer über Areale" loading="lazy"></object>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-default" href="/r/svg/thumbnail/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=zeitungen&amp;mode=map&amp;dl=1">Karte herunterladen</a>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <p class="text-center map-icons">
+    <a href="https://www.dwds.de/r/?corpus=regional&amp;q={'Wurst','wurscht','Wurscht','wurst'}" title="Belege im ZDL-Regionalkorpus anzeigen" data-toggle="tooltip"><img src="https://www.dwds.de/dwds_static/images/list-pointers-svgrepo-com.svg" style="width:40px"/></a>
+    <a href="/d/korpora/regional" title="Dokumentation zum Korpus »ZDL-Regionalkorpus«" data-toggle="tooltip"><img src="https://www.dwds.de/dwds_static/images/help1-svgrepo-com.svg" style="width:30px"/></a>
+  </p>
+  <p class="help-block">
+    Bitte beachten Sie, dass diese Karten nicht redaktionell, sondern automatisch
+    erstellt sind. Klicken Sie auf die Karte, um in der vergrößerten Ansicht mehr
+    Details zu sehen.
+  </p>
+
+  </div>
+
+
+
+  <div role="tabpanel" class="tab-pane " id="map-2" style="position:relative">
+
+
+
+  <p class="text-center" style="margin-top:20px; font-size:11pt"><strong>Verteilung über Areale</strong></p>
+  <div style="height:460px; width:100%" class="text-center">
+    <a data-toggle="modal" data-target="#regional-map-webmonitor-areale-modal" style="cursor:pointer">
+      <img src="/r/svg/thumbnail/?corpus=webmonitor&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=areale&amp;from=wb" alt="regionale Verteilung im Webmonitor (relative Häufigkeiten)" title="Regionale Verteilung im Webmonitor (relative Häufigkeiten).
+Klicken Sie auf die Karte, um eine vergrößerte Ansicht zu erhalten." width="320" height="443" loading="lazy" />
+    </a>
+  </div>
+
+
+  <div class="modal fade" id="regional-map-webmonitor-areale-modal" tabindex="-1" role="dialog" aria-labelledby="#regional-map-webmonitor-areale-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg regional-modal-dialog" role="document">
+      <div class="modal-content regional-modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title text-center" id="regional-map-webmonitor-areale-modal-label">Webmonitor: Verteilung über Areale</h4>
+        </div>
+        <div class="modal-body">
+          <div class="regional-svg regional-svg-areale">
+            <object data="/r/svg/thumbnail/?corpus=webmonitor&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=areale&amp;mode=map" type="image/svg+xml" aria-label="Geografische Verteilung der Treffer über Areale" loading="lazy"></object>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-default" href="/r/svg/thumbnail/?corpus=webmonitor&amp;q={'Wurst','wurscht','Wurscht','wurst'}&amp;what=areale&amp;mode=map&amp;dl=1">Karte herunterladen</a>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <p class="text-center map-icons">
+    <a href="https://www.dwds.de/r/?corpus=webmonitor&amp;q={'Wurst','wurscht','Wurscht','wurst'}" title="Belege im Webmonitor anzeigen" data-toggle="tooltip"><img src="https://www.dwds.de/dwds_static/images/list-pointers-svgrepo-com.svg" style="width:40px"/></a>
+    <a href="/d/korpora/webmonitor" title="Dokumentation zum Korpus »Webmonitor«" data-toggle="tooltip"><img src="https://www.dwds.de/dwds_static/images/help1-svgrepo-com.svg" style="width:30px"/></a>
+  </p>
+  <p class="help-block">
+    Bitte beachten Sie, dass diese Karten nicht redaktionell, sondern automatisch
+    erstellt sind. Klicken Sie auf die Karte, um in der vergrößerten Ansicht mehr
+    Details zu sehen.
+  </p>
+
+  </div>
+
+
+
+            </div>
+
+        </div>
+
+
+
+
+  </div>
+
+
+
+  <p class="h3">Weitere Wörterbücher</p>
+<ul class="sans" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Links zu weiteren Wörterbüchern">
+  <li>
+    <a href="/wb/dwb/search/?q=wurst">Deutsches Wörterbuch (¹DWB)</a>
+  </li>
+  <li>
+    <a href="/wb/dwb2/search/?q=wurst">Deutsches Wörterbuch, Neubearbeitung (²DWB)</a>
+  </li>
+  <li><a href="/wb/wdg/search/?q=Wurst">Wörterbuch der deutschen Gegenwartssprache (WDG)</a></li>
+
+
+</ul>
+
+
+
+
+<p class="h3">Belege in Korpora <a href="/d/korpora#wb" class="hidden-xs whatis" data-nosnippet>Was ist das?</a></p>
+
+<div data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Links zu Korpora">
+
+
+
+    <p class="h4">Metakorpora</p>
+    <ul class="sans"><li data-corpus="dwdsxl" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dwdsxl&amp;q={wurscht,Wurscht,wurst,Wurst}&amp;sc=adg&amp;sc=blogs&amp;sc=bundestag&amp;sc=bz&amp;sc=ddr&amp;sc=gesetze&amp;sc=kern&amp;sc=kern21&amp;sc=politische_reden&amp;sc=spk&amp;sc=tsp&amp;sc=untertitel">Gegenwartskorpora mit freiem Zugang</a></li>
+      <li data-corpus="dtaxl" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dtaxl&amp;q={wurscht,Wurscht,wurst,Wurst}">Historische Korpora</a></li>
+      <li data-corpus="dta" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dta&amp;q={wurscht,Wurscht,wurst,Wurst}">DTA-Kern+Erweiterungen</a></li>
+
+    </ul>
+
+    <p class="h4">Referenzkorpora</p>
+    <ul class="sans"><li data-corpus="kern" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=kern&amp;q={wurscht,Wurscht,wurst,Wurst}">DWDS-Kernkorpus (1900–1999)</a></li>
+      <li data-corpus="kern21" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=kern21&amp;q={wurscht,Wurscht,wurst,Wurst}">DWDS-Kernkorpus 21 (2000–2010)</a></li>
+      <li data-corpus="dtak" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dtak&amp;q={wurscht,Wurscht,wurst,Wurst}">DTA-Kernkorpus (1598–1913)</a></li>
+
+    </ul>
+
+    <p class="h4">Zeitungskorpora</p>
+    <ul class="sans"><li data-corpus="bz" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=bz&amp;q={wurscht,Wurscht,wurst,Wurst}">Berliner Zeitung (1994–2005)</a></li>
+      <li data-corpus="tsp" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=tsp&amp;q={wurscht,Wurscht,wurst,Wurst}">Der Tagesspiegel (ab 1996)</a></li>
+
+    </ul>
+
+    <p class="h4">Webkorpora</p>
+    <ul class="sans"><li data-corpus="blogs" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=blogs&amp;q={wurscht,Wurscht,wurst,Wurst}">Blogs</a></li>
+
+    </ul>
+
+    <p class="h4">Spezialkorpora</p>
+    <ul class="sans"><li data-corpus="dtae" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dtae&amp;q={wurscht,Wurscht,wurst,Wurst}">DTA-Erweiterungen (1465–1969)</a></li>
+      <li data-corpus="adg" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=adg&amp;q={wurscht,Wurscht,wurst,Wurst}">Archiv der Gegenwart (1931–2000)</a></li>
+      <li data-corpus="dingler" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dingler&amp;q={wurscht,Wurscht,wurst,Wurst}">Polytechnisches Journal</a></li>
+      <li data-corpus="untertitel" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=untertitel&amp;q={wurscht,Wurscht,wurst,Wurst}">Filmuntertitel</a></li>
+      <li data-corpus="spk" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=spk&amp;q={wurscht,Wurscht,wurst,Wurst}">Gesprochene Sprache</a></li>
+      <li data-corpus="ddr" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=ddr&amp;q={wurscht,Wurscht,wurst,Wurst}">DDR</a></li>
+      <li data-corpus="politische_reden" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=politische_reden&amp;q={wurscht,Wurscht,wurst,Wurst}">Politische Reden (1982–2020)</a></li>
+      <li data-corpus="bundestag" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=bundestag&amp;q={wurscht,Wurscht,wurst,Wurst}">Bundestagskorpus (1949–2017)</a></li>
+      <li data-corpus="soldatenbriefe" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=soldatenbriefe&amp;q={wurscht,Wurscht,wurst,Wurst}">Soldatenbriefe (1745–1872)</a></li>
+      <li data-corpus="copadocs" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=copadocs&amp;q={wurscht,Wurscht,wurst,Wurst}">Korpus Patiententexte (1834–1957)</a></li>
+      <li data-corpus="avh-bern" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=avh-bern&amp;q={wurscht,Wurscht,wurst,Wurst}">A. v. Humboldts Publizistik (dt., 1790–1859)</a></li>
+      <li data-corpus="bruedergemeine" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=bruedergemeine&amp;q={wurscht,Wurscht,wurst,Wurst}">Nachrichten aus der Brüdergemeine (1819–1894)</a></li>
+      <li data-corpus="pitaval" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=pitaval&amp;q={wurscht,Wurscht,wurst,Wurst}">Der Neue Pitaval (1842–1890)</a></li>
+      <li data-corpus="jean_paul" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=jean_paul&amp;q={wurscht,Wurscht,wurst,Wurst}">Briefe von Jean Paul (1780–1825)</a></li>
+      <li data-corpus="dekude" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=dekude&amp;q={wurscht,Wurscht,wurst,Wurst}">Deutsche Kunst und Dekoration (1897–1932)</a></li>
+      <li data-corpus="nschatz_deu" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=nschatz_deu&amp;q={wurscht,Wurscht,wurst,Wurst}">Neuer Deutscher Novellenschatz (1884–1887)</a></li>
+      <li data-corpus="stimm-los" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=stimm-los&amp;q={wurscht,Wurscht,wurst,Wurst}">stimm-los – Wiedergefundene Perlen der Literatur</a></li>
+      <li data-corpus="wikibooks" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=wikibooks&amp;q={wurscht,Wurscht,wurst,Wurst}">Wikibooks-Korpus</a></li>
+      <li data-corpus="wikipedia" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=wikipedia&amp;q={wurscht,Wurscht,wurst,Wurst}">Wikipedia-Korpus</a></li>
+      <li data-corpus="wikivoyage" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=wikivoyage&amp;q={wurscht,Wurscht,wurst,Wurst}">Wikivoyage-Korpus</a></li>
+      <li data-corpus="gesetze" data-query="wurscht	Wurscht	wurst	Wurst" data-lexdb="1" >
+          <a href="https://www.dwds.de/r/?corpus=gesetze&amp;q={wurscht,Wurscht,wurst,Wurst}">Gesetze und Verordnungen (1897–2024)</a></li>
+
+    </ul>
+
+</div>
+
+
+
+
+
+</div>
+</div>
+
+        </div>
+
+      <div id="to-top">
+  <div class="dwds-bookmark-icons-block" data-id="1" style="display:inline">
+    <img src="https://www.dwds.de/dwds_static/images/bookmark.svg" class="dwds-bookmark-add" title="Lesezeichen für diesen Artikel anlegen" data-toggle="tooltip" data-id="Wurst" data-hidx="1"  />
+    <img src="https://www.dwds.de/dwds_static/images/bookmark-set.svg" class="dwds-bookmark-remove" title="Lesezeichen für diesen Artikel entfernen" data-toggle="tooltip" data-id="Wurst" data-hidx="1" style="display:none" />
+  </div>
+
+  <div class="dwds-bookmark-icons-block" data-id="2" style="display:inline">
+    <img src="https://www.dwds.de/dwds_static/images/bookmark.svg" class="dwds-bookmark-add" title="Lesezeichen für diesen Artikel anlegen" data-toggle="tooltip" data-id="wurscht" data-hidx=""  />
+    <img src="https://www.dwds.de/dwds_static/images/bookmark-set.svg" class="dwds-bookmark-remove" title="Lesezeichen für diesen Artikel entfernen" data-toggle="tooltip" data-id="wurscht" data-hidx="" style="display:none" />
+  </div>
+<img src="https://www.dwds.de/dwds_static/images/up.svg" title="nach oben scrollen" data-toggle="tooltip" onclick="scrollToTop()"/>
+      </div>
+    </main>
+
+    <footer class="dwds-bottom dwds-bottom-box">
+
+
+
+
+      <div class="container">
+        <div class="row dwds-bottom-claim">
+          <div class="col-md-12">
+            DWDS – Digitales Wörterbuch der deutschen Sprache</div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="dwds-bottom-box">
+              <div class="dwds-bottom-flex">
+                <a href="/d/ueber-uns">Über uns</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="/d">Dokumentation</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="https://www.dwds.de/b/">Blog</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="/d/datenschutz">Datenschutz</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="/d/nutzungsbedingungen">Nutzungsbedingungen</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="/d/zitieren">Zitieren des DWDS</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="https://www.dwds.de/kontakt">Kontakt und Feedback</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="/d/impressum">Impressum</a>
+              </div>
+              <div class="dwds-bottom-flex">
+                <a href="https://www.bbaw.de/" target="_blank"><img src="https://www.dwds.de/dwds_static/images/bbaw.svg" style="height:80px" height="80" width="180" alt="BBAW-Logo" loading="lazy" /></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap slider, https://github.com/seiyria/bootstrap-slider -->
+    <link href="https://www.dwds.de/dwds_static/bootstrap-slider/css/bootstrap-slider.min.css" rel="stylesheet"><!--[if lt IE 9]>
+        <script src="https://www.dwds.de/dwds_static/js/html5shiv.min.js"></script>
+        <script src="https://www.dwds.de/dwds_static/js/respond.min.js"></script>
+      <![endif]--><link href="https://www.dwds.de/dwds_static/dwds.min.css?v=74" rel="stylesheet">
+
+    <script>
+      base = '/'
+      base_static = 'https://www.dwds.de/dwds_static/'
+      q = "Wurst"
+      ansatz = "wurscht"
+      is_lex  = 0
+      is_user = 0
+      pos = 'Adjektiv'
+      dwds_host_staging = 'https://www.dwds.de/'
+      dwds_host_dynamic = 'https://www.dwds.de/'
+      dwds_host_api     = 'https://www.dwds.de/'
+      dwds_want_kiwix   = 0</script>
+    <script src="https://www.dwds.de/dwds_static/dwds.min.js?v=53"></script><script>
+        new ClipboardJS('.ddc-copy-hit');
+      </script><!-- Matomo -->
+      <script>
+        var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+          var u="https://stats.dwds.de/";
+          _paq.push(['setTrackerUrl', u+'matomo.php']);
+          _paq.push(['setSiteId', '1']);
+          _paq.push(['enableLinkTracking']);
+          _paq.push(['trackPageView']);
+          _paq.push(['trackVisibleContentImpressions']);
+          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+          g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
+      </script>
+      <noscript><p><img src="https://stats.dwds.de/matomo.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+      <!-- End Matomo Code --></body>
+</html>
