@@ -35,15 +35,16 @@ Uses [[https://github.com/doublep/eldev][Eldev]] which needs to be [[https://git
 
 To test the package locally call the Makefile targets:
 
-| Target            | Description                                           |
-|-------------------+-------------------------------------------------------|
-| make help         | Show help for targets available                       |
-| make all          | Run tests, lint and compile                           |
-| make test         | Run project’s regression/unit tests                   |
-| make lint         | Run standard linters on the project’s source code     |
-| make compile      | Byte-compile ‘.el’ files to check for errors/warnings |
-| make clean        | Clean everything                                      |
-| make run-emacs    | Launch Emacs with package and dependencies installed  |
+| Target          | Description                                          |
+|-----------------+------------------------------------------------------|
+| make help       | Show help for targets available                      |
+| make all        | Run tests, lint and compile                          |
+| make test       | Run tests                                            |
+| make test-as-is | Run tests and use as-is instead of packaged (eldev)  |
+| make lint       | Run linters                                          |
+| make compile    | Byte-compile to check for errors/warnings            |
+| make clean      | Clean everything                                     |
+| make run-emacs  | Run Emacs with package and dependencies installed |
 
 The output of Eldev is set to ~--quiet~. To produce more verbose output, run the make targets by setting the verbose parameter:
 
@@ -51,7 +52,6 @@ The output of Eldev is set to ~--quiet~. To produce more verbose output, run the
 make all verbose=--trace # very verbose
 make all verbose=--verbose # verbose
 #+END_SRC
-
 
 It is also possible to run the test with another Emacs version like so (Docker needs to be installed):
 

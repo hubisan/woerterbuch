@@ -11,10 +11,10 @@ help:
 	$(info - make all        # Run tests, lint and compile)
 	$(info - make test       # Run tests)
 	$(info - make test-as-is # Run tests and use as-is instead of packaged)
-	$(info - make lint       # Lint the package)
-	$(info - make compile    # Compiles the files to check for errors/warnings and delete elc after)
+	$(info - make lint       # Run linters)
+	$(info - make compile    # Compiles the files to check for errors/warnings)
 	$(info - make clean      # Clean everything)
-	$(info - make run-emacs  # Run Emacs with just your project installed)
+	$(info - make run-emacs  # Run Emacs with package and dependencies installed
 	$(info )
 
 all: test compile lint
