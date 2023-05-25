@@ -35,6 +35,7 @@
 ;;;; Requirements
 
 (require 'seq)
+(require 'map)
 
 ;;;; Customization
 
@@ -42,6 +43,10 @@
   "German dictionary and thesaurus."
   :group 'convenience
   :link '(url-link "https://github.com/hubisan/woerterbuch"))
+
+(defcustom woerterbuch-synoyms-display-function nil
+  "The function used to the display the org buffer with the synonyms."
+  :type 'function)
 
 ;;;; German Dictionary
 
@@ -82,14 +87,50 @@ Returns nil if no synonyms are retrieved."
   "Convert the RAW-SYNONYMS retrieved with the API to a list of lists.
 Each list consist of the synonyms for one meaning of the word."
   (let* ((synsets (seq-into (plist-get raw-synonyms :synsets) 'list)))
-    (mapcar (lambda (synomys-group)
-              (mapcar #'cadr (plist-get synomys-group :terms)))
+    (mapcar (lambda (synonyms-group)
+              (mapcar #'cadr (plist-get synonyms-group :terms)))
             synsets)))
 
 (defun woerterbuch--synonyms-baseform (raw-synonyms)
   "Try to get the baseform of the word from RAW-SYNONYMS.
 Returns nil if not found."
+  (map-elt raw-synonyms :baseforms)
   (car-safe (seq-into (plist-get raw-synonyms :baseforms) 'list)))
+
+;;;###autoload
+(defun woerterbuch-synonyms-show-in-org-buffer (&optional word)
+  "Show the synonyms for WORD in an `org-mode' buffer."
+  (interactive "P")
+
+  )
+
+;;;###autoload
+(defun woerterbuch-synonyms-insert-into-org-buffer (&optional word include-heading)
+  "Insert the synonyms for WORD into an `org-mode' buffer.
+Will insert a list with each item being the synonyms for a meaning.
+If INCLUDE-HEADING is non-nil it inserts a subheading with the WORD as text and
+the list of synonyms below."
+  (interactive "P")
+
+  )
+
+;;;###autoload
+(defun woerterbuch-synonyms-kill-as-org-mode-syntax (&optional word include-heading)
+  "Add the synonyms for WORD to the kill ring as `org-mode' syntax.
+Will add a list with each item being the synonyms for a meaning.
+If INCLUDE-HEADING is non-nil it will add a subheading with the WORD as text and
+the list of synonyms below."
+  (interactive "P")
+
+  )
+
+;;;###autoload
+(defun woerterbuch-synonyms-lookup (word &optional to-kill-ring)
+  "Lookup synonyms for WORD and insert selected word at point.
+If TO-KILL-RING is non-nil it is added to the kill ring instead."
+  (interactive "P")
+
+  )
 
 (provide 'woerterbuch)
 
