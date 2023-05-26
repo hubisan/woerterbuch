@@ -106,8 +106,12 @@ Returns nil if no synonyms are retrieved."
 The string is a list. The group of synonyms for each meaning are
 shown as an item. The list bullet point can be configured with
 `woerterbuch-synonyms-list-bullet-point'"
-
-  )
+  (mapconcat
+     (lambda (elt)
+       (format "%s %s"
+               woerterbuch-synonyms-list-bullet-point
+               (mapconcat #'identity elt ", ")))
+     synonyms "\n"))
 
 (defun woerterbuch--synonyms-retrieve-as-string (word)
   "Retrieve the synonyms for WORD as a string.
@@ -117,7 +121,10 @@ It looks as follows:
 - Erprobung, Probe, Prüfung
 - Leistungsnachweis, Prüfung, Test
 - etc."
-  )
+  (let ((synonyms (woerterbuch--synonyms-retrieve-as-list word)))
+    (if synonyms
+        (woerterbuch--synonyms-convert-to-string synonyms)
+      (message "No synonyms found for %s" word))))
 
 ;;;###autoload
 (defun woerterbuch-synonyms-show-in-org-buffer (&optional word)
