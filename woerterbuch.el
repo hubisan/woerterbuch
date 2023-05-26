@@ -115,16 +115,15 @@ shown as an item. The list bullet point can be configured with
 
 (defun woerterbuch--synonyms-retrieve-as-string (word)
   "Retrieve the synonyms for WORD as a string.
+Returns a cons with car being the WORD and cdr the synonyms as string.
 Returns nil if no synonyms are retrieved.
 The returned string groups the synonyms for each meaning on one line.
 It looks as follows:
 - Erprobung, Probe, Prüfung
 - Leistungsnachweis, Prüfung, Test
 - etc."
-  (let ((synonyms (woerterbuch--synonyms-retrieve-as-list word)))
-    (if synonyms
-        (woerterbuch--synonyms-convert-to-string synonyms)
-      (message "No synonyms found for %s" word))))
+  (when-let ((synonyms (woerterbuch--synonyms-retrieve-as-list word)))
+    (cons word (woerterbuch--synonyms-convert-to-string synonyms))))
 
 ;;;###autoload
 (defun woerterbuch-synonyms-show-in-org-buffer (&optional word)
