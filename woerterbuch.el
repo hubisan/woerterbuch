@@ -108,7 +108,7 @@ Returns a cons cell with the car being the word and cdr the bounds."
       (cons
        (buffer-substring-no-properties (car bounds) (cdr bounds))
        bounds)
-    (user-error "no word at point and no region active")))
+    (user-error "No word at point and no region active")))
 
 ;;;; German Definitions
 
@@ -187,7 +187,9 @@ The returned string groups the synonyms for each meaning on one line.
 It looks as follows:
 - Erprobung, Probe, Prüfung
 - Leistungsnachweis, Prüfung, Test
-- etc."
+- etc.
+If WITH-HEADING is non-nil a heading with the WORD as text is listed above the
+synonyms."
   (when-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
              (word-used (car word-and-synonyms))
              (synonyms (cdr word-and-synonyms))
