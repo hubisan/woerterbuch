@@ -1,0 +1,52 @@
+(:metaData (:apiVersion "0.2"
+                         :warning "ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-Änderungen informiert zu werden"
+                         :copyright "Copyright (C) 2022 Daniel Naber (www.danielnaber.de)"
+                         :license "Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1"
+                         :source "https://www.openthesaurus.de"
+                         :date "Wed May 31 21:47:51 CEST 2023")
+            :synsets [(:id 292
+                           :categories []
+                           :terms [(:term "Erprobung")
+                                   (:term "Probe")
+                                   (:term "Prüfung")
+                                   (:term "Test")
+                                   (:term "Versuch")])
+                      (:id 4398
+                           :categories []
+                           :terms [(:term "Leistungsnachweis")
+                                   (:term "Prüfung")
+                                   (:term "Test")])
+                      (:id 5752
+                           :categories []
+                           :terms [(:term "Klassenarbeit")
+                                   (:term "Klausur")
+                                   (:term "Leistungsüberprüfung")
+                                   (:term "Lernerfolgskontrolle")
+                                   (:term "Prüfung")
+                                   (:term "Schularbeit")
+                                   (:term "Schulaufgabe")
+                                   (:term "Test")
+                                   (:term "Arbeit"
+                                          :level "umgangssprachlich")])
+                      (:id 9138
+                           :categories []
+                           :terms [(:term "Experiment")
+                                   (:term "(die) Probe aufs Exempel")
+                                   (:term "Probelauf")
+                                   (:term "Studie")
+                                   (:term "Test")
+                                   (:term "Testballon")
+                                   (:term "Testlauf")
+                                   (:term "Trockenlauf")
+                                   (:term "Trockentest")
+                                   (:term "Versuch")
+                                   (:term "Versuchsballon")])
+                      (:id 6241
+                           :categories []
+                           :terms [(:term "Bewährungsprobe")
+                                   (:term "Feuerprobe")
+                                   (:term "Feuertaufe")
+                                   (:term "harte Prüfung")
+                                   (:term "Lackmustest")
+                                   (:term "Nagelprobe")
+                                   (:term "Test")])])

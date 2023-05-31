@@ -6,6 +6,7 @@
 
 (require 'buttercup)
 (require 'ert)
+(require 'test-helper)
 
 (require 'woerterbuch)
 

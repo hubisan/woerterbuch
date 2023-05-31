@@ -76,11 +76,13 @@ The function takes buffer as argument."
 
 ;;;; Auxiliary Functions
 
+;; TODO Write Test
 (defun woerterbuch--org-add-heading (heading level content)
   "Add text of HEADING with LEVEL as heading before CONTENT."
   (format woerterbuch-insert-org-heading-format
           (make-string level ?*) heading content))
 
+;; TODO Write Test
 (defun woerterbuch--org-insert (text with-heading &optional buffer)
   "Insert TEXT on current line if empty else on a new line.
 If WITH-HEADING is non-nil the text includes an Org heading and is inserted
@@ -99,6 +101,7 @@ current."
         (newline))
       (insert text))))
 
+;; TODO Write Test
 (defun woerterbuch--get-word-at-point-or-selection ()
   "Get the word at point or the selection if region is active.
 Returns a cons cell with the car being the word and cdr the bounds."
@@ -166,6 +169,7 @@ Returns nil if no synonyms are retrieved."
       (when synonyms
         (cons (or baseform word) synonyms)))))
 
+;; TODO Write Test
 (defun woerterbuch--synonyms-convert-to-string (synonyms)
   "Convert the list of SYNONYMS to a string.
 The string is a list. The group of synonyms for each meaning are
@@ -178,6 +182,7 @@ shown as an item. The list bullet point can be configured with
                (mapconcat #'identity elt ", ")))
      synonyms "\n"))
 
+;; TODO Write Test
 (defun woerterbuch--synonyms-retrieve-as-string (word with-heading)
   "Retrieve the synonyms for WORD as a string.
 Returns a cons with car being the word and cdr the synonyms as string.
@@ -200,6 +205,7 @@ synonyms."
         (woerterbuch--org-add-heading word-used 1 synonyms-string)
       synonyms-string)))
 
+;; TODO Write Test
 (defun woerterbuch--read-synonym (word)
   "Read a synonym for WORD in the minibuffer and return it.
 Returns nil if no synonym was selected.
@@ -214,6 +220,7 @@ Signals an user-error if there are no synoyms for WORD."
         (completing-read "Select synonym: " synonyms-sorted nil t))
     (user-error "No synonyms found for %s" word)))
 
+;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-show-in-org-buffer (&optional word)
   "Show the synonyms for WORD in an `org-mode' buffer."
@@ -231,6 +238,7 @@ Signals an user-error if there are no synoyms for WORD."
       (woerterbuch-mode)
       (woerterbuch-synonyms-insert-into-org-buffer word t))))
 
+;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-insert-into-org-buffer (word &optional with-heading)
   "Insert the synonyms for WORD into an `org-mode' buffer.
@@ -243,6 +251,7 @@ will insert a heading at the same level as the current level."
     (save-excursion
       (woerterbuch--org-insert synonyms with-heading))))
 
+;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-kill-as-org-mode-syntax (word &optional with-heading)
   "Add the synonyms for WORD to the kill ring as `org-mode' syntax.
@@ -252,6 +261,7 @@ and the list of synonyms below."
   (interactive "sWort: \nP")
   (kill-new (woerterbuch--synonyms-retrieve-as-string word with-heading)))
 
+;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-insert (word &optional to-kill-ring)
   "Lookup synonyms for WORD and insert selected word at point.
@@ -262,6 +272,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
         (kill-new synonym)
       (insert synonym))))
 
+;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-lookup-word-at-point ()
   "Lookup synonyms for word at point and add to kill ring."
@@ -272,6 +283,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
         (kill-new synonym))
     (user-error "No word at point")))
 
+;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-replace-word-at-point ()
   "Lookup synonyms for wort at point or selection and replace it."
