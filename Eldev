@@ -8,6 +8,9 @@
 
 (eldev-add-loading-roots 'test "tests")
 
+;; I need this for testing interactive functions.
+(eldev-add-extra-dependencies 'test 'with-simulated-input)
+
 ;; Tell checkdoc not to demand two spaces after a period.
 (setq sentence-end-double-space nil)
 
