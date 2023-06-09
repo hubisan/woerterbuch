@@ -67,7 +67,7 @@ The function takes buffer as argument."
 (define-derived-mode woerterbuch-mode org-mode "Woerterbuch"
   "Major mode for displaying woerterbuch buffer.")
 
-(define-key woerterbuch-mode-map (kbd "q") 'quit-window)
+(define-key woerterbuch-mode-map (kbd "C-c C-q") 'quit-window)
 
 ;;;; Global Variables
 
@@ -76,13 +76,11 @@ The function takes buffer as argument."
 
 ;;;; Auxiliary Functions
 
-;; TODO Write Test
 (defun woerterbuch--org-add-heading (heading level content)
   "Add text of HEADING with LEVEL as heading before CONTENT."
   (format woerterbuch-insert-org-heading-format
           (make-string level ?*) heading content))
 
-;; TODO Write Test
 (defun woerterbuch--org-insert (text with-heading &optional buffer)
   "Insert TEXT on current line if empty else on a new line.
 If WITH-HEADING is non-nil the text includes an Org heading and is inserted
@@ -91,17 +89,23 @@ heading. If BUFFER is given, insert the text into that buffer instead of the
 current."
   (with-current-buffer (or buffer (current-buffer))
     (if with-heading
-        (if (eq major-mode 'woerterbuch-mode)
+        (if (or (eq major-mode 'org-mode)
+                (eq major-mode 'woerterbuch-mode))
             (progn (require 'org)
                    (org-paste-subtree (or (org-current-level) 1) text))
           (user-error "Text can only be inserted in an Org buffer"))
-      (if (string-match-p "\\`\\s-*$" (thing-at-point 'line))
-          (kill-whole-line)
+      ;; NOTE Not using (thing-at-point 'line) as this returns nil, if a buffer
+      ;; only contains whitespace.
+      (if (string-match-p "\\`\\s-*$"
+                          (buffer-substring-no-properties
+                           (line-beginning-position) (line-end-position)))
+          ;; If on an empty line make sure to delete any whitespace.
+          ;; This gives an error if point as at end of the buffer.
+          (ignore-errors (kill-whole-line))
         (end-of-line)
         (newline))
       (insert text))))
 
-;; TODO Write Test
 (defun woerterbuch--get-word-at-point-or-selection ()
   "Get the word at point or the selection if region is active.
 Returns a cons cell with the car being the word and cdr the bounds."
@@ -217,10 +221,10 @@ Signals an user-error if there are no synoyms for WORD."
         (completing-read "Select synonym: " synonyms-sorted nil t))
     (user-error "No synonyms found for %s" word)))
 
-;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-show-in-org-buffer (&optional word)
-  "Show the synonyms for WORD in an `org-mode' buffer."
+  "Show the synonyms for WORD in an `org-mode' buffer.
+Returns the buffer."
   (interactive "sWort: ")
   (let ((buffer (get-buffer-create woerterbuch--org-buffer-name)))
     (with-current-buffer buffer
@@ -228,14 +232,14 @@ Signals an user-error if there are no synoyms for WORD."
     ;; FIXME Debug and maybe report bug (visual-fill-column-mode).
     ;; Moved turning `org-mode' on after displaying the buffer. Else I had some
     ;; problems with `visual-fill-column-mode' changing the margins of the
-    ;; current buffer window. This is most likely a bug in
-    ;; `visual-fill-column-mode'.
+    ;; current buffer window, the selected window. Before the buffer was shown.
+    ;; This is most likely a bug in `visual-fill-column-mode'.
     (funcall woerterbuch-org-buffer-display-function buffer)
     (with-current-buffer buffer
       (woerterbuch-mode)
-      (woerterbuch-synonyms-insert-into-org-buffer word t))))
+      (woerterbuch-synonyms-insert-into-org-buffer word t)
+      buffer)))
 
-;; TODO Write Test
 ;;;###autoload
 (defun woerterbuch-synonyms-insert-into-org-buffer (word &optional with-heading)
   "Insert the synonyms for WORD into an `org-mode' buffer.
