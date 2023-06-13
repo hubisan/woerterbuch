@@ -48,19 +48,19 @@ There are functions to show the definitions of a word, the synonyms for a word o
 
 If a word is not in its baseform, the synonyms for the baseform are looked up (the baseform for Fahrzeuge is Fahrzeug for instance).
 
-- ~woerterbuch-synonyms-show-in-org-buffer~  
+- ~woerterbuch-synonyms-show-in-org-buffer~ \\
   Show the synonyms for a word in an Org buffer. Reads the word from the minibuffer.
-- ~woerterbuch-synonyms-show-in-org-buffer-for-word-at-point~  
+- ~woerterbuch-synonyms-show-in-org-buffer-for-word-at-point~ \\
   Show the synonyms for a word at point in an Org buffer.
-- ~woerterbuch-synonyms-insert-into-org-buffer~  
+- ~woerterbuch-synonyms-insert-into-org-buffer~ \\
   Read a word from the minibuffer and insert the synonyms as a list into the current Org buffer. If called with a prefix arg (C-u), it adds a heading with the word as the title before the list.
-- ~woerterbuch-synonyms-kill-as-org-mode-syntax~  
+- ~woerterbuch-synonyms-kill-as-org-mode-syntax~ \\
   Add the synonyms for word read from the minibuffer to the kill ring as Org syntax. If called with a prefix arg (C-u), it adds a heading with the word as title before the list.
-- ~woerterbuch-synonyms-insert~  
+- ~woerterbuch-synonyms-insert~ \\
   Lookup synonyms for word read from minibuffer and insert selected word at point. If called with a prefix arg (C-u) the selected word is added to the kill ring instead.
-- ~woerterbuch-synonyms-lookup-word-at-point~  
+- ~woerterbuch-synonyms-lookup-word-at-point~ \\
   Lookup synonyms for word at point and add to kill ring. 
-- ~woerterbuch-synonyms-replace-word-at-point~  
+- ~woerterbuch-synonyms-replace-word-at-point~ \\
   Lookup synonyms for wort at point or selection and replace it. 
   
 *** Functions to Show Definitions and Synonyms
@@ -74,11 +74,11 @@ If a word is not in its baseform, the synonyms for the baseform are looked up (t
 
 Set the following variables to change the behaviour of the package:
 
-- ~woerterbuch-org-buffer-display-function~ #'pop-to-buffer \\
+- ~woerterbuch-org-buffer-display-function~  ~#'pop-to-buffer~ \\
   Function used to the display the org buffer with the definitions or synonyms. The function takes buffer as argument.
-- ~woerterbuch-list-bullet-point~ "-" \\
+- ~woerterbuch-list-bullet-point~  ~"-"~ \\
   String to use as list bullet point when converting synonyms or definitions to a list.
-- ~woerterbuch-insert-org-heading-format~ "%s %s\n\n%s" \\
+- ~woerterbuch-insert-org-heading-format~  ~"%s %s\n\n%s"~ \\
   Format used when inserting an Org heading before content.
 
 *** Faces
