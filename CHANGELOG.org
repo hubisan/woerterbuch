@@ -4,8 +4,15 @@
 
 ** Planned
 
+- =Added= Functions to show definitions and synonyms.
+- =Added= Documentation for definitions.
+- =Added= Functions to lookup and show definitions.
+- =Added= Functions to retrieve German definitions for a word from [[https://www.dwds.de]]
+
 ** Unreleased
 
+- =Added= Documentation for synonyms.
+- =Added= Functions to lookup and show synonyms.
 - =Added= Functions to retrieve German synonyms for a word from [[https://www.openthesaurus.de/]].
 
 ** Remark

@@ -17,19 +17,19 @@
 ;;; Tests
 
 (describe "Auxiliary Functions:"
-  (it "- Adds an Org heading before the content."
+  (it "- Adds an Org heading before the content (woerterbuch--org-add-heading)"
     (expect (woerterbuch--org-add-heading "Test" 1 "content")
             :to-equal "* Test\n\ncontent")
     (expect (woerterbuch--org-add-heading "Test" 2 "content")
             :to-equal "** Test\n\ncontent"))
 
-  (it "- Inserts text into Org-mode buffer."
+  (it "- Inserts text into Org-mode buffer (woerterbuch--org-insert)"
     (expect (with-temp-buffer
               (woerterbuch--org-insert "Some text to insert" nil)
               (buffer-string))
             :to-equal "Some text to insert"))
 
-  (it "- Inserts subtree into Org-mode buffer."
+  (it "- Inserts subtree into Org-mode buffer (woerterbuch--org-insert)"
     (expect (with-temp-buffer
               (woerterbuch-mode)
               (insert "* Heading\n\nWith some content")
@@ -38,7 +38,7 @@
             :to-equal (concat "* Heading\n\nWith some content"
                               "\n* Test\n\nSome text to insert\n")))
 
-  (it "- Gets word at point or selection."
+  (it "- Gets word at point or selection (woerterbuch--get-word-at-point-or-selection)"
     (expect (with-temp-buffer
               (insert "this is a test")
               (woerterbuch--get-word-at-point-or-selection))
@@ -121,25 +121,37 @@
 
   (it "- Retrieves synonyms as a string with a heading (woerterbuch--synonyms-retrieve-as-string)"
     (expect (woerterbuch--synonyms-retrieve-as-string "Test" t)
-            :to-equal (format "* Test\n\n%s\n" synonyms-string)))
+            :to-equal (format woerterbuch-insert-org-heading-format "*" "Test"
+                (concat synonyms-string "\n"))))
 
-  (it "- Reads a synonym from minibuffer."
+  (it "- Reads a synonym from minibuffer (woerterbuch--read-synonym)"
     (expect (with-simulated-input
                 "Klausur RET"
               (woerterbuch--read-synonym "Test"))
             :to-equal "Klausur"))
 
-  (it "- Shows the synonyms in an a buffer in `woerterbuch-mode.'"
+  (it "- Shows the synonyms in a buffer in `woerterbuch-mode' (woerterbuch-synonyms-show-in-org-buffer)"
     (let* ((buffer (woerterbuch-synonyms-show-in-org-buffer "Test")))
       (expect (buffer-live-p (get-buffer woerterbuch--org-buffer-name))
               :to-be-truthy)
       (with-current-buffer buffer
         (expect major-mode :to-equal 'woerterbuch-mode)
         (expect (buffer-string) :to-equal
-                (format "* Test\n\n%s\n" synonyms-string)))
+                (format woerterbuch-insert-org-heading-format "*" "Test"
+                (concat synonyms-string "\n"))))
       (kill-buffer buffer)))
 
-  (it "- Inserts the synonyms into an Org buffer without a heading."
+  (it "- Shows the synonyms in a buffer for word at point (woerterbuch-synonyms-show-in-org-buffer-for-word-at-point)"
+      (with-temp-buffer
+        (insert "Test")
+        (let* ((buffer (woerterbuch-synonyms-show-in-org-buffer-for-word-at-point)))
+          (with-current-buffer buffer
+            (expect (buffer-string) :to-equal
+                    (format woerterbuch-insert-org-heading-format "*" "Test"
+                            (concat synonyms-string "\n"))))
+          (kill-buffer buffer))))
+
+  (it "- Inserts the synonyms into an Org buffer without a heading (woerterbuch-synonyms-insert-into-org-buffer)"
     (expect
      (with-temp-buffer
        (org-mode)
@@ -147,17 +159,18 @@
        (buffer-string))
      :to-equal (format "%s\n" synonyms-string)))
 
-  (it "- Inserts the synonyms into an Org buffer with a heading."
+  (it "- Inserts the synonyms into an Org buffer with a heading (woerterbuch-synonyms-insert-into-org-buffer)"
     (expect
      (with-temp-buffer
        (org-mode)
        (woerterbuch-synonyms-insert-into-org-buffer "Test" t)
        (buffer-string))
-     :to-equal (format "* Test\n\n%s\n" synonyms-string)))
+     :to-equal (format woerterbuch-insert-org-heading-format "*" "Test"
+                (concat synonyms-string "\n"))))
 
   ;; woerterbuch-synonyms-kill-as-org-mode-syntax > No test needed.
 
-  (it "- Reads and insert a synonym into current buffer."
+  (it "- Reads and insert a synonym into current buffer (woerterbuch-synonyms-insert)"
     (expect
      (with-temp-buffer
        (with-simulated-input
@@ -166,7 +179,7 @@
        (buffer-string))
      :to-equal "Klausur"))
 
-  (it "- Looks up synonyms for word at point."
+  (it "- Looks up synonyms for word at point (woerterbuch-synonyms-lookup-word-at-point)"
     (expect
      (with-temp-buffer
        (insert "Test")
@@ -175,7 +188,7 @@
          (woerterbuch-synonyms-lookup-word-at-point)))
      :to-equal "Klausur"))
 
-  (it "- Replaces word at point with a synonym."
+  (it "- Replaces word at point with a synonym (woerterbuch-synonyms-replace-word-at-point)"
     (expect
      (with-temp-buffer
        (insert "Test")

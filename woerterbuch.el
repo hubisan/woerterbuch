@@ -26,9 +26,22 @@
 
 ;;; Commentary:
 
-;; ...
+;; Lookup definitions and synonyms for German words with Emacs.
 
-;; TODO
+;; Main features:
+
+;; - Lookup synonyms for a word (read from minibuffer or word at point) and
+;;   insert the selected synonym into the current buffer, replace the word at
+;;   point or add it to the kill ring.
+;; - Show synonyms for a word (read from minibuffer or word at point) in an
+;;   Org-mode buffer, insert them into the current Org-mode buffer or add them
+;;   to the kill ring.
+;; - Show definitions for a word (read from minibuffer or word at point) in an
+;;   Org-mode buffer, insert them into the current Org-mode buffer or add them
+;;   to the kill ring.
+;; - Show both in an Org-mode buffer.
+
+;; Check out the documentation in the README for more.
 
 ;;; Code:
 
@@ -239,6 +252,16 @@ Returns the buffer."
       (woerterbuch-mode)
       (woerterbuch-synonyms-insert-into-org-buffer word t)
       buffer)))
+
+;;;###autoload
+(defun woerterbuch-synonyms-show-in-org-buffer-for-word-at-point ()
+  "Show the synonyms for the word at point in an `org-mode' buffer.
+Returns the buffer."
+  (interactive)
+  (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
+           (word (car word-and-bounds)))
+      (woerterbuch-synonyms-show-in-org-buffer word)
+    (user-error "No word at point")))
 
 ;;;###autoload
 (defun woerterbuch-synonyms-insert-into-org-buffer (word &optional with-heading)
