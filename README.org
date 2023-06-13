@@ -74,11 +74,11 @@ If a word is not in its baseform, the synonyms for the baseform are looked up (t
 
 Set the following variables to change the behaviour of the package:
 
-- ~woerterbuch-org-buffer-display-function~  ~#'pop-to-buffer~ \\
+- ~woerterbuch-org-buffer-display-function~  =#'pop-to-buffer= \\
   Function used to the display the org buffer with the definitions or synonyms. The function takes buffer as argument.
-- ~woerterbuch-list-bullet-point~  ~"-"~ \\
+- ~woerterbuch-list-bullet-point~  ="-"= \\
   String to use as list bullet point when converting synonyms or definitions to a list.
-- ~woerterbuch-insert-org-heading-format~  ~"%s %s\n\n%s"~ \\
+- ~woerterbuch-insert-org-heading-format~  ="%s %s\n\n%s"= \\
   Format used when inserting an Org heading before content.
 
 *** Faces
