@@ -14,7 +14,7 @@
 
 ;;; Helpers
 
-;;; Tests
+;;; Tests for Auxiliary Functions
 
 (describe "Auxiliary Functions:"
   (it "- Adds an Org heading before the content (woerterbuch--org-add-heading)"
@@ -51,6 +51,23 @@
               (woerterbuch--get-word-at-point-or-selection))
             :to-equal (cons "another" (cons 9 16)))))
 
+;;; Tests for Definitions
+
+(describe "Definitions:"
+  :var* ()
+  (before-each)
+
+  (it "- It is able to get a baseform (lemma) of a word (woerterbuch--definitions-get-baseform)"
+    (expect (woerterbuch--definitions-get-baseform "Katzen") :to-equal "Katze")
+    (expect (woerterbuch--definitions-get-baseform "Häuser") :to-equal "Haus")
+    (expect (woerterbuch--definitions-get-baseform "hält") :to-equal "halten")
+    ;; Return word if already the base form
+    (expect (woerterbuch--definitions-get-baseform "Katze") :to-equal "Katze"))
+
+  )
+
+;;; Tests for Synonyms
+
 (describe "Synonyms:"
   :var* (;; Create a buffer with the content from a API call to openthesaurus
          ;; stored as a text-file. It is not a good idea to call the API
@@ -86,7 +103,7 @@
     (spy-on 'url-retrieve-synchronously :and-return-value openthesaurus-buffer)
     (spy-on 'kill-buffer))
 
-  (it "- The JSON retrieved from the URL can be parsed into a plist (woerterbuch--synonyms-retrieve-raw)."
+  (it "- The JSON retrieved from the URL can be parsed into a plist (woerterbuch--synonyms-retrieve-raw)"
     (expect (woerterbuch--synonyms-retrieve-raw "Test") :to-equal synonyms-raw))
 
   (it "- It extracts the baseform from the plist if there is one (woerterbuch--synonyms-baseform)."

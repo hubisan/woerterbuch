@@ -50,6 +50,7 @@
 (require 'seq)
 (require 'map)
 (require 'thingatpt)
+(require 'dom)
 
 ;; Require `org' once it is used.
 (declare-function org-paste-subtree "org")
@@ -132,6 +133,36 @@ Returns a cons cell with the car being the word and cdr the bounds."
 
 ;;;; German Definitions
 
+(defvar woerterbuch--definitions-dwds-url "https://www.dwds.de/wb/%s"
+  "Url to retrieve the definitions for a word as html from DWDS.")
+
+(defun woerterbuch--definitions-retrieve-raw (word)
+  "Return the definitions for a WORD as HTML parse tree."
+  (let* ((baseform (woerterbuch--definitions-get-baseform word))
+         (url (format woerterbuch--definitions-dwds-url
+                      (url-hexify-string baseform)))
+         (buffer (url-retrieve-synchronously url t)))
+    (if (not buffer)
+        (error "Could not retrieve definitons")
+      (with-current-buffer buffer
+        (pop-to-buffer buffer)
+        (goto-char (point-min))
+        (re-search-forward "^$")
+        (forward-line 2)
+        (let ((dom (libxml-parse-html-region (point) (point-max))))
+          (unwind-protect
+              (dom-by-class dom "^dwdswb-lesart$")
+            (kill-buffer buffer)))))))
+
+(defun woerterbuch--definitions-get-baseform (word)
+  "Retrieve the baseform (lemma) of the WORD.
+If the WORD is already the baseform return WORD.
+The function uses the Openthesaurus API to find the base form of a word, as I
+couldn't find any other tool that could do this in a straightforward manner."
+  (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
+         (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
+    (or baseform word)))
+
 ;;;; German Synonyms
 
 (defvar woerterbuch--synonyms-openthesaurus-url
@@ -152,7 +183,7 @@ Returns a cons cell with the car being the word and cdr the bounds."
         (goto-char (point-min))
         (re-search-forward "^$")
         (forward-line)
-        (prog1
+        (unwind-protect
             (json-parse-buffer :object-type 'plist)
           (kill-buffer buffer))))))
 
