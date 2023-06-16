@@ -43,15 +43,13 @@
               (insert "this is a test")
               (woerterbuch--get-word-at-point-or-selection))
             :to-equal (cons "test" (cons 11 15)))
-    ;; FIXME This test works but not when running with Eldev. The region is not
-    ;; active it seems.
-    ;; (expect (with-temp-buffer
-    ;;           (insert "this is anothertest")
-    ;;           (goto-char 16)
-    ;;           (set-mark 9)
-    ;;           (woerterbuch--get-word-at-point-or-selection))
-    ;;         :to-equal (cons "another" (cons 9 16)))
-    ))
+    (expect (with-temp-buffer
+              (insert "this is anothertest")
+              (goto-char 16)
+              (push-mark 9)
+              (activate-mark)
+              (woerterbuch--get-word-at-point-or-selection))
+            :to-equal (cons "another" (cons 9 16)))))
 
 (describe "Synonyms:"
   :var* (;; Create a buffer with the content from a API call to openthesaurus
