@@ -151,17 +151,148 @@ Returns a cons cell with the car being the word and cdr the bounds."
         (forward-line 2)
         (let ((dom (libxml-parse-html-region (point) (point-max))))
           (unwind-protect
-              (dom-by-class dom "^dwdswb-lesart$")
+              (dom-by-class dom "^div.dwdswb-lesart$")
             (kill-buffer buffer)))))))
 
 (defun woerterbuch--definitions-get-baseform (word)
-  "Retrieve the baseform (lemma) of the WORD.
+  "Return the baseform (lemma) of the WORD.
 If the WORD is already the baseform return WORD.
 The function uses the Openthesaurus API to find the base form of a word, as I
 couldn't find any other tool that could do this in a straightforward manner."
   (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
          (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
     (or baseform word)))
+
+;; TODO copied synonyms function
+(defun woerterbuch--definitions-to-list (raw-synonyms)
+  "Convert the RAW-SYNONYMS retrieved with the API to a list of lists.
+Each list consist of the synonyms for one meaning of the word."
+  (let* ((synsets (seq-into (plist-get raw-synonyms :synsets) 'list)))
+    (mapcar (lambda (synonyms-group)
+              (mapcar #'cadr (plist-get synonyms-group :terms)))
+            synsets)))
+
+;; TODO copied synonyms function
+(defun woerterbuch--definitions-retrieve-as-list (word)
+  "Retrieve the synonyms for WORD as a list of lists.
+Each list consist of the synonyms for one meaning of the word.
+Returns a cons with car being the word and cdr the synonyms. The
+word is returned as it can differntiate from the WORD used as
+parameter when a baseform is used to retrieve the synonyms.
+Returns nil if no synonyms are retrieved."
+  (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
+         (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
+    ;; If a baseform was found use that to retrieve the synonyms.
+    (when baseform
+      (setq raw-synonyms (woerterbuch--synonyms-retrieve-raw baseform)))
+    (let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
+      (when synonyms
+        (cons (or baseform word) synonyms)))))
+
+;; TODO copied synonyms function
+(defun woerterbuch--definitions-convert-to-string (synonyms)
+  "Convert the list of SYNONYMS to a string.
+The string is a list. The group of synonyms for each meaning are
+shown as an item. The list bullet point can be configured with
+`woerterbuch-synonyms-list-bullet-point'"
+  (mapconcat
+     (lambda (elt)
+       (format "%s %s"
+               woerterbuch-synonyms-list-bullet-point
+               (mapconcat #'identity elt ", ")))
+     synonyms "\n"))
+
+;; TODO copied synonyms function
+(defun woerterbuch--definitions-retrieve-as-string (word with-heading)
+  "Retrieve the synonyms for WORD as a string.
+Returns a cons with car being the word and cdr the synonyms as string.
+The word does not match WORD if it needed to use a baseform to retrieve the
+synonyms. Returns nil if no synonyms are retrieved.
+The returned string groups the synonyms for each meaning on one line.
+It looks as follows:
+- Erprobung, Probe, Prüfung
+- Leistungsnachweis, Prüfung, Test
+- etc.
+If WITH-HEADING is non-nil a heading with the WORD as text is listed above the
+synonyms."
+  (when-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
+             (word-used (car word-and-synonyms))
+             (synonyms (cdr word-and-synonyms))
+             (synonyms-string
+              (format "%s\n"
+                      (woerterbuch--synonyms-convert-to-string synonyms))))
+    (if with-heading
+        (woerterbuch--org-add-heading word-used 1 synonyms-string)
+      synonyms-string)))
+
+;; TODO copied synonyms function
+(defun woerterbuch--definitions-read (word)
+  "Read a synonym for WORD in the minibuffer and return it.
+Returns nil if no synonym was selected.
+Signals an user-error if there are no synoyms for WORD."
+  (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
+           (word-used (car-safe word-and-synonyms))
+           (synonyms (cdr-safe word-and-synonyms)))
+      (when-let ((synonyms-flattened (apply #'append synonyms))
+                 (synonyms-no-duplicates (seq-uniq synonyms-flattened))
+                 (synonyms-sorted (seq-sort #'string-lessp
+                                            synonyms-no-duplicates)))
+        (completing-read "Select synonym: " synonyms-sorted nil t))
+    (user-error "No synonyms found for %s" word)))
+
+;; TODO copied synonyms function
+;;;###autoload
+(defun woerterbuch-definitions-show-in-org-buffer (&optional word)
+  "Show the synonyms for WORD in an `org-mode' buffer.
+Returns the buffer."
+  (interactive "sWort: ")
+  (let ((buffer (get-buffer-create woerterbuch--org-buffer-name)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    ;; FIXME Debug and maybe report bug (visual-fill-column-mode).
+    ;; Moved turning `org-mode' on after displaying the buffer. Else I had some
+    ;; problems with `visual-fill-column-mode' changing the margins of the
+    ;; current buffer window, the selected window. Before the buffer was shown.
+    ;; This is most likely a bug in `visual-fill-column-mode'.
+    (funcall woerterbuch-org-buffer-display-function buffer)
+    (with-current-buffer buffer
+      (woerterbuch-mode)
+      (woerterbuch-synonyms-insert-into-org-buffer word t)
+      buffer)))
+
+;; TODO copied synonyms function
+;;;###autoload
+(defun woerterbuch-definitions-show-in-org-buffer-for-word-at-point ()
+  "Show the synonyms for the word at point in an `org-mode' buffer.
+Returns the buffer."
+  (interactive)
+  (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
+           (word (car word-and-bounds)))
+      (woerterbuch-synonyms-show-in-org-buffer word)
+    (user-error "No word at point")))
+
+;; TODO copied synonyms function
+;;;###autoload
+(defun woerterbuch-definitions-insert-into-org-buffer (word &optional with-heading)
+  "Insert the synonyms for WORD into an `org-mode' buffer.
+Will insert a list with each item being the synonyms for a
+meaning. If WITH-HEADING is non-nil it inserts a heading with
+the WORD as text and the list of synonyms below. In that case it
+will insert a heading at the same level as the current level."
+  (interactive "sWort: \nP")
+  (let ((synonyms (woerterbuch--synonyms-retrieve-as-string word with-heading)))
+    (save-excursion
+      (woerterbuch--org-insert synonyms with-heading))))
+
+;; TODO copied synonyms function
+;;;###autoload
+(defun woerterbuch-definitions-kill-as-org-mode-syntax (word &optional with-heading)
+  "Add the synonyms for WORD to the kill ring as `org-mode' syntax.
+Will add a list with each item being the synonyms for a meaning to the kill
+ring. If WITH-HEADING is non-nil it will add a heading with the WORD as text
+and the list of synonyms below."
+  (interactive "sWort: \nP")
+  (kill-new (woerterbuch--synonyms-retrieve-as-string word with-heading)))
 
 ;;;; German Synonyms
 
@@ -251,7 +382,7 @@ synonyms."
         (woerterbuch--org-add-heading word-used 1 synonyms-string)
       synonyms-string)))
 
-(defun woerterbuch--read-synonym (word)
+(defun woerterbuch--synonyms-read-synonym (word)
   "Read a synonym for WORD in the minibuffer and return it.
 Returns nil if no synonym was selected.
 Signals an user-error if there are no synoyms for WORD."
@@ -320,7 +451,7 @@ and the list of synonyms below."
   "Lookup synonyms for WORD and insert selected word at point.
 If TO-KILL-RING is non-nil it is added to the kill ring instead."
   (interactive "sWort: \nP")
-  (when-let ((synonym (woerterbuch--read-synonym word)))
+  (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
     (if to-kill-ring
         (kill-new synonym)
       (insert synonym))))
@@ -331,7 +462,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
   (interactive)
   (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
            (word (car word-and-bounds)))
-      (when-let ((synonym (woerterbuch--read-synonym word)))
+      (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
         (kill-new synonym)
         synonym)
     (user-error "No word at point")))
@@ -343,7 +474,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
   (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
            (word (car word-and-bounds))
            (bounds (cdr word-and-bounds)))
-      (when-let ((synonym (woerterbuch--read-synonym word)))
+      (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
         (delete-region (car bounds) (cdr bounds))
         (insert synonym))
     (user-error "No word at point")))

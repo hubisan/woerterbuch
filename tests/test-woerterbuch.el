@@ -139,10 +139,10 @@
             :to-equal (format woerterbuch-insert-org-heading-format "*" "Test"
                 (concat synonyms-string "\n"))))
 
-  (it "- Reads a synonym from minibuffer (woerterbuch--read-synonym)"
+  (it "- Reads a synonym from minibuffer (woerterbuch--synonyms-read-synonym)"
     (expect (with-simulated-input
                 "Klausur RET"
-              (woerterbuch--read-synonym "Test"))
+              (woerterbuch--synonyms-read-synonym "Test"))
             :to-equal "Klausur"))
 
   (it "- Shows the synonyms in a buffer in `woerterbuch-mode' (woerterbuch-synonyms-show-in-org-buffer)"
