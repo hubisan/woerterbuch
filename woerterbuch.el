@@ -68,8 +68,9 @@
 The function takes buffer as argument."
   :type 'function)
 
-(defcustom woerterbuch-synonyms-list-bullet-point "-"
-  "String to use as list bullet point when converting the synonyms to a string."
+(defcustom woerterbuch-list-bullet-point "-"
+  "String to use as list bullet point.
+This has to be one compatible with `org-mode' lists."
   :type 'string)
 
 (defcustom woerterbuch-insert-org-heading-format "%s %s\n\n%s"
@@ -137,22 +138,36 @@ Returns a cons cell with the car being the word and cdr the bounds."
   "Url to retrieve the definitions for a word as html from DWDS.")
 
 (defun woerterbuch--definitions-retrieve-raw (word)
-  "Return the definitions for a WORD as HTML parse tree."
-  (let* ((baseform (woerterbuch--definitions-get-baseform word))
-         (url (format woerterbuch--definitions-dwds-url
-                      (url-hexify-string baseform)))
+  "Return a raw list of definitions for WORD.
+Each element is a cons with the car being the id of the defintion and the cadr
+the text. Gets the definition from URL `https://www.dwds.de.'"
+  (let* ((url (format woerterbuch--definitions-dwds-url
+                      (url-hexify-string word)))
          (buffer (url-retrieve-synchronously url t)))
     (if (not buffer)
         (error "Could not retrieve definitons")
       (with-current-buffer buffer
-        (pop-to-buffer buffer)
         (goto-char (point-min))
         (re-search-forward "^$")
         (forward-line 2)
-        (let ((dom (libxml-parse-html-region (point) (point-max))))
-          (unwind-protect
-              (dom-by-class dom "^div.dwdswb-lesart$")
-            (kill-buffer buffer)))))))
+        (unwind-protect
+            (when-let* ((html-parse-tree
+                         (libxml-parse-html-region (point) (point-max)))
+                        (lesearten
+                         (dom-by-class html-parse-tree "^dwdswb-lesart$")))
+              ;; Make the list and remove nils.
+              (remove nil
+                      (mapcar
+                       (lambda (leseart)
+                         (when-let ((id (dom-attr leseart 'id))
+                                    (text (dom-text
+                                           (dom-by-class
+                                            leseart
+                                            "^dwdswb-definition$"))))
+                           (when (and (stringp id) (not (string-empty-p text)))
+                             (cons id text))))
+                       lesearten)))
+          (kill-buffer buffer))))))
 
 (defun woerterbuch--definitions-get-baseform (word)
   "Return the baseform (lemma) of the WORD.
@@ -163,42 +178,63 @@ couldn't find any other tool that could do this in a straightforward manner."
          (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
     (or baseform word)))
 
-;; TODO copied synonyms function
-(defun woerterbuch--definitions-to-list (raw-synonyms)
-  "Convert the RAW-SYNONYMS retrieved with the API to a list of lists.
-Each list consist of the synonyms for one meaning of the word."
-  (let* ((synsets (seq-into (plist-get raw-synonyms :synsets) 'list)))
-    (mapcar (lambda (synonyms-group)
-              (mapcar #'cadr (plist-get synonyms-group :terms)))
-            synsets)))
+(defun woerterbuch--definitions-to-list (raw-definitions)
+  "Tranform RAW-DEFINITIONS to a nested list with definitions and subdefinitions.
+Takes the
+Not entirely sure if a defintion can only have one level of subexpressions,
+therefore this function is designed to also work with more than one level."
+  (let* ((definitions '())
+         definition previous-id)
+    (while (setq definition (pop raw-definitions))
+      (let* ((id (car definition))
+             (text (cdr definition)))
+        (cond
+         ;; If it is the first definition or the same level as before.
+         ((or (not previous-id) (length= previous-id (length id)))
+          ;; Add the defintion to definitions
+          (push (list text) definitions)
+          (setq previous-id id))
+         ;; Handle child definition.
+         ((and previous-id (length> id (length previous-id)))
+          (let ((children (list definition)))
+            ;; Get all the children.
+            (while
+                (and raw-definitions
+                     (equal
+                      (substring (caar raw-definitions) 0 (length previous-id))
+                      previous-id))
+              (setq definition (pop raw-definitions))
+              (setq children (append children (list definition))))
+            ;; Reursively call the function to add the children to the first
+            ;; item in the definitions.
+            (setcar definitions (list (caar definitions)
+                                      (woerterbuch--definitions-to-list
+                                       children))))))))
+    (when definitions
+      (nreverse definitions))))
 
-;; TODO copied synonyms function
 (defun woerterbuch--definitions-retrieve-as-list (word)
-  "Retrieve the synonyms for WORD as a list of lists.
-Each list consist of the synonyms for one meaning of the word.
-Returns a cons with car being the word and cdr the synonyms. The
-word is returned as it can differntiate from the WORD used as
-parameter when a baseform is used to retrieve the synonyms.
-Returns nil if no synonyms are retrieved."
-  (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
-         (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
-    ;; If a baseform was found use that to retrieve the synonyms.
-    (when baseform
-      (setq raw-synonyms (woerterbuch--synonyms-retrieve-raw baseform)))
-    (let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
-      (when synonyms
-        (cons (or baseform word) synonyms)))))
+  "Retrieve the definitions for WORD as a list.
+Each list consist of one or multiple definitions (meanings) of a word. Each
+definition can a list of hold subdefinitions. Returns a cons with car being the
+word and cdr the definitions. The word is returned as it can differntiate from
+the WORD used as parameter when a baseform is used to retrieve the definitions.
+Returns nil if no definition was found."
+  (let* ((baseform (woerterbuch--definitions-get-baseform word))
+         (raw-definitions (woerterbuch--definitions-retrieve-raw baseform)))
+    (when-let ((definitions (woerterbuch--definitions-to-list raw-definitions)))
+      (cons baseform (list definitions)))))
 
 ;; TODO copied synonyms function
 (defun woerterbuch--definitions-convert-to-string (synonyms)
   "Convert the list of SYNONYMS to a string.
 The string is a list. The group of synonyms for each meaning are
 shown as an item. The list bullet point can be configured with
-`woerterbuch-synonyms-list-bullet-point'"
+`woerterbuch-list-bullet-point'"
   (mapconcat
      (lambda (elt)
        (format "%s %s"
-               woerterbuch-synonyms-list-bullet-point
+               woerterbuch-list-bullet-point
                (mapconcat #'identity elt ", ")))
      synonyms "\n"))
 
@@ -228,8 +264,7 @@ synonyms."
 ;; TODO copied synonyms function
 (defun woerterbuch--definitions-read (word)
   "Read a synonym for WORD in the minibuffer and return it.
-Returns nil if no synonym was selected.
-Signals an user-error if there are no synoyms for WORD."
+Returns nil if no synonym was selected."
   (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
            (word-used (car-safe word-and-synonyms))
            (synonyms (cdr-safe word-and-synonyms)))
@@ -344,19 +379,18 @@ Returns nil if no synonyms are retrieved."
     ;; If a baseform was found use that to retrieve the synonyms.
     (when baseform
       (setq raw-synonyms (woerterbuch--synonyms-retrieve-raw baseform)))
-    (let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
-      (when synonyms
-        (cons (or baseform word) synonyms)))))
+    (when-let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
+      (cons (or baseform word) synonyms))))
 
 (defun woerterbuch--synonyms-convert-to-string (synonyms)
   "Convert the list of SYNONYMS to a string.
 The string is a list. The group of synonyms for each meaning are
 shown as an item. The list bullet point can be configured with
-`woerterbuch-synonyms-list-bullet-point'"
+`woerterbuch-list-bullet-point'"
   (mapconcat
      (lambda (elt)
        (format "%s %s"
-               woerterbuch-synonyms-list-bullet-point
+               woerterbuch-list-bullet-point
                (mapconcat #'identity elt ", ")))
      synonyms "\n"))
 
@@ -384,8 +418,7 @@ synonyms."
 
 (defun woerterbuch--synonyms-read-synonym (word)
   "Read a synonym for WORD in the minibuffer and return it.
-Returns nil if no synonym was selected.
-Signals an user-error if there are no synoyms for WORD."
+Returns nil if no synonym was selected."
   (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
            (word-used (car-safe word-and-synonyms))
            (synonyms (cdr-safe word-and-synonyms)))

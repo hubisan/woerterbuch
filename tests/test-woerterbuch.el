@@ -53,6 +53,11 @@
 
 ;;; Tests for Definitions
 
+;; TODO Testing with multiple words:
+;; - einfach because it has two tabs
+;; - Mensch because it has a lot of subdefinitions
+;; - test a word without defintions (word that doesn't exists on dwds)
+
 (describe "Definitions:"
   :var* ()
   (before-each)
@@ -101,6 +106,7 @@
   (before-each
     ;; Use the prefetched version from a call to the API.
     (spy-on 'url-retrieve-synchronously :and-return-value openthesaurus-buffer)
+    ;; Disable `kill-buffer' to not make it kill the openthesaurus buffer .
     (spy-on 'kill-buffer))
 
   (it "- The JSON retrieved from the URL can be parsed into a plist (woerterbuch--synonyms-retrieve-raw)"
