@@ -70,11 +70,18 @@ The function takes buffer as argument."
 
 (defcustom woerterbuch-list-bullet-point "-"
   "String to use as list bullet point.
-This has to be one compatible with `org-mode' lists."
-  :type 'string)
+This should be one compatible with `org-mode' lists."
+  :type '(choice (string :tag "-" :value "-")
+                 (string :tag "+" :value "+")))
 
 (defcustom woerterbuch-insert-org-heading-format "%s %s\n\n%s"
-  "Format used when inserting an Org heading before content."
+  "Format used when inserting an Org heading before content.
+You most likely only want to change this, if you want to change the number of
+newlines.
+Format is called with three parameters:
+- Stars to start a heading
+- Text of the heading
+- The content"
   :type 'string)
 
 ;;;; Major-Mode & Key Bindings
@@ -178,6 +185,7 @@ couldn't find any other tool that could do this in a straightforward manner."
          (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
     (or baseform word)))
 
+;; TODO Test it
 (defun woerterbuch--definitions-to-list (raw-definitions)
   "Tranform RAW-DEFINITIONS to a nested list with definitions and subdefinitions.
 Takes the
@@ -213,6 +221,7 @@ therefore this function is designed to also work with more than one level."
     (when definitions
       (nreverse definitions))))
 
+;; TODO Test it
 (defun woerterbuch--definitions-retrieve-as-list (word)
   "Retrieve the definitions for WORD as a list.
 Each list consist of one or multiple definitions (meanings) of a word. Each
@@ -226,8 +235,8 @@ Returns nil if no definition was found."
       (cons baseform (list definitions)))))
 
 ;; TODO copied synonyms function
-(defun woerterbuch--definitions-convert-to-string (synonyms)
-  "Convert the list of SYNONYMS to a string.
+(defun woerterbuch--definitions-convert-to-string (definitions)
+  "Convert the list of DEFINITIONS to a string.
 The string is a list. The group of synonyms for each meaning are
 shown as an item. The list bullet point can be configured with
 `woerterbuch-list-bullet-point'"
