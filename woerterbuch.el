@@ -234,54 +234,54 @@ Returns nil if no definition was found."
     (when-let ((definitions (woerterbuch--definitions-to-list raw-definitions)))
       (cons baseform (list definitions)))))
 
-;; TODO copied synonyms function
-(defun woerterbuch--definitions-convert-to-string (definitions)
+;; TODO Write test
+(defun woerterbuch--definitions-convert-to-string (definitions &optional lvl)
   "Convert the list of DEFINITIONS to a string.
-The string is a list. The group of synonyms for each meaning are
-shown as an item. The list bullet point can be configured with
-`woerterbuch-list-bullet-point'"
-  (mapconcat
-     (lambda (elt)
-       (format "%s %s"
-               woerterbuch-list-bullet-point
-               (mapconcat #'identity elt ", ")))
-     synonyms "\n"))
+The list bullet point can be configured with `woerterbuch-list-bullet-point'"
+  (let ((lvl (or lvl 0)))
+    (mapconcat
+     (lambda (definition)
+       (let ((text (format "%s%s %s"
+                           (make-string (* 2 lvl) ? )
+                           woerterbuch-list-bullet-point
+                           (car definition)))
+             (children (car-safe (cdr-safe definition))))
+         (if children
+             ;; Call function again with children.
+             (format
+              "%s\n%s" text
+              (woerterbuch--definitions-convert-to-string children (1+ lvl)))
+           text)))
+     definitions "\n")))
 
-;; TODO copied synonyms function
-(defun woerterbuch--definitions-retrieve-as-string (word with-heading)
-  "Retrieve the synonyms for WORD as a string.
-Returns a cons with car being the word and cdr the synonyms as string.
-The word does not match WORD if it needed to use a baseform to retrieve the
-synonyms. Returns nil if no synonyms are retrieved.
-The returned string groups the synonyms for each meaning on one line.
-It looks as follows:
-- Erprobung, Probe, Prüfung
-- Leistungsnachweis, Prüfung, Test
-- etc.
+;; TODO Change docstring
+(defun woerterbuch--definitions-retrieve-as-string (word &optional with-heading)
+  "Retrieve the definitions for WORD as a string.
+Returns a cons with car being the WORD and cdr the definitions as string.
+The car will be the baseform if the WORD was not a baseform.
+Returns nil if no definitions are retrieved.
 If WITH-HEADING is non-nil a heading with the WORD as text is listed above the
-synonyms."
-  (when-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
-             (word-used (car word-and-synonyms))
-             (synonyms (cdr word-and-synonyms))
-             (synonyms-string
+definitions."
+  (when-let ((word-and-definitions (woerterbuch--definitions-retrieve-as-list
+                                    word))
+             (word-used (car word-and-definitions))
+             (definitions (cadr word-and-definitions))
+             (definitions-string
               (format "%s\n"
-                      (woerterbuch--synonyms-convert-to-string synonyms))))
+                      (woerterbuch--definitions-convert-to-string definitions))))
     (if with-heading
-        (woerterbuch--org-add-heading word-used 1 synonyms-string)
-      synonyms-string)))
+        (woerterbuch--org-add-heading word-used 1 definitions-string)
+      definitions-string)))
 
-;; TODO copied synonyms function
+;; TODO Test function
 (defun woerterbuch--definitions-read (word)
-  "Read a synonym for WORD in the minibuffer and return it.
-Returns nil if no synonym was selected."
-  (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
-           (word-used (car-safe word-and-synonyms))
-           (synonyms (cdr-safe word-and-synonyms)))
-      (when-let ((synonyms-flattened (apply #'append synonyms))
-                 (synonyms-no-duplicates (seq-uniq synonyms-flattened))
-                 (synonyms-sorted (seq-sort #'string-lessp
-                                            synonyms-no-duplicates)))
-        (completing-read "Select synonym: " synonyms-sorted nil t))
+  "Read a definition for WORD in the minibuffer and return it.
+Returns nil if no definition was selected."
+  (if-let ((word-and-definitions (woerterbuch--definitions-retrieve-as-list word))
+           (word-used (car-safe word-and-definitions))
+           (definitions (cdr-safe word-and-definitions)))
+      (when-let ((definitions-flattened (flatten-list definitions)))
+        (completing-read "Select definition: " definitions-flattened nil t))
     (user-error "No synonyms found for %s" word)))
 
 ;; TODO copied synonyms function
@@ -403,11 +403,11 @@ shown as an item. The list bullet point can be configured with
                (mapconcat #'identity elt ", ")))
      synonyms "\n"))
 
-(defun woerterbuch--synonyms-retrieve-as-string (word with-heading)
+(defun woerterbuch--synonyms-retrieve-as-string (word &optional with-heading)
   "Retrieve the synonyms for WORD as a string.
 Returns a cons with car being the word and cdr the synonyms as string.
-The word does not match WORD if it needed to use a baseform to retrieve the
-synonyms. Returns nil if no synonyms are retrieved.
+The car will be the baseform if the WORD was not a baseform.
+Returns nil if no synonyms are retrieved.
 The returned string groups the synonyms for each meaning on one line.
 It looks as follows:
 - Erprobung, Probe, Prüfung
