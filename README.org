@@ -15,6 +15,8 @@ Lookup definitions and synonyms for German words with Emacs.
 
 Definitions are retrieved from [[https://www.dwds.de/]] and synonyms from [[https://www.openthesaurus.de/]].
 
+If anyone knows a better way to get definitions than parsing Dwds, please open an issue. [[https://github.com/hdaSprachtechnologie/odenet][Open German WordNet]] looks promising but needs some time to incubate. 
+
 -----
 
 ** Contents
