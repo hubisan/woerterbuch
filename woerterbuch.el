@@ -92,7 +92,7 @@ Format is called with one parameters:
   :type 'string)
 
 ;; TODO implement this
-(defcustom woerterbuch-definitions-heading-text "%s - Definition"
+(defcustom woerterbuch-definitions-heading-text "%s - Definitionen"
   "Format used for the heading text when inserting an Org heading before content.
 Format is called with one parameters:
 - The word (or baseform) definitions were retrieved for."
@@ -214,12 +214,13 @@ therefore this function is designed to also work with more than one level."
          definition previous-id)
     (while (setq definition (pop raw-definitions))
       (let* ((id (car definition))
-             (text (cdr definition)))
+             ;; Get the text and clean it.
+             (text (woerterbuch--definitions-clean-text (cdr definition))))
         (cond
          ;; If it is the first definition or the same level as before.
          ((or (not previous-id) (length= previous-id (length id)))
-          ;; Add the defintion to definitions
-          (push (list (woerterbuch--definitions-clean-text text)) definitions)
+          ;; Add the defintion to definitions and cleanf
+          (push (list text) definitions)
           (setq previous-id id))
          ;; If the id is longer than the previous one handle child definitions.
          ((and previous-id (length> id (length previous-id)))
@@ -232,7 +233,7 @@ therefore this function is designed to also work with more than one level."
                       previous-id))
               (setq definition (pop raw-definitions))
               (setq children (append children (list definition))))
-            ;; Reursively call the function to add the children to the first
+            ;; Recursively call the function to add the children to the first
             ;; item in the definitions.
             (setcar definitions (list (caar definitions)
                                       (woerterbuch--definitions-to-list
@@ -247,7 +248,7 @@ therefore this function is designed to also work with more than one level."
       ((text-trimmed (string-trim text))
        ;; Remove those targets placed after links to other defintions. Either a
        ;; number, a letter or dot symbol ● in parentheses like (1), (2), (●). A
-       ;; good example is if using the word Katze.
+       ;; good example is if getting the definitions for Katze.
        (text-link-targets-removed
         (replace-regexp-in-string "([[:alnum:]●])" "" text-trimmed))
        ;; Change all consecutive spaces into one space.
@@ -260,7 +261,7 @@ therefore this function is designed to also work with more than one level."
                                   text-multiple-spaces-removed)))
     text-space-before-comma-removed))
 
-;; TODO Test it
+;; TODO Write test
 (defun woerterbuch--definitions-retrieve-as-list (word)
   "Retrieve the definitions for WORD as a list.
 Each list consist of one or multiple definitions (meanings) of a word. Each
@@ -293,13 +294,13 @@ The list bullet point can be configured with `woerterbuch-list-bullet-point'"
            text)))
      definitions "\n")))
 
-;; TODO Change docstring
+;; TODO Write test.
 (defun woerterbuch--definitions-retrieve-as-string (word &optional with-heading)
   "Retrieve the definitions for WORD as a string.
 Returns a cons with car being the WORD and cdr the definitions as string.
 The car will be the baseform if the WORD was not a baseform.
 Returns nil if no definitions are retrieved.
-If WITH-HEADING is non-nil a heading with the WORD as text is listed above the
+If WITH-HEADING is non-nil a heading with the WORD as text is added above the
 definitions."
   (when-let ((word-and-definitions (woerterbuch--definitions-retrieve-as-list
                                     word))
@@ -323,10 +324,10 @@ Returns nil if no definition was selected."
         (completing-read "Select definition: " definitions-flattened nil t))
     (user-error "No synonyms found for %s" word)))
 
-;; TODO copied synonyms function
+;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-show-in-org-buffer (&optional word)
-  "Show the synonyms for WORD in an `org-mode' buffer.
+  "Show the defintions for WORD in an `org-mode' buffer.
 Returns the buffer."
   (interactive "sWort: ")
   (let ((buffer (get-buffer-create woerterbuch--org-buffer-name)))
@@ -340,42 +341,50 @@ Returns the buffer."
     (funcall woerterbuch-org-buffer-display-function buffer)
     (with-current-buffer buffer
       (woerterbuch-mode)
-      (woerterbuch-synonyms-insert-into-org-buffer word t)
+      (woerterbuch-definitions-insert-into-org-buffer word t)
       buffer)))
 
-;; TODO copied synonyms function
+;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-show-in-org-buffer-for-word-at-point ()
-  "Show the synonyms for the word at point in an `org-mode' buffer.
+  "Show the definitions for the word at point in an `org-mode' buffer.
 Returns the buffer."
   (interactive)
   (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
            (word (car word-and-bounds)))
-      (woerterbuch-synonyms-show-in-org-buffer word)
+      (woerterbuch-definitions-show-in-org-buffer word)
     (user-error "No word at point")))
 
-;; TODO copied synonyms function
+;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-insert-into-org-buffer (word &optional with-heading)
-  "Insert the synonyms for WORD into an `org-mode' buffer.
-Will insert a list with each item being the synonyms for a
-meaning. If WITH-HEADING is non-nil it inserts a heading with
-the WORD as text and the list of synonyms below. In that case it
-will insert a heading at the same level as the current level."
+  "Insert the definitions for WORD into an `org-mode' buffer.
+If WITH-HEADING is non-nil it inserts a heading with
+the WORD as text before the definitions."
   (interactive "sWort: \nP")
-  (let ((synonyms (woerterbuch--synonyms-retrieve-as-string word with-heading)))
+  (let ((definitions (woerterbuch--definitions-retrieve-as-string word with-heading)))
     (save-excursion
-      (woerterbuch--org-insert synonyms with-heading))))
+      (woerterbuch--org-insert definitions with-heading))))
 
-;; TODO copied synonyms function
+;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-kill-as-org-mode-syntax (word &optional with-heading)
-  "Add the synonyms for WORD to the kill ring as `org-mode' syntax.
-Will add a list with each item being the synonyms for a meaning to the kill
-ring. If WITH-HEADING is non-nil it will add a heading with the WORD as text
-and the list of synonyms below."
+  "Add the definitions for WORD to the kill ring as `org-mode' syntax.
+If WITH-HEADING is non-nil it will add a heading with the WORD as text
+before the definitions."
   (interactive "sWort: \nP")
-  (kill-new (woerterbuch--synonyms-retrieve-as-string word with-heading)))
+  (kill-new (woerterbuch--definitions-retrieve-as-string word with-heading)))
+
+;; TODO Write test
+;;;###autoload
+(defun woerterbuch-definitions-insert (word &optional to-kill-ring)
+  "Lookup definitions for WORD and insert selected definition at point.
+If TO-KILL-RING is non-nil it is added to the kill ring instead."
+  (interactive "sWort: \nP")
+  (when-let ((definition (woerterbuch--definitions-read word)))
+    (if to-kill-ring
+        (kill-new definition)
+      (insert definition))))
 
 ;;;; German Synonyms
 
@@ -457,7 +466,7 @@ It looks as follows:
 - Erprobung, Probe, Prüfung
 - Leistungsnachweis, Prüfung, Test
 - etc.
-If WITH-HEADING is non-nil a heading with the WORD as text is listed above the
+If WITH-HEADING is non-nil a heading with the WORD as text is added above the
 synonyms."
   (when-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
              (word-used (car word-and-synonyms))
@@ -516,8 +525,7 @@ Returns the buffer."
   "Insert the synonyms for WORD into an `org-mode' buffer.
 Will insert a list with each item being the synonyms for a
 meaning. If WITH-HEADING is non-nil it inserts a heading with
-the WORD as text and the list of synonyms below. In that case it
-will insert a heading at the same level as the current level."
+the WORD as text before the synonyms."
   (interactive "sWort: \nP")
   (let ((synonyms (woerterbuch--synonyms-retrieve-as-string word with-heading)))
     (save-excursion

@@ -16,6 +16,7 @@
 
 ;;; Tests for Auxiliary Functions
 
+
 (describe "Auxiliary Functions:"
   (it "- Adds an Org heading before the content (woerterbuch--org-add-heading)"
     (expect (woerterbuch--org-add-heading "Test" 1 "content")
@@ -53,9 +54,11 @@
 
 ;;; Tests for Definitions
 
+
 ;; TODO Testing with multiple words:
 ;; - einfach because it has two tabs
 ;; - Mensch because it has a lot of subdefinitions
+;; - Katze because it has those strange links with (1), (b) etc.
 ;; - test a word without defintions (word that doesn't exists on dwds)
 
 (describe "Definitions:"
