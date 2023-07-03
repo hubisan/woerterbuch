@@ -64,15 +64,13 @@
 (describe "Definitions:"
   :var* ()
   (before-each)
-
   (it "- It is able to get a baseform (lemma) of a word (woerterbuch--definitions-get-baseform)"
-    (expect (woerterbuch--definitions-get-baseform "Katzen") :to-equal "Katze")
     (expect (woerterbuch--definitions-get-baseform "Häuser") :to-equal "Haus")
-    (expect (woerterbuch--definitions-get-baseform "hält") :to-equal "halten")
-    ;; Return word if already the base form
-    (expect (woerterbuch--definitions-get-baseform "Katze") :to-equal "Katze"))
-
-  )
+    (expect (woerterbuch--definitions-get-baseform "Patienten") :to-equal "Patient")
+    ;; Return word if already the base form.
+    (expect (woerterbuch--definitions-get-baseform "Haus") :to-equal "Haus")
+    ;; This is actually a baseform, good to test this.
+    (expect (woerterbuch--definitions-get-baseform "Katzen") :to-equal "Katzen")))
 
 ;;; Tests for Synonyms
 
@@ -136,7 +134,7 @@
             :to-equal (cons "Test" synonyms-list)))
 
   (it "- Converts the synonyms to a string (woerterbuch--synonyms-convert-to-string)"
-    (expect (woerterbuch--synonyms-convert-to-string synonyms-list)
+    (expect (woerterbuch--synonyms-to-string synonyms-list)
             :to-equal synonyms-string))
 
   (it "- Retrieves synonyms as a string without a heading (woerterbuch--synonyms-retrieve-as-string)"
@@ -145,7 +143,8 @@
 
   (it "- Retrieves synonyms as a string with a heading (woerterbuch--synonyms-retrieve-as-string)"
     (expect (woerterbuch--synonyms-retrieve-as-string "Test" t)
-            :to-equal (format woerterbuch-insert-org-heading-format "*" "Test"
+            :to-equal (format woerterbuch-insert-org-heading-format "*"
+                              (format woerterbuch-synonyms-heading-text-format "Test")
                 (concat synonyms-string "\n"))))
 
   (it "- Reads a synonym from minibuffer (woerterbuch--synonyms-read-synonym)"
@@ -161,7 +160,8 @@
       (with-current-buffer buffer
         (expect major-mode :to-equal 'woerterbuch-mode)
         (expect (buffer-string) :to-equal
-                (format woerterbuch-insert-org-heading-format "*" "Test"
+                (format woerterbuch-insert-org-heading-format "*"
+                        (format woerterbuch-synonyms-heading-text-format"Test")
                 (concat synonyms-string "\n"))))
       (kill-buffer buffer)))
 
@@ -171,7 +171,8 @@
         (let* ((buffer (woerterbuch-synonyms-show-in-org-buffer-for-word-at-point)))
           (with-current-buffer buffer
             (expect (buffer-string) :to-equal
-                    (format woerterbuch-insert-org-heading-format "*" "Test"
+                    (format woerterbuch-insert-org-heading-format "*"
+                            (format woerterbuch-synonyms-heading-text-format "Test")
                             (concat synonyms-string "\n"))))
           (kill-buffer buffer))))
 
@@ -189,7 +190,8 @@
        (org-mode)
        (woerterbuch-synonyms-insert-into-org-buffer "Test" t)
        (buffer-string))
-     :to-equal (format woerterbuch-insert-org-heading-format "*" "Test"
+     :to-equal (format woerterbuch-insert-org-heading-format "*"
+                       (format woerterbuch-synonyms-heading-text-format "Test")
                 (concat synonyms-string "\n"))))
 
   ;; woerterbuch-synonyms-kill-as-org-mode-syntax > No test needed.

@@ -84,19 +84,21 @@ Format is called with three parameters:
 - The content"
   :type 'string)
 
+(defcustom woerterbuch-definitions-heading-text-format
+  "[[https://www.dwds.de/wb/%1$s][%1$s]] - Bedeutungen"
+  "Format used for the heading text when inserting an Org heading before content.
+Format is called with one parameters:
+- The word (or baseform) definitions were retrieved for."
+  :type 'string)
+
 ;; TODO implement this
-(defcustom woerterbuch-synonyms-heading-text "%s - Synonyme"
+(defcustom woerterbuch-synonyms-heading-text-format
+  "[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"
   "Format used for the heading text when inserting an Org heading before content.
 Format is called with one parameters:
 - The word (or baseform) synonyms were retrieved for."
   :type 'string)
 
-;; TODO implement this
-(defcustom woerterbuch-definitions-heading-text "%s - Definitionen"
-  "Format used for the heading text when inserting an Org heading before content.
-Format is called with one parameters:
-- The word (or baseform) definitions were retrieved for."
-  :type 'string)
 
 ;;;; Major-Mode & Key Bindings
 
@@ -277,7 +279,8 @@ Returns nil if no definition was found."
 ;; TODO Write test
 (defun woerterbuch--definitions-to-string (definitions &optional lvl)
   "Convert the list of DEFINITIONS to a string.
-The list bullet point can be configured with `woerterbuch-list-bullet-point'"
+LVL is used when the function is called recursively to process the children.
+The list bullet point can be configured with `woerterbuch-list-bullet-point'."
   (let ((lvl (or lvl 0)))
     (mapconcat
      (lambda (definition)
@@ -310,7 +313,9 @@ definitions."
               (format "%s\n"
                       (woerterbuch--definitions-to-string definitions))))
     (if with-heading
-        (woerterbuch--org-add-heading word-used 1 definitions-string)
+        (woerterbuch--org-add-heading
+         (format woerterbuch-definitions-heading-text-format word-used)
+         1 definitions-string)
       definitions-string)))
 
 ;; TODO Test function
@@ -388,7 +393,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 
 ;;;; German Synonyms
 
-(defvar woerterbuch--synonyms-openthesaurus-url
+(defvar woerterbuch--synonyms-openthesaurus-api-url
   (concat
    "https://www.openthesaurus.de/synonyme/search?q=%s"
    "&format=application/json"
@@ -397,7 +402,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 
 (defun woerterbuch--synonyms-retrieve-raw (word)
   "Return the synonyms for a WORD as plist as retrieved with the API."
-  (let* ((url (format woerterbuch--synonyms-openthesaurus-url
+  (let* ((url (format woerterbuch--synonyms-openthesaurus-api-url
                       (url-hexify-string (string-trim word))))
          (buffer (url-retrieve-synchronously url t)))
     (if (not buffer)
@@ -420,8 +425,12 @@ Each list consist of the synonyms for one meaning of the word."
 
 (defun woerterbuch--synonyms-baseform (raw-synonyms)
   "Try to get the baseform of the word from RAW-SYNONYMS.
-Returns nil if not found."
-  (if (plist-get raw-synonyms :synsets)
+Returns nil if not found.
+Sometimes openthesaurus returns synsets (synoyms) for words that are not in the
+baseform like for the word Kinder or Frauen. But sometimes it returns a baseform
+for words that are already a baseform. To avoid problems this functions returns
+nil if synsets are not empty."
+  (if (not (seq-empty-p (plist-get raw-synonyms :synsets)))
       ;; For some words a baseform is given even though it already is a baseform
       ;; and synonyms are returned. In that case return nil to signal that
       ;; there is no baseform.
@@ -475,7 +484,9 @@ synonyms."
               (format "%s\n"
                       (woerterbuch--synonyms-to-string synonyms))))
     (if with-heading
-        (woerterbuch--org-add-heading word-used 1 synonyms-string)
+        (woerterbuch--org-add-heading
+         (format woerterbuch-synonyms-heading-text-format word-used)
+         1 synonyms-string)
       synonyms-string)))
 
 (defun woerterbuch--synonyms-read-synonym (word)
