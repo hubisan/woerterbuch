@@ -74,6 +74,7 @@
 
 ;;; Tests for Synonyms
 
+;; TODO add test for page without synonyms.
 (describe "Synonyms:"
   :var* (;; Create a buffer with the content from a API call to openthesaurus
          ;; stored as a text-file. It is not a good idea to call the API
@@ -138,11 +139,11 @@
             :to-equal synonyms-string))
 
   (it "- Retrieves synonyms as a string without a heading (woerterbuch--synonyms-retrieve-as-string)"
-    (expect (woerterbuch--synonyms-retrieve-as-string "Test" nil)
+    (expect (cdr-safe (woerterbuch--synonyms-retrieve-as-string "Test" nil))
             :to-equal (format "%s\n" synonyms-string)))
 
   (it "- Retrieves synonyms as a string with a heading (woerterbuch--synonyms-retrieve-as-string)"
-    (expect (woerterbuch--synonyms-retrieve-as-string "Test" t)
+    (expect (cdr-safe (woerterbuch--synonyms-retrieve-as-string "Test" t))
             :to-equal (format woerterbuch-insert-org-heading-format "*"
                               (format woerterbuch-synonyms-heading-text-format "Test")
                 (concat synonyms-string "\n"))))

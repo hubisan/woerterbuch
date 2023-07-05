@@ -91,14 +91,12 @@ Format is called with one parameters:
 - The word (or baseform) definitions were retrieved for."
   :type 'string)
 
-;; TODO implement this
 (defcustom woerterbuch-synonyms-heading-text-format
   "[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"
   "Format used for the heading text when inserting an Org heading before content.
 Format is called with one parameters:
 - The word (or baseform) synonyms were retrieved for."
   :type 'string)
-
 
 ;;;; Major-Mode & Key Bindings
 
@@ -273,8 +271,8 @@ the WORD used as parameter when a baseform is used to retrieve the definitions.
 Returns nil if no definition was found."
   (let* ((baseform (woerterbuch--definitions-get-baseform word))
          (raw-definitions (woerterbuch--definitions-retrieve-raw baseform)))
-    (when-let ((definitions (woerterbuch--definitions-to-list raw-definitions)))
-      (cons baseform (list definitions)))))
+    (let ((definitions (woerterbuch--definitions-to-list raw-definitions)))
+      (cons baseform definitions))))
 
 ;; TODO Write test
 (defun woerterbuch--definitions-to-string (definitions &optional lvl)
@@ -302,21 +300,27 @@ The list bullet point can be configured with `woerterbuch-list-bullet-point'."
   "Retrieve the definitions for WORD as a string.
 Returns a cons with car being the WORD and cdr the definitions as string.
 The car will be the baseform if the WORD was not a baseform.
-Returns nil if no definitions are retrieved.
+If no definitions are found it inserts a link to the dwds page as string.
 If WITH-HEADING is non-nil a heading with the WORD as text is added above the
 definitions."
-  (when-let ((word-and-definitions (woerterbuch--definitions-retrieve-as-list
-                                    word))
-             (word-used (car word-and-definitions))
-             (definitions (cadr word-and-definitions))
-             (definitions-string
-              (format "%s\n"
-                      (woerterbuch--definitions-to-string definitions))))
-    (if with-heading
-        (woerterbuch--org-add-heading
-         (format woerterbuch-definitions-heading-text-format word-used)
-         1 definitions-string)
-      definitions-string)))
+  (let* ((word-and-definitions (woerterbuch--definitions-retrieve-as-list
+                                word))
+         (word-used (car-safe word-and-definitions))
+         (definitions (cdr-safe word-and-definitions))
+         (text (if definitions
+                   (format "%s\n" (woerterbuch--definitions-to-string
+                                   definitions))
+                 (format (concat "Keine Bedeutungen für [["
+                                 woerterbuch--definitions-dwds-url
+                                 "][%1$s]] gefunden.\n")
+                         word-used)))
+         (definitions-string
+          (if with-heading
+              (woerterbuch--org-add-heading
+               (format woerterbuch-definitions-heading-text-format word-used)
+               1 text)
+            text)))
+    (cons word-used definitions-string)))
 
 ;; TODO Test function
 (defun woerterbuch--definitions-read (word)
@@ -367,7 +371,9 @@ Returns the buffer."
 If WITH-HEADING is non-nil it inserts a heading with
 the WORD as text before the definitions."
   (interactive "sWort: \nP")
-  (let ((definitions (woerterbuch--definitions-retrieve-as-string word with-heading)))
+  (let* ((word-and-defintions
+          (woerterbuch--definitions-retrieve-as-string word with-heading))
+         (definitions (cdr-safe word-and-defintions)))
     (save-excursion
       (woerterbuch--org-insert definitions with-heading))))
 
@@ -378,7 +384,8 @@ the WORD as text before the definitions."
 If WITH-HEADING is non-nil it will add a heading with the WORD as text
 before the definitions."
   (interactive "sWort: \nP")
-  (kill-new (woerterbuch--definitions-retrieve-as-string word with-heading)))
+  (kill-new (cdr-safe
+             (woerterbuch--definitions-retrieve-as-string word with-heading))))
 
 ;; TODO Write test
 ;;;###autoload
@@ -392,6 +399,10 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
       (insert definition))))
 
 ;;;; German Synonyms
+
+(defvar woerterbuch--synonyms-openthesaurus-url
+  "https://www.openthesaurus.de/synonyme/%s"
+  "Url to link to a synonyms page.")
 
 (defvar woerterbuch--synonyms-openthesaurus-api-url
   (concat
@@ -450,7 +461,7 @@ Returns nil if no synonyms are retrieved."
     ;; If a baseform was found use that to retrieve the synonyms.
     (when baseform
       (setq raw-synonyms (woerterbuch--synonyms-retrieve-raw baseform)))
-    (when-let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
+    (let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
       (cons (or baseform word) synonyms))))
 
 (defun woerterbuch--synonyms-to-string (synonyms)
@@ -466,10 +477,10 @@ shown as an item. The list bullet point can be configured with
      synonyms "\n"))
 
 (defun woerterbuch--synonyms-retrieve-as-string (word &optional with-heading)
-  "Retrieve the synonyms for WORD as a string.
+  "Retrieve the synonyms for WORD as a string in Org-mode syntax.
 Returns a cons with car being the word and cdr the synonyms as string.
 The car will be the baseform if the WORD was not a baseform.
-Returns nil if no synonyms are retrieved.
+If no synonyms are found it inserts a link to the openthesaurus page as string.
 The returned string groups the synonyms for each meaning on one line.
 It looks as follows:
 - Erprobung, Probe, Prüfung
@@ -477,17 +488,23 @@ It looks as follows:
 - etc.
 If WITH-HEADING is non-nil a heading with the WORD as text is added above the
 synonyms."
-  (when-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
-             (word-used (car word-and-synonyms))
-             (synonyms (cdr word-and-synonyms))
-             (synonyms-string
-              (format "%s\n"
-                      (woerterbuch--synonyms-to-string synonyms))))
-    (if with-heading
-        (woerterbuch--org-add-heading
-         (format woerterbuch-synonyms-heading-text-format word-used)
-         1 synonyms-string)
-      synonyms-string)))
+  (let* ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
+         (word-used (car-safe word-and-synonyms))
+         (synonyms (cdr-safe word-and-synonyms))
+         (text (if synonyms
+                   (format "%s\n" (woerterbuch--synonyms-to-string synonyms))
+                 (format (concat "Keine Synonyme für [["
+                                 woerterbuch--synonyms-openthesaurus-url
+                                 "][%1$s]] gefunden.\n")
+                         word-used)))
+         ;; Add a heading if needed.
+         (synonyms-string
+          (if with-heading
+              (woerterbuch--org-add-heading
+               (format woerterbuch-synonyms-heading-text-format word-used)
+               1 text)
+            text)))
+    (cons word-used synonyms-string)))
 
 (defun woerterbuch--synonyms-read-synonym (word)
   "Read a synonym for WORD in the minibuffer and return it.
@@ -534,11 +551,14 @@ Returns the buffer."
 ;;;###autoload
 (defun woerterbuch-synonyms-insert-into-org-buffer (word &optional with-heading)
   "Insert the synonyms for WORD into an `org-mode' buffer.
-Will insert a list with each item being the synonyms for a
-meaning. If WITH-HEADING is non-nil it inserts a heading with
-the WORD as text before the synonyms."
+Will insert a list with each item being the synonyms for a meaning. If
+WITH-HEADING is non-nil it inserts a heading with the WORD as text before the
+synonyms. If there are no synonyms found it will insert a text with a link to
+openthesaurus."
   (interactive "sWort: \nP")
-  (let ((synonyms (woerterbuch--synonyms-retrieve-as-string word with-heading)))
+  (let* ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-string
+                             word with-heading))
+         (synonyms (cdr-safe word-and-synonyms)))
     (save-excursion
       (woerterbuch--org-insert synonyms with-heading))))
 
@@ -549,7 +569,8 @@ Will add a list with each item being the synonyms for a meaning to the kill
 ring. If WITH-HEADING is non-nil it will add a heading with the WORD as text
 and the list of synonyms below."
   (interactive "sWort: \nP")
-  (kill-new (woerterbuch--synonyms-retrieve-as-string word with-heading)))
+  (kill-new (cdr-safe
+             (woerterbuch--synonyms-retrieve-as-string word with-heading))))
 
 ;;;###autoload
 (defun woerterbuch-synonyms-insert (word &optional to-kill-ring)
