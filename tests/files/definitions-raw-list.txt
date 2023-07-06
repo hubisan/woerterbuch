@@ -1,0 +1,6 @@
+(("d-1-1" . "Lebensmittel mit einer länglichen Form aus einer gewürzten Masse, die traditionell aus zerkleinertem Fleisch, Gewürzen und anderen Zutaten besteht, die in eine dünne Hülle aus Tierdarm, Kunstdarm  o. Ä.  gepresst und anschließend gegart oder durch Trocknen oder Räuchern haltbar gemacht wird")
+ ("d-1-1-1" . "Wurstart, die meist kalt, in Scheiben geschnitten oder als streichfähige Masse als Brotbelag oder in kleinen Stücken zu Brot, verzehrt wird")
+ ("d-1-1-2" . "Wurstart, die in der Regel heiß als Ganzes (gebraten oder in Wasser erhitzt) verzehrt wird")
+ ("d-1-2" . "etw. , das mit seiner länglichen Form an eine  Wurst¹  (1 b)  erinnert")
+ ("d-1-2-1" . "länglich geformte Exkremente")
+ ("d-2-1" . "völlig unwichtig, gleichgültig"))
