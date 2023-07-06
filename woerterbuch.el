@@ -91,11 +91,25 @@ Format is called with one parameters:
 - The word (or baseform) definitions were retrieved for."
   :type 'string)
 
+(defcustom woerterbuch-definitions-no-matches-text-format
+  "Keine Bedeutungen für [[https://www.dwds.de/wb/%1$s][%1$s]] gefunden.\n"
+  "Format used for the text when no definitions are found.
+Format is called with one parameters:
+- The word (or baseform) used to try to get definitions."
+  :type 'string)
+
 (defcustom woerterbuch-synonyms-heading-text-format
   "[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"
   "Format used for the heading text when inserting an Org heading before content.
 Format is called with one parameters:
 - The word (or baseform) synonyms were retrieved for."
+  :type 'string)
+
+(defcustom woerterbuch-synonyms-no-matches-text-format
+  "Keine Synonyme für [[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] gefunden.\n"
+  "Format used for the text when no synonyms are found.
+Format is called with one parameters:
+- The word (or baseform) used to try to get synonyms."
   :type 'string)
 
 ;;;; Major-Mode & Key Bindings
@@ -205,7 +219,6 @@ couldn't find any other tool that could do this in a straightforward manner."
          (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
     (or baseform word)))
 
-;; TODO Test it
 (defun woerterbuch--definitions-to-list (raw-definitions)
   "Tranform RAW-DEFINITIONS to a nested list with definitions and subdefinitions.
 Not entirely sure if a defintion can only have one level of subexpressions,
@@ -241,27 +254,30 @@ therefore this function is designed to also work with more than one level."
     (when definitions
       (nreverse definitions))))
 
-;; TODO Write test
 (defun woerterbuch--definitions-clean-text (text)
   "Clean the TEXT of the definitions."
   (when-let*
       ((text-trimmed (string-trim text))
        ;; Remove those targets placed after links to other defintions. Either a
-       ;; number, a letter or dot symbol ● in parentheses like (1), (2), (●). A
-       ;; good example is if getting the definitions for Katze.
+       ;; number, a letter or dot symbol ● in parentheses like (1), (2), (●). Or
+       ;; actually multiple of those if it is nested like (1 b). A good example
+       ;; is if getting the definitions for Katze or Wurst.
        (text-link-targets-removed
-        (replace-regexp-in-string "([[:alnum:]●])" "" text-trimmed))
+        (replace-regexp-in-string "([[:alnum:]● ]+)" "" text-trimmed))
+       ;; If are word has more than one tab a superscript is used in links.
+       ;; For instance in the definitions for word Wurst.
+       (text-superscripts-removed
+        (replace-regexp-in-string "[⁰¹²³⁴⁵⁶⁷⁸⁹]" "" text-link-targets-removed))
        ;; Change all consecutive spaces into one space.
        (text-multiple-spaces-removed
         (replace-regexp-in-string "[[:blank:]]+" " "
-                                  text-link-targets-removed))
+                                  text-superscripts-removed))
        ;; Sometimes there are spaces before commas.
        (text-space-before-comma-removed
         (replace-regexp-in-string " ," ","
                                   text-multiple-spaces-removed)))
     text-space-before-comma-removed))
 
-;; TODO Write test
 (defun woerterbuch--definitions-retrieve-as-list (word)
   "Retrieve the definitions for WORD as a list.
 Each list consist of one or multiple definitions (meanings) of a word. Each
@@ -274,7 +290,6 @@ Returns nil if no definition was found."
     (let ((definitions (woerterbuch--definitions-to-list raw-definitions)))
       (cons baseform definitions))))
 
-;; TODO Write test
 (defun woerterbuch--definitions-to-string (definitions &optional lvl)
   "Convert the list of DEFINITIONS to a string.
 LVL is used when the function is called recursively to process the children.
@@ -295,7 +310,6 @@ The list bullet point can be configured with `woerterbuch-list-bullet-point'."
            text)))
      definitions "\n")))
 
-;; TODO Write test.
 (defun woerterbuch--definitions-retrieve-as-string (word &optional with-heading)
   "Retrieve the definitions for WORD as a string.
 Returns a cons with car being the WORD and cdr the definitions as string.
@@ -310,9 +324,7 @@ definitions."
          (text (if definitions
                    (format "%s\n" (woerterbuch--definitions-to-string
                                    definitions))
-                 (format (concat "Keine Bedeutungen für [["
-                                 woerterbuch--definitions-dwds-url
-                                 "][%1$s]] gefunden.\n")
+                 (format woerterbuch-definitions-no-matches-text-format
                          word-used)))
          (definitions-string
           (if with-heading
@@ -322,8 +334,7 @@ definitions."
             text)))
     (cons word-used definitions-string)))
 
-;; TODO Test function
-(defun woerterbuch--definitions-read (word)
+(defun woerterbuch--definitions-read-definition (word)
   "Read a definition for WORD in the minibuffer and return it.
 Returns nil if no definition was selected."
   (if-let ((word-and-definitions (woerterbuch--definitions-retrieve-as-list word))
@@ -333,7 +344,6 @@ Returns nil if no definition was selected."
         (completing-read "Select definition: " definitions-flattened nil t))
     (user-error "No synonyms found for %s" word)))
 
-;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-show-in-org-buffer (&optional word)
   "Show the defintions for WORD in an `org-mode' buffer.
@@ -353,7 +363,6 @@ Returns the buffer."
       (woerterbuch-definitions-insert-into-org-buffer word t)
       buffer)))
 
-;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-show-in-org-buffer-for-word-at-point ()
   "Show the definitions for the word at point in an `org-mode' buffer.
@@ -364,7 +373,6 @@ Returns the buffer."
       (woerterbuch-definitions-show-in-org-buffer word)
     (user-error "No word at point")))
 
-;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-insert-into-org-buffer (word &optional with-heading)
   "Insert the definitions for WORD into an `org-mode' buffer.
@@ -377,7 +385,6 @@ the WORD as text before the definitions."
     (save-excursion
       (woerterbuch--org-insert definitions with-heading))))
 
-;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-kill-as-org-mode-syntax (word &optional with-heading)
   "Add the definitions for WORD to the kill ring as `org-mode' syntax.
@@ -387,13 +394,12 @@ before the definitions."
   (kill-new (cdr-safe
              (woerterbuch--definitions-retrieve-as-string word with-heading))))
 
-;; TODO Write test
 ;;;###autoload
 (defun woerterbuch-definitions-insert (word &optional to-kill-ring)
   "Lookup definitions for WORD and insert selected definition at point.
 If TO-KILL-RING is non-nil it is added to the kill ring instead."
   (interactive "sWort: \nP")
-  (when-let ((definition (woerterbuch--definitions-read word)))
+  (when-let ((definition (woerterbuch--definitions-read-definition word)))
     (if to-kill-ring
         (kill-new definition)
       (insert definition))))
@@ -493,9 +499,7 @@ synonyms."
          (synonyms (cdr-safe word-and-synonyms))
          (text (if synonyms
                    (format "%s\n" (woerterbuch--synonyms-to-string synonyms))
-                 (format (concat "Keine Synonyme für [["
-                                 woerterbuch--synonyms-openthesaurus-url
-                                 "][%1$s]] gefunden.\n")
+                 (format woerterbuch-synonyms-no-matches-text-format
                          word-used)))
          ;; Add a heading if needed.
          (synonyms-string

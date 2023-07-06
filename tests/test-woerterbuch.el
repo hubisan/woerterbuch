@@ -54,18 +54,146 @@
 
 ;;; Tests for Definitions
 
-
 ;; TODO Testing with multiple words:
 ;; - einfach because it has two tabs
 ;; - Mensch because it has a lot of subdefinitions
 ;; - Katze because it has those strange links with (1), (b) etc.
 ;; - test a word without defintions (word that doesn't exists on dwds)
 
+
+
 (describe "Definitions:"
-  :var* ()
-  (before-each)
+  :var* (;; Create a buffer with the content of a dwsds definitions page
+         ;; stored as a text-file. It is not a good idea to get the content
+         ;; directly as the definitions might have changed or the site is down.
+         (dwds-path
+          (test-helper-get-file-in-test-dir
+           "files/definitions-url-retrieved-for-wurst.txt"))
+         (dwds-buffer (find-file-noselect dwds-path))
+         ;; No definitions found.
+         (dwds-no-definitions-path
+          (test-helper-get-file-in-test-dir
+           "files/definitions-url-retrieved-no-definitions-found.txt"))
+         (dwds-no-definitions-buffer (find-file-noselect
+                                      dwds-no-definitions-path))
+         ;; Get the expected list from parsing the page.
+         (defintions-raw-path (test-helper-get-file-in-test-dir
+                             "files/definitions-raw-list.txt"))
+         (definitions-raw (read (test-helper-file-read-contents
+                                 defintions-raw-path)))
+         ;; Get the expected list of synonyms after converting the plist.
+         (definitions-list-path (test-helper-get-file-in-test-dir
+                              "files/definitions-list.txt"))
+         (definitions-list (read
+                         (test-helper-file-read-contents definitions-list-path)))
+         ;; Synonym list as string.
+         (definitions-string-path (test-helper-get-file-in-test-dir
+                              "./files/definitions-string.txt"))
+         (definitions-string (read
+                         (test-helper-file-read-contents definitions-string-path))))
+  (before-each
+    (spy-on 'woerterbuch--definitions-get-baseform :and-return-value "Wurst"))
+
+  (it "- The page retrieved from the URL can be parsed into a list (woerterbuch--definitions-retrieve-raw)"
+    (expect (woerterbuch--definitions-retrieve-raw "Wurst") :to-equal definitions-raw))
+
+  (it "- The raw definitions list can be converted into a list (woerterbuch--definitions-to-list)."
+    (expect (woerterbuch--definitions-to-list definitions-raw)
+            :to-equal definitions-list))
+
+  ;; woerterbuch--definitions-clean-text > no test needed as it is tested indirectly.
+
+  (it "- Retrieves a cons with car word and cdr the definitions (woerterbuch--definitions-retrieve-as-list)."
+    (expect (woerterbuch--definitions-retrieve-as-list "Wurst")
+            :to-equal (cons "Wurst" definitions-list)))
+
+  (it "- Converts the definitions to a string (woerterbuch--definitions-convert-to-string)"
+    (expect (woerterbuch--definitions-to-string definitions-list)
+            :to-equal definitions-string))
+
+  (it "- Retrieves definitions as a string without a heading (woerterbuch--definitions-retrieve-as-string)"
+    (expect (cdr-safe (woerterbuch--definitions-retrieve-as-string "Wurst" nil))
+            :to-equal (format "%s\n" definitions-string)))
+
+  (it "- If no definitions are found returns a string holding an error message - in this case without a heading (woerterbuch--definitions-retrieve-as-string)"
+    (spy-on 'url-retrieve-synchronously :and-return-value dwds-no-definitions-buffer)
+    (spy-on 'woerterbuch--definitions-get-baseform :and-return-value "Existiertnicht")
+    (expect (cdr-safe (woerterbuch--definitions-retrieve-as-string "Existiertnicht" nil))
+            :to-equal (format woerterbuch-definitions-no-matches-text-format
+                              "Existiertnicht")))
+
+  (it "- Retrieves definitions as a string with a heading (woerterbuch--definitions-retrieve-as-string)"
+    (expect (cdr-safe (woerterbuch--definitions-retrieve-as-string "Wurst" t))
+            :to-equal (format woerterbuch-insert-org-heading-format "*"
+                              (format woerterbuch-definitions-heading-text-format "Wurst")
+                (concat definitions-string "\n"))))
+
+  (it "- Reads a definition from minibuffer (woerterbuch--definitions-read-definition)"
+    (expect (with-simulated-input
+                "völlig RET"
+              (woerterbuch--definitions-read-definition "Wurst"))
+            :to-equal "völlig unwichtig, gleichgültig"))
+
+  (it "- Shows the definitions in a buffer in `woerterbuch-mode' (woerterbuch-definitions-show-in-org-buffer)"
+    (let* ((buffer (woerterbuch-definitions-show-in-org-buffer "Wurst")))
+      (expect (buffer-live-p (get-buffer woerterbuch--org-buffer-name))
+              :to-be-truthy)
+      (with-current-buffer buffer
+        (expect major-mode :to-equal 'woerterbuch-mode)
+        (expect (buffer-string) :to-equal
+                (format woerterbuch-insert-org-heading-format "*"
+                        (format woerterbuch-definitions-heading-text-format"Wurst")
+                (concat definitions-string "\n"))))
+      (kill-buffer buffer)))
+
+  (it "- Shows the definitions in a buffer for word at point (woerterbuch-definitions-show-in-org-buffer-for-word-at-point)"
+      (with-temp-buffer
+        (insert "Wurst")
+        (let* ((buffer (woerterbuch-definitions-show-in-org-buffer-for-word-at-point)))
+          (with-current-buffer buffer
+            (expect (buffer-string) :to-equal
+                    (format woerterbuch-insert-org-heading-format "*"
+                            (format woerterbuch-definitions-heading-text-format "Wurst")
+                            (concat definitions-string "\n"))))
+          (kill-buffer buffer))))
+
+  (it "- Inserts the definitions into an Org buffer without a heading (woerterbuch-definitions-insert-into-org-buffer)"
+    (expect
+     (with-temp-buffer
+       (org-mode)
+       (woerterbuch-definitions-insert-into-org-buffer "Wurst")
+       (buffer-string))
+     :to-equal (format "%s\n" definitions-string)))
+
+  (it "- Inserts the definitions into an Org buffer with a heading (woerterbuch-definitions-insert-into-org-buffer)"
+    (expect
+     (with-temp-buffer
+       (org-mode)
+       (woerterbuch-definitions-insert-into-org-buffer "Wurst" t)
+       (buffer-string))
+     :to-equal (format woerterbuch-insert-org-heading-format "*"
+                       (format woerterbuch-definitions-heading-text-format "Wurst")
+                (concat definitions-string "\n"))))
+
+  ;; woerterbuch-definitions-kill-as-org-mode-syntax > No test needed.
+
+  (it "- Reads and insert a definition into current buffer (woerterbuch-definitions-insert)"
+    (expect
+     (with-temp-buffer
+       (with-simulated-input
+           "völlig RET"
+         (woerterbuch-definitions-insert "Wurst"))
+       (buffer-string))
+     :to-equal  "völlig unwichtig, gleichgültig")))
+
+(describe "Definitinons (baseform):"
+  ;; Moved this to another describe as I was not sure how to reset the spy just
+  ;; for this part. This didn't work inside the it statement:
+  ;; (spy-on 'woerterbuch--definitions-get-baseform :and-call-through)
   (it "- It is able to get a baseform (lemma) of a word (woerterbuch--definitions-get-baseform)"
-    (expect (woerterbuch--definitions-get-baseform "Häuser") :to-equal "Haus")
+    (spy-on 'woerterbuch--definitions-get-baseform :and-call-through)
+    (expect
+     (woerterbuch--definitions-get-baseform "Häuser") :to-equal "Haus")
     (expect (woerterbuch--definitions-get-baseform "Patienten") :to-equal "Patient")
     ;; Return word if already the base form.
     (expect (woerterbuch--definitions-get-baseform "Haus") :to-equal "Haus")
@@ -74,7 +202,6 @@
 
 ;;; Tests for Synonyms
 
-;; TODO add test for page without synonyms.
 (describe "Synonyms:"
   :var* (;; Create a buffer with the content from a API call to openthesaurus
          ;; stored as a text-file. It is not a good idea to call the API
@@ -83,6 +210,12 @@
           (test-helper-get-file-in-test-dir
            "files/synonyms-url-retrieved-openthesaurus-api.txt"))
          (openthesaurus-buffer (find-file-noselect openthesaurus-path))
+         ;; No synonyms found.
+         (openthesaurus-no-synonyms-path
+          (test-helper-get-file-in-test-dir
+           "files/synonyms-url-retrieved-openthesaurus-api-no-synonyms-found.txt"))
+         (openthesaurus-no-synonyms-buffer (find-file-noselect
+                                            openthesaurus-no-synonyms-path))
          ;; Get the expected plist from parsing the API data.
          (synonyms-raw-path (test-helper-get-file-in-test-dir
                              "files/synonyms-raw-plist.txt"))
@@ -141,6 +274,12 @@
   (it "- Retrieves synonyms as a string without a heading (woerterbuch--synonyms-retrieve-as-string)"
     (expect (cdr-safe (woerterbuch--synonyms-retrieve-as-string "Test" nil))
             :to-equal (format "%s\n" synonyms-string)))
+
+  (it "- If no synonyms are found returns a string holding an error message - in this case without a heading (woerterbuch--synonyms-retrieve-as-string)"
+    (spy-on 'url-retrieve-synchronously :and-return-value openthesaurus-no-synonyms-buffer)
+    (expect (cdr-safe (woerterbuch--synonyms-retrieve-as-string "Existiertnicht" nil))
+            :to-equal (format woerterbuch-synonyms-no-matches-text-format
+                              "Existiertnicht")))
 
   (it "- Retrieves synonyms as a string with a heading (woerterbuch--synonyms-retrieve-as-string)"
     (expect (cdr-safe (woerterbuch--synonyms-retrieve-as-string "Test" t))

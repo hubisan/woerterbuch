@@ -1,10 +1,10 @@
 HTTP/1.1 200 OK
-Date: Sun, 18 Jun 2023 21:38:01 GMT
+Date: Thu, 06 Jul 2023 19:35:16 GMT
 Server: Apache
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 Vary: Accept-Language,Accept-Encoding
 Content-Type: text/html; charset=utf-8
-Content-Length: 5551
+Content-Length: 5534
 Keep-Alive: timeout=5, max=100
 Connection: Keep-Alive
 
@@ -13,15 +13,9 @@ Connection: Keep-Alive
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"/><base href="/">
 
-    
-    <meta name="robots" content="noindex" />
-    
-
-    <base href="/">
-
-    <title>gibtesnicht – Schreibung, Beispiele | DWDS</title>
+    <title>Existiertnicht – Schreibung, Beispiele | DWDS</title>
 
     <!-- preloading CSS and fonts -->
     <link href="https://www.dwds.de/dwds_static/fonts/crimson-text-v8-latin-regular.woff2" as="font" rel="preload" crossorigin="anonymous">
@@ -36,38 +30,16 @@ Connection: Keep-Alive
     <link rel="alternate" type="application/atom+xml" title="DWDS: Neueste Artikel" href="/api/feed/latest"/>
     <!-- //feeds -->
 
-    <meta property="og:description" content="DWDS – Digitales Wörterbuch der deutschen Sprache" />
-    <meta name="twitter:title" content="DWDS – Digitales Wörterbuch der deutschen Sprache" />
-    <meta itemprop="name" content="DWDS – Digitales Wörterbuch der deutschen Sprache" />
+    <meta property="og:description" content="DWDS – Digitales Wörterbuch der deutschen Sprache"/>
+    <meta name="twitter:title" content="DWDS – Digitales Wörterbuch der deutschen Sprache"/>
+    <meta itemprop="name" content="DWDS – Digitales Wörterbuch der deutschen Sprache"/><meta name="description" content="Existiertnicht – Schreibung, Beispiele"/>
+      <meta property="og:title" content="Existiertnicht – Schreibung, Beispiele"/>
+      <meta name="twitter:description" content="Existiertnicht – Schreibung, Beispiele"/><meta property="og:image" content="https://www.dwds.de/dwds_static/images/dwds-og.png"/><meta property="og:url" content="https://www.dwds.de/wb/Existiertnicht"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:locale" content="de"/>
+    <meta property="og:site_name" content="DWDS"/>
 
-    
-      <meta name="description" content="gibtesnicht – Schreibung, Beispiele"/>
-      <meta property="og:title" content="gibtesnicht – Schreibung, Beispiele" />
-      <meta name="twitter:description" content="gibtesnicht – Schreibung, Beispiele" />
-    
-
-    
-      <meta property="og:image" content="https://www.dwds.de/dwds_static/images/dwds-og.png" />
-    
-
-    <meta property="og:url" content="https://www.dwds.de/wb/gibtesnicht" />
-    <meta property="og:type" content="article" />
-    <meta property="og:locale" content="de" />
-    <meta property="og:site_name" content="DWDS" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-
-    
-      <meta property="twitter:image:src" content="https://www.dwds.de/dwds_static/images/d-200.png" />
-    
-
-    <meta name="twitter:site" content="@dwds_de"/>
-
-    
-      <meta property="image" content="https://www.dwds.de/dwds_static/images/dwds_601_141.png" />
-    
-
-    <meta itemprop="url" content="https://www.dwds.de/wb/gibtesnicht" />
+    <meta name="twitter:card" content="summary_large_image"/><meta property="twitter:image:src" content="https://www.dwds.de/dwds_static/images/d-200.png"/><meta name="twitter:site" content="@dwds_de"/><meta property="image" content="https://www.dwds.de/dwds_static/images/dwds_601_141.png"/><meta itemprop="url" content="https://www.dwds.de/wb/Existiertnicht"/>
 
     <!-- favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=QEJw5qWp5M">
@@ -81,9 +53,7 @@ Connection: Keep-Alive
     <!-- //favicon -->
 
     <!-- Bootstrap -->
-    <link href="https://www.dwds.de/dwds_static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <script type="application/ld+json">
+    <link href="https://www.dwds.de/dwds_static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"><script type="application/ld+json">
   [
     {
       "@context": "https://schema.org",
@@ -111,10 +81,7 @@ Connection: Keep-Alive
     }
   ]
 </script>
-
-
-    
-  </head>
+</head>
 
   <body>
     <header>
@@ -145,7 +112,7 @@ Connection: Keep-Alive
         <div class="visible-xs-inline-block navbar-right-mobile">
           
             
-              <a href="https://www.dwds.de/profile/login?c=wb%2Fgibtesnicht" class="btn btn-sm btn-default" rel="nofollow"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+              <a href="https://www.dwds.de/profile/login?c=wb%2FExistiertnicht" class="btn btn-sm btn-default" rel="nofollow"><span class="glyphicon glyphicon-log-in"></span> Login</a>
             
           
         </div>
@@ -172,7 +139,7 @@ Connection: Keep-Alive
             
               <li>
                 <p class="navbar-btn">
-                  <a href="https://www.dwds.de/profile/login?c=wb%2Fgibtesnicht" class="btn btn-sm btn-default" rel="nofollow"><span class="glyphicon glyphicon-log-in"></span> Anmelden</a>
+                  <a href="https://www.dwds.de/profile/login?c=wb%2FExistiertnicht" class="btn btn-sm btn-default" rel="nofollow"><span class="glyphicon glyphicon-log-in"></span> Anmelden</a>
                 </p>
               </li>
             
@@ -222,24 +189,26 @@ Connection: Keep-Alive
             <meta itemprop="position" content="2" />
           </li>
           <li class="active" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-            <span itemprop="name">gibtesnicht – Schreibung, Beispiele</span>
+            <span itemprop="name">Existiertnicht – Schreibung, Beispiele</span>
             <meta itemprop="position" content="3" />
           </li>
         </ol>
 
-        <form method="get" action="/" class="form-horizontal autosubmit">
-          <div class="input-group">
-            <span class="sr-only">
-              <label for="q">Sucheingabe</label>
-            </span>
-            <input type="search" class="form-control input-lg" placeholder="Suche im Digitalen Wörterbuch" name="q" id="q" value="gibtesnicht" />
-            <input type="hidden" name="from" value="wb" />
-            <div class="input-group-btn" style="vertical-align:top">
-              <button class="btn btn-primary btn-lg" type="submit" aria-label="suchen"><i class="glyphicon glyphicon-search"></i></button>
-              <a class="btn btn-default btn-lg" href="/d/suche"><i class="glyphicon glyphicon-question-sign"></i><span class="sr-only">Hilfe zur Suche</span></a>
+        
+          <form method="get" action="/" class="form-horizontal autosubmit">
+            <div class="input-group">
+              <span class="sr-only">
+                <label for="q">Sucheingabe</label>
+              </span>
+              <input type="search" class="form-control input-lg" placeholder="Suche im Digitalen Wörterbuch" name="q" id="q" value="Existiertnicht" />
+              <input type="hidden" name="from" value="wb" />
+              <div class="input-group-btn" style="vertical-align:top">
+                <button class="btn btn-primary btn-lg" type="submit" aria-label="suchen"><i class="glyphicon glyphicon-search"></i></button>
+                <a class="btn btn-default btn-lg" href="/d/suche"><i class="glyphicon glyphicon-question-sign"></i><span class="sr-only">Hilfe zur Suche</span></a>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+          
         
       </div>
     </div>
@@ -249,7 +218,7 @@ Connection: Keep-Alive
       <div class="col-md-12" style="margin-top:10px">
         <p class="label label-danger">Hinweis</p>
         <p class="bg-danger" style="padding:10px">
-          Es tut uns leid, Ihre Anfrage <strong>gibtesnicht</strong> ist nicht in unseren gegenwartssprachlichen lexikalischen Quellen vorhanden.
+          Es tut uns leid, Ihre Anfrage <strong>Existiertnicht</strong> ist nicht in unseren gegenwartssprachlichen lexikalischen Quellen vorhanden.
           <br />
           Vielleicht helfen Ihnen folgende Informationen weiter:
         </p>
@@ -270,7 +239,7 @@ Connection: Keep-Alive
 
           
             <div class="sans" style="margin-bottom:50px">
-              <h2>Suche in ausgewählten Korpora nach ›gibtesnicht‹</h2>
+              <h2>Suche in ausgewählten Korpora nach ›Existiertnicht‹</h2>
               <table class="table" style="width:auto">
                 
                   <tr>
@@ -280,7 +249,7 @@ Connection: Keep-Alive
                     <th style="text-align:right;padding-left:40px">
                       
                       
-                        <a href="https://www.dwds.de/r/?corpus=kern&amp;q=gibtesnicht"><span class="dwds-corpus-hits-new" data-corpus="kern" data-query="gibtesnicht">... Belege</span></a>
+                        <a href="https://www.dwds.de/r/?corpus=kern&amp;q=Existiertnicht"><span class="dwds-corpus-hits-new" data-corpus="kern" data-query="Existiertnicht">... Belege</span></a>
                       
                     </th>
                   </tr>
@@ -292,7 +261,7 @@ Connection: Keep-Alive
                     <th style="text-align:right;padding-left:40px">
                       
                       
-                        <a href="https://www.dwds.de/r/?corpus=regional&amp;q=gibtesnicht"><span class="dwds-corpus-hits-new" data-corpus="regional" data-query="gibtesnicht">... Belege</span></a>
+                        <a href="https://www.dwds.de/r/?corpus=regional&amp;q=Existiertnicht"><span class="dwds-corpus-hits-new" data-corpus="regional" data-query="Existiertnicht">... Belege</span></a>
                       
                     </th>
                   </tr>
@@ -304,7 +273,7 @@ Connection: Keep-Alive
                     <th style="text-align:right;padding-left:40px">
                       
                       
-                        <a href="https://www.dwds.de/r/?corpus=webmonitor&amp;q=gibtesnicht"><span class="dwds-corpus-hits-new" data-corpus="webmonitor" data-query="gibtesnicht">... Belege</span></a>
+                        <a href="https://www.dwds.de/r/?corpus=webmonitor&amp;q=Existiertnicht"><span class="dwds-corpus-hits-new" data-corpus="webmonitor" data-query="Existiertnicht">... Belege</span></a>
                       
                     </th>
                   </tr>
@@ -316,7 +285,7 @@ Connection: Keep-Alive
                     <th style="text-align:right;padding-left:40px">
                       
                       
-                        <a href="https://www.dwds.de/r/?corpus=wikipedia&amp;q=gibtesnicht"><span class="dwds-corpus-hits-new" data-corpus="wikipedia" data-query="gibtesnicht">... Belege</span></a>
+                        <a href="https://www.dwds.de/r/?corpus=wikipedia&amp;q=Existiertnicht"><span class="dwds-corpus-hits-new" data-corpus="wikipedia" data-query="Existiertnicht">... Belege</span></a>
                       
                     </th>
                   </tr>
@@ -328,7 +297,7 @@ Connection: Keep-Alive
                     <th style="text-align:right;padding-left:40px">
                       
                       
-                        <a href="https://www.dwds.de/r/?corpus=dtaxl&amp;q=gibtesnicht"><span class="dwds-corpus-hits-new" data-corpus="dtaxl" data-query="gibtesnicht">... Belege</span></a>
+                        <a href="https://www.dwds.de/r/?corpus=dtaxl&amp;q=Existiertnicht"><span class="dwds-corpus-hits-new" data-corpus="dtaxl" data-query="Existiertnicht">... Belege</span></a>
                       
                     </th>
                   </tr>
@@ -336,7 +305,7 @@ Connection: Keep-Alive
               </table>
 
               
-                <h2>Suche in historischen Wörterbüchern nach ›gibtesnicht‹</h2>
+                <h2>Suche in historischen Wörterbüchern nach ›Existiertnicht‹</h2>
                 <table class="table" style="width:auto">
                   
                     <tr>
@@ -344,7 +313,7 @@ Connection: Keep-Alive
                         <a href="/d/wb-1dwb">Deutsches Wörterbuch (¹DWB)</a>
                       </td>
                       <th style="text-align:right;padding-left:40px">
-                        <a href="/wb/dwb/gibtesnicht"><span class="dwds-wb-count-new" data-wb="dwb" data-query="gibtesnicht">... Einträge</span></a>
+                        <a href="/wb/dwb/Existiertnicht"><span class="dwds-wb-count-new" data-wb="dwb" data-query="Existiertnicht">... Einträge</span></a>
                       </th>
                     </tr>
                   
@@ -353,7 +322,7 @@ Connection: Keep-Alive
                         <a href="/d/wb-2dwb">Deutsches Wörterbuch, Neubearbeitung (²DWB)</a>
                       </td>
                       <th style="text-align:right;padding-left:40px">
-                        <a href="/wb/dwb2/gibtesnicht"><span class="dwds-wb-count-new" data-wb="dwb2" data-query="gibtesnicht">... Einträge</span></a>
+                        <a href="/wb/dwb2/Existiertnicht"><span class="dwds-wb-count-new" data-wb="dwb2" data-query="Existiertnicht">... Einträge</span></a>
                       </th>
                     </tr>
                   
@@ -362,7 +331,7 @@ Connection: Keep-Alive
                         <a href="/d/wb-wdg">Wörterbuch der deutschen Gegenwartssprache (WDG)</a>
                       </td>
                       <th style="text-align:right;padding-left:40px">
-                        <a href="/wb/wdg/gibtesnicht"><span class="dwds-wb-count-new" data-wb="wdg" data-query="gibtesnicht">... Einträge</span></a>
+                        <a href="/wb/wdg/Existiertnicht"><span class="dwds-wb-count-new" data-wb="wdg" data-query="Existiertnicht">... Einträge</span></a>
                       </th>
                     </tr>
                   
@@ -386,129 +355,131 @@ Connection: Keep-Alive
 
       </div>
     </div>
-  </div>
-
-  <div class="col-md-3 rightcol">
-    <div>
+  </div><div class="col-md-3 rightcol">
+  <div>
+    
       
+        <p class="h3">Worthäufigkeit <sup><a href="/d/worthaeufigkeit"><i class="glyphicon glyphicon-question-sign" style="opacity:.5" title="Dokumentation zu Worthäufigkeiten im DWDS" data-toggle="tooltip" data-placement="bottom"></i></a></sup></p>
+
         
-          <p class="h3">Worthäufigkeit <sup><a href="/d/worthaeufigkeit"><i class="glyphicon glyphicon-question-sign" style="opacity:.5" title="Dokumentation zu Worthäufigkeiten im DWDS" data-toggle="tooltip" data-placement="bottom"></i></a></sup></p>
-
-          
-            <p class="sans" style="margin-bottom:20px;font-size:11pt">Nicht genügend Daten in der DWDS-Textbasis vorhanden.</p>
-          
-
-          
-          
+          <p class="sans" style="margin-bottom:20px;font-size:11pt">Nicht genügend Daten in der DWDS-Textbasis vorhanden.</p>
         
 
+        
         
       
 
       
-    </div>
-
     
 
-    <p class="h3">Weitere Wörterbücher</p>
-    <ul class="sans" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Links zu weiteren Wörterbüchern">
-      <li>
-        <a href="/wb/dwb/search/?q=gibtesnicht">Deutsches Wörterbuch (¹DWB)</a>
-      </li>
-      <li>
-        <a href="/wb/dwb2/search/?q=gibtesnicht">Deutsches Wörterbuch, Neubearbeitung (²DWB)</a>
-      </li>
-      <li><a href="/wb/wdg/search/?q=gibtesnicht">Wörterbuch der deutschen Gegenwartssprache (WDG)</a></li>
-      
+    
+  </div>
+
+  
+
+  <p class="h3">Weitere Wörterbücher</p>
+<ul class="sans" data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Links zu weiteren Wörterbüchern">
+  <li>
+    <a href="/wb/dwb/search/?q=existiertnicht">Deutsches Wörterbuch (¹DWB)</a>
+  </li>
+  <li>
+    <a href="/wb/dwb2/search/?q=existiertnicht">Deutsches Wörterbuch, Neubearbeitung (²DWB)</a>
+  </li>
+  <li><a href="/wb/wdg/search/?q=Existiertnicht">Wörterbuch der deutschen Gegenwartssprache (WDG)</a></li>
+  
+  
+</ul>
+
+
+  <p class="h3">Belege in Korpora</p>
+
+<div data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Links zu Korpora">
+  
+
+  
+    <p class="h4">Referenzkorpora</p>
+    <ul class="sans"><li data-corpus="kern" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=kern&amp;q=Existiertnicht">DWDS-Kernkorpus (1900–1999)</a></li>
+      <li data-corpus="korpus21" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=korpus21&amp;q=Existiertnicht">DWDS-Kernkorpus 21 (2000–2010)</a></li>
+      <li data-corpus="dtak" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=dtak&amp;q=Existiertnicht">DTA-Kernkorpus (1598–1913)</a></li>
       
     </ul>
+  
+    <p class="h4">Metakorpora</p>
+    <ul class="sans"><li data-corpus="dta" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=dta&amp;q=Existiertnicht">DTA-Kern+Erweit. (1465–1969)</a></li>
+      <li data-corpus="dtaxl" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=dtaxl&amp;q=Existiertnicht">Historische Korpora (1465–1998)</a></li>
+      <li data-corpus="public" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=public&amp;q=Existiertnicht">Referenz- und Zeitungskorpora (frei)</a></li>
+      
+    </ul>
+  
+    <p class="h4">Zeitungskorpora</p>
+    <ul class="sans"><li data-corpus="bz" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=bz&amp;q=Existiertnicht">Berliner Zeitung (1994–2005)</a></li>
+      <li data-corpus="tsp" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=tsp&amp;q=Existiertnicht">Der Tagesspiegel (ab 1996)</a></li>
+      <li data-corpus="zeit" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=zeit&amp;q=Existiertnicht">Die ZEIT (1946–2018)</a></li>
+      
+    </ul>
+  
+    <p class="h4">Webkorpora</p>
+    <ul class="sans"><li data-corpus="blogs" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=blogs&amp;q=Existiertnicht">Blogs</a></li>
+      
+    </ul>
+  
+    <p class="h4">Spezialkorpora</p>
+    <ul class="sans"><li data-corpus="dtae" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=dtae&amp;q=Existiertnicht">DTA-Erweiterungen (1465–1969)</a></li>
+      <li data-corpus="adg" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=adg&amp;q=Existiertnicht">Archiv der Gegenwart (1931–2000)</a></li>
+      <li data-corpus="dingler" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=dingler&amp;q=Existiertnicht">Polytechnisches Journal</a></li>
+      <li data-corpus="untertitel" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=untertitel&amp;q=Existiertnicht">Filmuntertitel</a></li>
+      <li data-corpus="spk" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=spk&amp;q=Existiertnicht">Gesprochene Sprache</a></li>
+      <li data-corpus="ddr" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=ddr&amp;q=Existiertnicht">DDR</a></li>
+      <li data-corpus="politische_reden" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=politische_reden&amp;q=Existiertnicht">Politische Reden (1982–2020)</a></li>
+      <li data-corpus="bundestag" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=bundestag&amp;q=Existiertnicht">Bundestagskorpus (1949–2017)</a></li>
+      <li data-corpus="soldatenbriefe" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=soldatenbriefe&amp;q=Existiertnicht">Soldatenbriefe (1745–1872)</a></li>
+      <li data-corpus="avh-bern" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=avh-bern&amp;q=Existiertnicht">A. v. Humboldts Publizistik (dt., 1790–1859)</a></li>
+      <li data-corpus="bruedergemeine" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=bruedergemeine&amp;q=Existiertnicht">Nachrichten aus der Brüdergemeine (1819–1894)</a></li>
+      <li data-corpus="pitaval" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=pitaval&amp;q=Existiertnicht">Der Neue Pitaval (1842–1890)</a></li>
+      <li data-corpus="jean_paul" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=jean_paul&amp;q=Existiertnicht">Briefe von Jean Paul (1780–1825)</a></li>
+      <li data-corpus="dekude" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=dekude&amp;q=Existiertnicht">Deutsche Kunst und Dekoration (1897–1932)</a></li>
+      <li data-corpus="wikibooks" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=wikibooks&amp;q=Existiertnicht">Wikibooks-Korpus</a></li>
+      <li data-corpus="wikipedia" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=wikipedia&amp;q=Existiertnicht">Wikipedia-Korpus</a></li>
+      <li data-corpus="wikivoyage" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=wikivoyage&amp;q=Existiertnicht">Wikivoyage-Korpus</a></li>
+      <li data-corpus="gesetze" data-query="Existiertnicht" data-lexdb="0" >
+          <a href="https://www.dwds.de/r/?corpus=gesetze&amp;q=Existiertnicht">Gesetze und Verordnungen (1897–2023)</a></li>
+      
+    </ul>
+  
+</div>
 
-    <p class="h3">Belege in Korpora</p>
 
-    <div data-track-content data-content-name="DWDSWB Artikel" data-content-piece="Links zu Korpora">
-      
+  
 
-      
-        <p class="h4">Referenzkorpora</p>
-        <ul class="sans"><li class="" data-corpus="kern" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=kern&amp;q=gibtesnicht">DWDS-Kernkorpus (1900–1999)</a></li>
-          <li class="" data-corpus="korpus21" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=korpus21&amp;q=gibtesnicht">DWDS-Kernkorpus 21 (2000–2010)</a></li>
-          <li class="" data-corpus="dtak" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=dtak&amp;q=gibtesnicht">DTA-Kernkorpus (1598–1913)</a></li>
-          
-        </ul>
-      
-        <p class="h4">Metakorpora</p>
-        <ul class="sans"><li class="" data-corpus="dta" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=dta&amp;q=gibtesnicht">DTA-Kern+Erweit. (1465–1969)</a></li>
-          <li class="" data-corpus="dtaxl" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=dtaxl&amp;q=gibtesnicht">Historische Korpora (1465–1998)</a></li>
-          <li class="" data-corpus="public" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=public&amp;q=gibtesnicht">Referenz- und Zeitungskorpora (frei)</a></li>
-          
-        </ul>
-      
-        <p class="h4">Zeitungskorpora</p>
-        <ul class="sans"><li class="" data-corpus="bz" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=bz&amp;q=gibtesnicht">Berliner Zeitung (1994–2005)</a></li>
-          <li class="" data-corpus="tsp" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=tsp&amp;q=gibtesnicht">Der Tagesspiegel (ab 1996)</a></li>
-          <li class="" data-corpus="zeit" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=zeit&amp;q=gibtesnicht">Die ZEIT (1946–2018)</a></li>
-          
-        </ul>
-      
-        <p class="h4">Webkorpora</p>
-        <ul class="sans"><li class="" data-corpus="blogs" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=blogs&amp;q=gibtesnicht">Blogs</a></li>
-          
-        </ul>
-      
-        <p class="h4">Spezialkorpora</p>
-        <ul class="sans"><li class="" data-corpus="dtae" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=dtae&amp;q=gibtesnicht">DTA-Erweiterungen (1465–1969)</a></li>
-          <li class="" data-corpus="adg" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=adg&amp;q=gibtesnicht">Archiv der Gegenwart (1931–2000)</a></li>
-          <li class="" data-corpus="dingler" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=dingler&amp;q=gibtesnicht">Polytechnisches Journal</a></li>
-          <li class="" data-corpus="untertitel" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=untertitel&amp;q=gibtesnicht">Filmuntertitel</a></li>
-          <li class="" data-corpus="spk" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=spk&amp;q=gibtesnicht">Gesprochene Sprache</a></li>
-          <li class="" data-corpus="ddr" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=ddr&amp;q=gibtesnicht">DDR</a></li>
-          <li class="" data-corpus="politische_reden" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=politische_reden&amp;q=gibtesnicht">Politische Reden (1982–2020)</a></li>
-          <li class="" data-corpus="bundestag" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=bundestag&amp;q=gibtesnicht">Bundestagskorpus (1949–2017)</a></li>
-          <li class="" data-corpus="soldatenbriefe" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=soldatenbriefe&amp;q=gibtesnicht">Soldatenbriefe (1745–1872)</a></li>
-          <li class="" data-corpus="avh-bern" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=avh-bern&amp;q=gibtesnicht">A. v. Humboldts Publizistik (dt., 1790–1859)</a></li>
-          <li class="" data-corpus="bruedergemeine" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=bruedergemeine&amp;q=gibtesnicht">Nachrichten aus der Brüdergemeine (1819–1894)</a></li>
-          <li class="" data-corpus="pitaval" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=pitaval&amp;q=gibtesnicht">Der Neue Pitaval (1842–1890)</a></li>
-          <li class="" data-corpus="jean_paul" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=jean_paul&amp;q=gibtesnicht">Briefe von Jean Paul (1780–1825)</a></li>
-          <li class="" data-corpus="dekude" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=dekude&amp;q=gibtesnicht">Deutsche Kunst und Dekoration (1897–1932)</a></li>
-          <li class="" data-corpus="wikipedia" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=wikipedia&amp;q=gibtesnicht">Wikipedia-Korpus</a></li>
-          <li class="" data-corpus="wikivoyage" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=wikivoyage&amp;q=gibtesnicht">Wikivoyage-Korpus</a></li>
-          <li class="" data-corpus="gesetze" data-query="gibtesnicht" data-lexdb="0" >
-              <a href="https://www.dwds.de/r/?corpus=gesetze&amp;q=gibtesnicht">Gesetze und Verordnungen (1897–2023)</a></li>
-          
-        </ul>
-      
-    </div>
-
-    
-
-    
-  </div>
+  
+</div>
 </div>
 
         </div>
@@ -574,36 +545,23 @@ Connection: Keep-Alive
       <script src="https://www.dwds.de/dwds_static/js/respond.min.js"></script>
     <![endif]-->
 
-    <link href="https://www.dwds.de/dwds_static/dwds.min.css?v=43" rel="stylesheet">
+    <link href="https://www.dwds.de/dwds_static/dwds.min.css?v=47" rel="stylesheet">
 
     <script>
-      base = '/';
-      base_static = 'https://www.dwds.de/dwds_static/';
-      q    = "gibtesnicht";
-      
+      base = '/'
+      base_static = 'https://www.dwds.de/dwds_static/'
+      q = "Existiertnicht"
       is_lex = 0
-      pos = '';
-      dwds_host_staging = 'https://www.dwds.de/';
-      dwds_host_dynamic = 'https://www.dwds.de/';
-      dwds_host_api     = 'https://www.dwds.de/';
-      
-    </script>
+      pos = ''
+      dwds_host_staging = 'https://www.dwds.de/'
+      dwds_host_dynamic = 'https://www.dwds.de/'
+      dwds_host_api     = 'https://www.dwds.de/'
+      </script>
     <script src="https://www.dwds.de/dwds_static/dwds.min.js?v=25"></script>
 
     <script>
       new ClipboardJS('.ddc-copy-hit');
-    </script>
-
-    
-
-    
-
-    
-
-    
-
-    
-      <!-- Matomo -->
+    </script><!-- Matomo -->
       <script>
         var _paq = window._paq = window._paq || [];
         /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
@@ -621,7 +579,5 @@ Connection: Keep-Alive
         })();
       </script>
       <noscript><p><img src="https://stats.dwds.de/matomo.php?idsite=1&amp;rec=1" style="border:0;" alt="" /></p></noscript>
-      <!-- End Matomo Code -->
-    
-  </body>
+      <!-- End Matomo Code --></body>
 </html>
