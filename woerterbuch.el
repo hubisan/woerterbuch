@@ -264,7 +264,7 @@ therefore this function is designed to also work with more than one level."
        ;; is if getting the definitions for Katze or Wurst.
        (text-link-targets-removed
         (replace-regexp-in-string "([[:alnum:]● ]+)" "" text-trimmed))
-       ;; If are word has more than one tab a superscript is used in links.
+       ;; If a word has more than one tab a superscript is used in links.
        ;; For instance in the definitions for word Wurst.
        (text-superscripts-removed
         (replace-regexp-in-string "[⁰¹²³⁴⁵⁶⁷⁸⁹]" "" text-link-targets-removed))
