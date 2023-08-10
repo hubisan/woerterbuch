@@ -45,18 +45,19 @@
 
 ;;; Code:
 
-;;;; Requirements
+;;; Requirements
 
 (require 'seq)
 (require 'map)
 (require 'thingatpt)
 (require 'dom)
+(require 'find-func)
 
 ;; Require `org' once it is used.
 (declare-function org-paste-subtree "org")
 (declare-function org-current-level "org")
 
-;;;; Customization
+;;; Customization
 
 (defgroup woerterbuch nil
   "German dictionary and thesaurus."
@@ -112,19 +113,33 @@ Format is called with one parameters:
 - The word (or baseform) used to try to get synonyms."
   :type 'string)
 
-;;;; Major-Mode & Key Bindings
+(defcustom woerterbuch-process-timeout 5
+  "Number of seconds to wait for the process to return output."
+  :type 'integer)
+
+(defcustom woerterbuch-process-python-programm "python3"
+  "The name of the command to start the python process"
+  :type 'integer)
+
+;;; Major-Mode & Key Bindings
 
 (define-derived-mode woerterbuch-mode org-mode "Woerterbuch"
   "Major mode for displaying woerterbuch buffer.")
 
 (define-key woerterbuch-mode-map (kbd "C-c C-q") 'quit-window)
 
-;;;; Global Variables
+;;; Global Variables
 
-(defvar woerterbuch--org-buffer-name "*woerterbuch*"
+(defconst woerterbuch--package-directory
+  (if load-file-name
+      (file-name-directory load-file-name)
+    default-directory)
+  "The directory woerterbuch.el is stored in.")
+
+(defconst woerterbuch--org-buffer-name "*woerterbuch*"
   "Name used for the Org buffer showing the defintions or synonyms.")
 
-;;;; Auxiliary Functions
+;;; Auxiliary Functions
 
 (defun woerterbuch--org-add-heading (heading level content)
   "Add text of HEADING with LEVEL as heading before CONTENT."
@@ -167,9 +182,88 @@ Returns a cons cell with the car being the word and cdr the bounds."
        bounds)
     (user-error "No word at point and no region active")))
 
-;;;; German Definitions
+(defun woerterbuch--read-file-contents (path)
+  "Return the contents of file at PATH as a string."
+  (with-temp-buffer
+    (insert-file-contents path)
+    (buffer-string)))
 
-(defvar woerterbuch--definitions-dwds-url "https://www.dwds.de/wb/%s"
+;;; Python Process
+
+(defvar woerterbuch--process nil
+  "The process running python.")
+
+(defconst woerterbuch--process-buffer-name "*woerterbuch-process*"
+  "Name to use for the process buffer.")
+
+;; (defvar woerterbuch--process-start-timeout 30
+;;   "Number of seconds program waits for the definition of the python functions.")
+
+(defvar woerterbuch--process-python-init-path
+  (expand-file-name "init.py" woerterbuch--package-directory)
+  "Path to the file that holds the python init code.")
+
+(defvar woerterbuch--process-output nil
+  "Capture the output of the process.")
+
+(defun woerterbuch--process-filter (_process output)
+  "Function called from the process.
+It stores the output in `woerterbuch--process-output'."
+  (setq woerterbuch--process-output output))
+
+(defun woerterbuch--process-start (&optional restart)
+  "Start and return the process runing python.
+Loads the modules needed and defines the functions and variables.
+If RESTART is non-nil then kill the process and start it again."
+  (when (and restart (process-live-p woerterbuch--process))
+        (kill-process woerterbuch--process))
+  (if (process-live-p woerterbuch--process)
+      woerterbuch--process
+    (let* ((process-connection-type nil) ; use a pipe
+           (coding-system-for-write 'utf-8-auto)
+           (coding-system-for-read 'utf-8-auto)
+           (process-buffer-name woerterbuch--process-buffer-name)
+           (process-buffer (get-buffer-create process-buffer-name))
+           (process (start-process "woerterbuch python" process-buffer
+                                   woerterbuch-process-python-programm
+                                   ;; "-i" path
+                                   )))
+      ;; (set-process-filter process t)
+      ;; ;; Send the string to the process to load the modules and define the
+      ;; ;; functions.
+      ;; (unless (accept-process-output
+      ;;          (process-send-string process
+      ;;                               (woerterbuch--read-file-contents
+      ;;                                woerterbuch--process-python-init-path))
+
+      ;;          10)
+      ;;   (error "Was not able to start the process. Timeout reached (30 s)"))
+      (setq woerterbuch--process process))))
+
+(defun woerterbuch--process-capture-output (code)
+  "Run CODE in the python process and capture it's output."
+  (let* ((process woerterbuch--process))
+    (unwind-protect
+        (progn
+          (setq woerterbuch--process-output nil)
+          (set-process-filter process #'woerterbuch--process-filter)
+          ;; `accept-process-output' can be used to wait for the process output.
+          ;; Else it doesn't wait and the filter function will be called later on.
+          ;; Use a higher timeout as it can take a while to load the modules.
+          (unless (accept-process-output (process-send-string process code)
+                                         woerterbuch-process-timeout)
+            (error "Timeout reached before output was received"))
+          (when woerterbuch--process-output
+            woerterbuch--process-output
+            ;; (json-parse-string woerterbuch--process-output
+            ;;                    :object-type 'plist)
+            ))
+      ;; (set-process-filter process t)
+      )))
+
+;;; German Definitions
+
+(defconst woerterbuch--definitions-dwds-url "https://www.dwds.de/wb/%s"
   "Url to retrieve the definitions for a word as html from DWDS.")
 
 (defun woerterbuch--definitions-retrieve-raw (word)
@@ -404,13 +498,13 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
         (kill-new definition)
       (insert definition))))
 
-;;;; German Synonyms
+;;; German Synonyms
 
-(defvar woerterbuch--synonyms-openthesaurus-url
+(defconst woerterbuch--synonyms-openthesaurus-url
   "https://www.openthesaurus.de/synonyme/%s"
   "Url to link to a synonyms page.")
 
-(defvar woerterbuch--synonyms-openthesaurus-api-url
+(defconst woerterbuch--synonyms-openthesaurus-api-url
   (concat
    "https://www.openthesaurus.de/synonyme/search?q=%s"
    "&format=application/json"

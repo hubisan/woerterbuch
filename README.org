@@ -44,7 +44,7 @@ Use pipx to install packages. This doesn't seem to work for non-commands. And th
     )
 
   (let* (
-         ;; (process-connection-type nil)  ; use a pipe
+         (process-connection-type nil)  ; use a pipe
          (coding-system-for-write 'utf-8-auto)
          (coding-system-for-read 'utf-8-auto)
          (process-buffer-name "*testme*")

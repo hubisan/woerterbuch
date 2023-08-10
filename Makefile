@@ -14,8 +14,9 @@ help:
 	$(info - make lint       # Run linters)
 	$(info - make compile    # Compiles the files to check for errors/warnings)
 	$(info - make clean      # Clean everything)
-	$(info - make run-emacs  # Run Emacs with package and dependencies installed
+	$(info - make run-emacs  # Run Emacs with package and dependencies installed)
 	$(info )
+	@echo > /dev/null
 
 all: test compile lint
 

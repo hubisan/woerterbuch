@@ -2,9 +2,10 @@ import json
 import wn
 from simplemma.simplemma import lemmatize
 
-de = wn.Wordnet('odenet')
+de = wn.Wordnet("odenet")
 
 import json
+
 
 def woerterbuch_definitions_and_synonyms(word, part_of_speech=False):
     """
@@ -27,12 +28,13 @@ def woerterbuch_definitions_and_synonyms(word, part_of_speech=False):
         woerterbuch_definitions_and_synonyms('orange', 'a')
     """
     words = de.words(word)
+    word_object = False
 
     # If no word was found get the lemma and try again.
     if not words:
-        lemma = lemmatize(word, lang='de')
+        lemma = lemmatize(word, lang="de")
         if lemma != word:
-            words = de.words(word)
+            words = de.words(lemma)
         if not words:
             return False
 
@@ -40,33 +42,35 @@ def woerterbuch_definitions_and_synonyms(word, part_of_speech=False):
     # If the optional argument pos is provided select the part of speech
     # accordingly.
     if len(words) > 1:
-        parts_of_speech = ['parts of speech']
+        parts_of_speech = ["parts of speech"]
         for w in words:
             pos = w.pos
             if part_of_speech and part_of_speech == pos:
-                word = w
+                word_object = w
                 break
             else:
                 parts_of_speech.append(pos)
-        return json.dumps(parts_of_speech)
+        if not word_object:
+            return json.dumps(parts_of_speech, ensure_ascii=False)
     else:
-        word = words[0]
+        word_object = words[0]
 
     # Get the synsets which is a group of words with the same definition.
-    synsets = word.synsets()
+    synsets = word_object.synsets()
     definitions_and_synonyms = []
     for synset in synsets:
         definition = synset.definition()
         synonyms = synset.lemmas()
 
         # Remove the word itself.
-        word_lemma = word.lemma()
+        word_lemma = word_object.lemma()
         if word_lemma in synonyms:
             synonyms.remove(word_lemma)
 
         # Add the defintion and it synonyms (as children).
         definitions_and_synonyms.append([definition, synonyms])
-    return json.dumps(definitions_and_synonyms)
+    output = {"word": word_object.lemma(), "definitions": definitions_and_synonyms} 
+    return json.dumps(output, ensure_ascii=False)
 
 def get_definitions(word):
     word = de.words(word)[0]
@@ -76,8 +80,31 @@ def get_definitions(word):
         definitions.append(synset.definition())
     return definitions
 
+
 # TODO
 def get_synonyms(word):
     # lemmas = sorted(lemmas, key=str.casefold)
     return word
 
+
+def process_command(command, args):
+    functions = {
+        "woerterbuch_definitions_and_synonyms": woerterbuch_definitions_and_synonyms,
+        "get_synonyms": get_synonyms,
+        "get_definitions": get_definitions
+    }
+    
+    if command in functions:
+        func = functions[command]
+        parsed_args = [arg.strip() for arg in args.split(",")]
+        
+        return func(*parsed_args)
+    else:
+        return "Invalid command"
+
+
+while True:
+    line = input()
+    command, args = line.split(",", 1)
+    result = process_command(command, args)
+    print(result)
