@@ -200,7 +200,7 @@ Returns a cons cell with the car being the word and cdr the bounds."
 ;;   "Number of seconds program waits for the definition of the python functions.")
 
 (defvar woerterbuch--process-python-init-path
-  (expand-file-name "init.py" woerterbuch--package-directory)
+  (expand-file-name "woerterbuch.py" woerterbuch--package-directory)
   "Path to the file that holds the python init code.")
 
 (defvar woerterbuch--process-output nil
@@ -216,28 +216,23 @@ It stores the output in `woerterbuch--process-output'."
 Loads the modules needed and defines the functions and variables.
 If RESTART is non-nil then kill the process and start it again."
   (when (and restart (process-live-p woerterbuch--process))
-        (kill-process woerterbuch--process))
+    (when-let* ((buffer-name woerterbuch--process-buffer-name)
+                (buffer (get-buffer buffer-name)))
+      (kill-buffer buffer))
+    ;; Hope this will never result in an endless loop
+    (kill-process woerterbuch--process)
+    (while (process-live-p woerterbuch--process)))
   (if (process-live-p woerterbuch--process)
       woerterbuch--process
     (let* ((process-connection-type nil) ; use a pipe
            (coding-system-for-write 'utf-8-auto)
            (coding-system-for-read 'utf-8-auto)
+           (path woerterbuch--process-python-init-path)
            (process-buffer-name woerterbuch--process-buffer-name)
            (process-buffer (get-buffer-create process-buffer-name))
            (process (start-process "woerterbuch python" process-buffer
                                    woerterbuch-process-python-programm
-                                   ;; "-i" path
-                                   )))
-      ;; (set-process-filter process t)
-      ;; ;; Send the string to the process to load the modules and define the
-      ;; ;; functions.
-      ;; (unless (accept-process-output
-      ;;          (process-send-string process
-      ;;                               (woerterbuch--read-file-contents
-      ;;                                woerterbuch--process-python-init-path))
-
-      ;;          10)
-      ;;   (error "Was not able to start the process. Timeout reached (30 s)"))
+                                   "-u" path)))
       (setq woerterbuch--process process))))
 
 (defun woerterbuch--process-capture-output (code)
@@ -254,12 +249,12 @@ If RESTART is non-nil then kill the process and start it again."
                                          woerterbuch-process-timeout)
             (error "Timeout reached before output was received"))
           (when woerterbuch--process-output
-            woerterbuch--process-output
-            ;; (json-parse-string woerterbuch--process-output
-            ;;                    :object-type 'plist)
-            ))
-      ;; (set-process-filter process t)
-      )))
+            (pcase woerterbuch--process-output
+              ("None\n" nil)
+              ("Invalid command\n"
+               (error "%s (%s)" "Python code is invalid" code))
+              (output (json-parse-string output :object-type 'plist)))))
+      (set-process-filter process t))))
 
 ;;; German Definitions
 

@@ -170,8 +170,8 @@ def woerterbuch_definitions_and_synonyms(word: str, part_of_speech: str = None, 
         # different to the param and the defintions with the synonyms for each
         # definition.
         output = {
-            "word param": word,
-            "word lemma": word_lemma,
+            "word-param": word,
+            "word-lemma": word_lemma,
             "definitions": definitions_and_synonyms,
         }
         return json.dumps(output, ensure_ascii=False)
