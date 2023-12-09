@@ -112,20 +112,20 @@ Definitions:
           definitions.append(synset.definition())
       return definitions
 
-  return get_all_synset_definitions('Feld')
+  return get_all_synset_definitions('Ente')
 #+END_SRC
 
 #+RESULTS:
-: ['ein bestimmtes Umfeld oder eine bestimmte Lebensweise',
-:  'ein Gebiet, in dem eine Schlacht ausgetragen wird (oder wurde)',
-:  'ein Ort, an dem Flugzeuge starten und landen',
-:  'ein Wissensgebiet, für das man sich interessiert oder über das man '
-:  'kommuniziert',
-:  'ein Gebiet, in dem aktive militärische Operationen durchgeführt werden']
+: ['kleiner wildlebender oder domestizierter Schwimmvogel mit breitem Schnabel, '
+:  'der gewöhnlich einen geduckten Körper und kurze Beine hat',
+:  'männliche Waldente',
+:  'ein schweres Baumwollgewebe in Leinwandbindung, das für Kleidung und Zelte '
+:  'verwendet wird',
+:  'Fleisch von Enten (Haus- oder Wildenten)']
 
 Synonyms can be retrieved as follows:
 
-#+BEGIN_SRC python :results raw
+#+BEGIN_SRC python :results pp
   # de.synsets('einfach')[1].senses()[0].word().lemma()
   import json
   import wn
@@ -150,9 +150,18 @@ Synonyms can be retrieved as follows:
           synonyms.append([synset.definition(), lemmas])
       return json.dumps(synonyms)
 
-  return get_synonyms("Wohnung")
+  return get_synonyms("Ente")
 
 #+END_SRC
+
+#+RESULTS:
+: ('[["kleiner wildlebender oder domestizierter Schwimmvogel mit breitem '
+:  'Schnabel, der gew\\u00f6hnlich einen geduckten K\\u00f6rper und kurze Beine '
+:  'hat", ["Zeitungsente", "Falschmeldung", "Fehlinformation", '
+:  '"Falschinformation"]], ["m\\u00e4nnliche Waldente", ["Enterich", "Erpel"]], '
+:  '["ein schweres Baumwollgewebe in Leinwandbindung, das f\\u00fcr Kleidung und '
+:  'Zelte verwendet wird", ["D\\u00f6schwo", "Citro\\u00ebn 2CV", "2CV"]], '
+:  '["Fleisch von Enten (Haus- oder Wildenten)", ["Willi Lippens"]]]')
 
 ** Contents
 
