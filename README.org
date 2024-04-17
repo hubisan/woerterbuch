@@ -6,7 +6,14 @@
 
 Retrieve definitions (meanings) and synonyms for German words with Emacs.
 
-** TODO Add image
+** TODOS
+
+*** NEXT Add synonyms from Wiktionary
+There is already some code in the file that sort of works.
+
+*** TODO Add tests to cover more
+
+** TODO Add image before Main features
 
 ** Main features                                                :noexport_0:
 
@@ -22,137 +29,11 @@ Retrieve definitions (meanings) and synonyms for German words with Emacs.
 
 The word used for retrieval can be read from the minibuffer or taken from point.
 
-Definitions are retrieved from [[https://www.dwds.de/]] and synonyms from [[https://www.openthesaurus.de/]].
+Definitions are retrieved from [[https://www.dwds.de/]] and synonyms from [[https://www.openthesaurus.de/]]. Optionally synonyms from https://de.wiktionary.org can be retrieved as well.
 
-If anyone knows a better way to get definitions than parsing Dwds, please open an issue. [[https://github.com/hdaSprachtechnologie/odenet][Open German WordNet]] looks promising but needs some python scripts to return
+If anyone knows a better way to get definitions or synonyms than parsing Dwds and Wiktionary, please open an issue. [[https://github.com/hdaSprachtechnologie/odenet][Open German WordNet]] looks promising but needs time to mature.
 
 -----
-
-** TODOS
-
-To make use of python in Emacs Lisp start-process is needed:
-
-Use pipx to install packages. This doesn't seem to work for non-commands. And those packages here are non-commands.
-
-#+BEGIN_SRC emacs-lisp
-  (defvar my-filter-output nil
-    "Capture the output of the process.")
-
-  (defun my-filter (process output)
-    "This function is called from the process."
-
-    )
-
-  (let* (
-         (process-connection-type nil)  ; use a pipe
-         (coding-system-for-write 'utf-8-auto)
-         (coding-system-for-read 'utf-8-auto)
-         (process-buffer-name "*testme*")
-         (process-buffer (get-buffer-create process-buffer-name))
-         (process (start-process "python-script" process-buffer "python3")))
-    ;; Don't show any output unless it is needed.
-    (set-process-filter process t)
-    (process-send-string process "import wn")
-    (set-process-filter process #'my-filter)
-    ;; `accept-process-output' can be used to wait for the process output.
-    ;; Else it doesn't wait and the filter function will be called later on.
-    (unless (accept-process-output (process-send-string process "") 3)
-      (error "Timeout reached before output was received"))
-
-    )
-#+END_SRC
-
-#+RESULTS:
-
-
-*** TODO Lemmatizer
-
-This seems to be much simpler and correctly makes groß if using gross. But it is wrong with Busse > Bus. But this is actually hard to know if using swiss dialect as we write Busse for Bus and Busse for Busse. Probably best to only use the lemmatizer if it is not already a baseform. And this is only needed if using word at point, else it can be expected that the users enters the baseform.
-
-https://github.com/adbar/simplemma
-
-Simplemma is much faster and in this case even better:
-
-#+BEGIN_SRC python :results pp
-  from simplemma.simplemma import lemmatize
-  lemma = lemmatize("draussen", lang='de')
-  return lemma
-#+END_SRC
-
-#+RESULTS:
-: 'draußen'
-
-#+BEGIN_SRC python :results pp
-  import spacy
-  nlp = spacy.load('de_dep_news_trf')
-  doc = nlp('draussen')
-  return doc[0].lemma_
-#+END_SRC
-
-#+RESULTS:
-: 'Draussen'
-
-=de_core_news_sm= gave me some false lemmas, like 'Spitäler' instead of 'Spital'.
-
-*** TODO Switch to Open German WordNet
-
-This seems to be a good alternative, but also needs some python coding. If words returns more than one the word can be for instance a Adjektiv and a Verb. In that case the user needs to decide what he wants.
-
-Definitions:
-
-#+BEGIN_SRC python :results pp
-  import wn
-
-  def get_all_synset_definitions(word):
-      de = wn.Wordnet('odenet')
-      word = de.words(word)[0]
-      synsets = word.synsets()
-      definitions = []
-      for synset in synsets:
-          definitions.append(synset.definition())
-      return definitions
-
-  return get_all_synset_definitions('Feld')
-#+END_SRC
-
-#+RESULTS:
-: ['ein bestimmtes Umfeld oder eine bestimmte Lebensweise',
-:  'ein Gebiet, in dem eine Schlacht ausgetragen wird (oder wurde)',
-:  'ein Ort, an dem Flugzeuge starten und landen',
-:  'ein Wissensgebiet, für das man sich interessiert oder über das man '
-:  'kommuniziert',
-:  'ein Gebiet, in dem aktive militärische Operationen durchgeführt werden']
-
-Synonyms can be retrieved as follows:
-
-#+BEGIN_SRC python :results raw
-  # de.synsets('einfach')[1].senses()[0].word().lemma()
-  import json
-  import wn
-
-  def get_synonyms(word):
-      de = wn.Wordnet('odenet')
-      # If this array is bigger than 1 then show an UI
-      # in which one can decide what to do. Could also
-      # retrieve all words?
-      # word.pos does give n for noun and a for adjective/adverb
-      # and v for Verb.
-      word = de.words(word)[0]
-      synsets = word.synsets()
-      synonyms = []
-      for synset in synsets:
-          lemmas = synset.lemmas()
-          # lemmas = sorted(lemmas, key=str.casefold)
-          # Remove the word itself.
-          word_lemma = word.lemma()
-          if word_lemma in lemmas:
-              lemmas.remove(word_lemma)
-          synonyms.append([synset.definition(), lemmas])
-      return json.dumps(synonyms)
-
-  return get_synonyms("Wohnung")
-
-#+END_SRC
 
 ** Contents
 
@@ -170,7 +51,7 @@ Synonyms can be retrieved as follows:
 
 # Describe how to install this package.
 
-This package is hosted on Github. Use your favourite way to install like [[https://github.com/radian-software/straight.el][Straight]] or [[https://github.com/quelpa/quelpa][Quelpa]]. Starting with Emacs 29 ~package-vc-install~ may be used.
+This package is hosted on Github. Use your favourite way to install like [[https://github.com/progfolio/elpaca][Elpaca]], [[https://github.com/radian-software/straight.el][Straight]], [[https://github.com/quelpa/quelpa][Quelpa]]. Starting with Emacs 29 ~package-vc-install~ may be used.
 
 ** Usage
 :PROPERTIES:

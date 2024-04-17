@@ -45,6 +45,51 @@
 
 ;;; Code:
 
+;; TODO Possibility to add wiktionary synonyms to the org buffer like:
+
+;; * [[https://www.openthesaurus.de/synonyme/lassen][lassen]] - Synonyme
+
+;; ** Openthesaurus
+
+;; - autorisieren, bewilligen, den Weg frei machen, den Weg freimachen, erlauben, ermöglichen, gestatten, gewähren, lassen, legalisieren, lizenzieren, möglich machen, (eine) Möglichkeit schaffen, zulassen, sanktionieren
+;; - ...
+
+;; ** Wiktionary
+
+;; - sfsdsd, sdsdfsdf
+;; - sdfsdfs, sdfsdsdffdj
+
+;; Schwierig dies
+;; Testen mit tun, machen, lassen
+;; Mühsam, scheint als ist dies einfach Text ohne klare Struktur. Kann bestimmt
+;; nur einfach der Text verwendet werden, ohne die einzelnen Synonyme zu
+;; extrahieren.
+
+(with-current-buffer (url-retrieve-synchronously  "https://de.wiktionary.org/wiki/lassen")
+  (set-buffer-multibyte t)
+  (let* ((start (1+ (re-search-forward "\\(>Synonyme:</p>\\|>Sinnverwandte Wörter:</p>\\)")))
+         (end (search-forward "</dl>"))
+         (dom (libxml-parse-html-region start end))
+         (text (dom-texts dom))
+         ;; Change the leading [1] to - for org-mode.
+         (text-cleaned (replace-regexp-in-string "\\[[^]]+]"  "-" text))
+         ;; Replace spaces with one space.
+         (text-cleaned (replace-regexp-in-string " +" " " text-cleaned))
+         ;; Remove space before punctuation.
+         (text-cleaned (replace-regexp-in-string "\\( \\)[,:;.]" "" text-cleaned nil nil 1))
+         ;; Remove space at end of line.
+         (text-cleaned (replace-regexp-in-string " $" "" text-cleaned))
+         ;; Remove remarks with Siehe auch
+         (text-cleaned (replace-regexp-in-string "\\(; siehe auch:.*;\\|; siehe auch:.*$\\)" "" text-cleaned))
+         ;; Second line and following have a space at the beginning.
+         (text-cleaned (replace-regexp-in-string "^ -" "-" text-cleaned))
+         ;; Add spaces at the beginning if not starting with -.
+         (text-cleaned (replace-regexp-in-string "^[^-]" "  " text-cleaned))
+         )
+    (kill-buffer)
+    text-cleaned
+    ))
+
 ;;; Requirements
 
 (require 'seq)
@@ -508,6 +553,16 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 
 (defun woerterbuch--synonyms-retrieve-raw (word)
   "Return the synonyms for a WORD as plist as retrieved with the API."
+  ;; TODO Some words sadly inlcude remarks in brackets. Example:
+  ;; A synonym for erstellen is errichten (Testament, Patientenverfügung, ...).
+  ;; Need to clean the synonyms by removing the text starting with ' ('.
+  ;; Regexp is probably: " (.*". Rather test it.
+  ;; Hmm, it is only needed to clean when using a function to select and insert a
+  ;; synonym. Else it is better to leave it as it is. Example:
+  ;; - abfassen, erstellen, aufsetzen (Schreiben, Kaufvertrag, ...), errichten
+  ;;   (Testament, Patientenverfügung, ...), machen
+  ;; So probably implement a function to clean the synonyms which is called when
+  ;; displaying it a lookup table in the minibuffer.
   (let* ((url (format woerterbuch--synonyms-openthesaurus-api-url
                       (url-hexify-string (string-trim word))))
          (buffer (url-retrieve-synchronously url t)))
