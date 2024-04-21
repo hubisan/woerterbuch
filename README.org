@@ -93,7 +93,16 @@ If a word is not in its baseform, the synonyms for the baseform are looked up (t
 Set the following variables to change the behaviour of the package:
 
 - ~woerterbuch-org-buffer-display-function~  #'pop-to-buffer \\
-  Function used to the display the org buffer with the definitions or synonyms. The function takes buffer as argument.
+  Function used to the display the org buffer with the definitions or synonyms. The function takes buffer as argument. There is also a function provided to show it in a side window: 
+  #+BEGIN_SRC emacs-lisp
+    ;; Set the variable:
+    (setq woerterbuch-org-buffer-display-function
+          (apply-partially #'woerterbuch--display-in-side-window 'right nil nil))
+    ;; Or use it in a let binding:
+    (let* ((woerterbuch-org-buffer-display-function
+            (apply-partially #'woerterbuch--display-in-side-window 'right nil nil)))
+      (woerterbuch-synonyms-show-in-org-buffer))
+  #+END_SRC
 - ~woerterbuch-list-bullet-point~  "-" \\
   String to use as list bullet point when converting synonyms or definitions to a list.
 - ~woerterbuch-insert-org-heading-format~  "%s %s\n\n%s" \\
@@ -130,3 +139,17 @@ See the [[./CHANGELOG.org][changelog]].
 Use the issue tracker to reports bugs, suggest improvements or propose new features. If you want to contribute please open a pull request after having opened a new issue.
 
 In any case please check out the [[./CONTRIBUTING.org::*Contributing][contributing guidelines]] beforehand.
+
+** Remarks
+
+*** Synonyms
+
+**** Openthesaurus
+
+The text returned can contains additional information in parentheses. Examples:
+
+- aufsetzen (Schreiben, Kaufvertrag, ...)
+- errichten (Testament, Patientenverfügung, ...)
+- (die) Probe aufs Exempel
+
+This information is removed, when reading from the minibuffer. Else it is not removed and inserted into the buffer

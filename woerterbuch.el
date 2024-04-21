@@ -65,30 +65,30 @@
 ;; nur einfach der Text verwendet werden, ohne die einzelnen Synonyme zu
 ;; extrahieren.
 
-(with-current-buffer (url-retrieve-synchronously  "https://de.wiktionary.org/wiki/lassen")
-  (set-buffer-multibyte t)
-  (let* ((start (1+ (re-search-forward "\\(>Synonyme:</p>\\|>Sinnverwandte Wörter:</p>\\)")))
-         (end (search-forward "</dl>"))
-         (dom (libxml-parse-html-region start end))
-         (text (dom-texts dom))
-         ;; Change the leading [1] to - for org-mode.
-         (text-cleaned (replace-regexp-in-string "\\[[^]]+]"  "-" text))
-         ;; Replace spaces with one space.
-         (text-cleaned (replace-regexp-in-string " +" " " text-cleaned))
-         ;; Remove space before punctuation.
-         (text-cleaned (replace-regexp-in-string "\\( \\)[,:;.]" "" text-cleaned nil nil 1))
-         ;; Remove space at end of line.
-         (text-cleaned (replace-regexp-in-string " $" "" text-cleaned))
-         ;; Remove remarks with Siehe auch
-         (text-cleaned (replace-regexp-in-string "\\(; siehe auch:.*;\\|; siehe auch:.*$\\)" "" text-cleaned))
-         ;; Second line and following have a space at the beginning.
-         (text-cleaned (replace-regexp-in-string "^ -" "-" text-cleaned))
-         ;; Add spaces at the beginning if not starting with -.
-         (text-cleaned (replace-regexp-in-string "^[^-]" "  " text-cleaned))
-         )
-    (kill-buffer)
-    text-cleaned
-    ))
+;; (with-current-buffer (url-retrieve-synchronously  "https://de.wiktionary.org/wiki/lassen")
+;;   (set-buffer-multibyte t)
+;;   (let* ((start (1+ (re-search-forward "\\(>Synonyme:</p>\\|>Sinnverwandte Wörter:</p>\\)")))
+;;          (end (search-forward "</dl>"))
+;;          (dom (libxml-parse-html-region start end))
+;;          (text (dom-texts dom))
+;;          ;; Change the leading [1] to - for org-mode.
+;;          (text-cleaned (replace-regexp-in-string "\\[[^]]+]"  "-" text))
+;;          ;; Replace spaces with one space.
+;;          (text-cleaned (replace-regexp-in-string " +" " " text-cleaned))
+;;          ;; Remove space before punctuation.
+;;          (text-cleaned (replace-regexp-in-string "\\( \\)[,:;.]" "" text-cleaned nil nil 1))
+;;          ;; Remove space at end of line.
+;;          (text-cleaned (replace-regexp-in-string " $" "" text-cleaned))
+;;          ;; Remove remarks with Siehe auch
+;;          (text-cleaned (replace-regexp-in-string "\\(; siehe auch:.*;\\|; siehe auch:.*$\\)" "" text-cleaned))
+;;          ;; Second line and following have a space at the beginning.
+;;          (text-cleaned (replace-regexp-in-string "^ -" "-" text-cleaned))
+;;          ;; Add spaces at the beginning if not starting with -.
+;;          (text-cleaned (replace-regexp-in-string "^[^-]" "  " text-cleaned))
+;;          )
+;;     (kill-buffer)
+;;     text-cleaned
+;;     ))
 
 ;;; Requirements
 
@@ -111,7 +111,9 @@
 
 (defcustom woerterbuch-org-buffer-display-function #'pop-to-buffer
   "Function used to the display the org buffer with the definitions or synonyms.
-The function takes buffer as argument."
+The function takes buffer as argument.
+The function `woerterbuch--display-in-side-window' may be used to show the org
+buffer in a side window. Use with `apply-partially' to set the side."
   :type 'function)
 
 (defcustom woerterbuch-list-bullet-point "-"
@@ -233,73 +235,18 @@ Returns a cons cell with the car being the word and cdr the bounds."
     (insert-file-contents path)
     (buffer-string)))
 
-;;; Python Process
-
-(defvar woerterbuch--process nil
-  "The process running python.")
-
-(defconst woerterbuch--process-buffer-name "*woerterbuch-process*"
-  "Name to use for the process buffer.")
-
-;; (defvar woerterbuch--process-start-timeout 30
-;;   "Number of seconds program waits for the definition of the python functions.")
-
-(defvar woerterbuch--process-python-init-path
-  (expand-file-name "woerterbuch.py" woerterbuch--package-directory)
-  "Path to the file that holds the python init code.")
-
-(defvar woerterbuch--process-output nil
-  "Capture the output of the process.")
-
-(defun woerterbuch--process-filter (_process output)
-  "Function called from the process.
-It stores the output in `woerterbuch--process-output'."
-  (setq woerterbuch--process-output output))
-
-(defun woerterbuch--process-start (&optional restart)
-  "Start and return the process runing python.
-Loads the modules needed and defines the functions and variables.
-If RESTART is non-nil then kill the process and start it again."
-  (when (and restart (process-live-p woerterbuch--process))
-    (when-let* ((buffer-name woerterbuch--process-buffer-name)
-                (buffer (get-buffer buffer-name)))
-      (kill-buffer buffer))
-    ;; Hope this will never result in an endless loop
-    (kill-process woerterbuch--process)
-    (while (process-live-p woerterbuch--process)))
-  (if (process-live-p woerterbuch--process)
-      woerterbuch--process
-    (let* ((process-connection-type nil) ; use a pipe
-           (coding-system-for-write 'utf-8-auto)
-           (coding-system-for-read 'utf-8-auto)
-           (path woerterbuch--process-python-init-path)
-           (process-buffer-name woerterbuch--process-buffer-name)
-           (process-buffer (get-buffer-create process-buffer-name))
-           (process (start-process "woerterbuch python" process-buffer
-                                   woerterbuch-process-python-programm
-                                   "-u" path)))
-      (setq woerterbuch--process process))))
-
-(defun woerterbuch--process-capture-output (code)
-  "Run CODE in the python process and capture it's output."
-  (let* ((process woerterbuch--process))
-    (unwind-protect
-        (progn
-          (setq woerterbuch--process-output nil)
-          (set-process-filter process #'woerterbuch--process-filter)
-          ;; `accept-process-output' can be used to wait for the process output.
-          ;; Else it doesn't wait and the filter function will be called later on.
-          ;; Use a higher timeout as it can take a while to load the modules.
-          (unless (accept-process-output (process-send-string process code)
-                                         woerterbuch-process-timeout)
-            (error "Timeout reached before output was received"))
-          (when woerterbuch--process-output
-            (pcase woerterbuch--process-output
-              ("None\n" nil)
-              ("Invalid command\n"
-               (error "%s (%s)" "Python code is invalid" code))
-              (output (json-parse-string output :object-type 'plist)))))
-      (set-process-filter process t))))
+(defun woerterbuch--display-in-side-window (side width height buffer)
+  "Display BUFFER in side window on SIDE specified and select it.
+Specify WIDTH and HEIGHT or set em to nil to not change it manually."
+  (let* ((alist (list (cons 'side side)))
+         (alist (if width
+                    (append alist (list (cons 'window-width width)))
+                  alist))
+         (alist (if height
+                    (append alist (list (cons 'window-height height)))
+                  alist)))
+    (select-window
+     (display-buffer-in-side-window buffer alist))))
 
 ;;; German Definitions
 
@@ -556,7 +503,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
   ;; TODO Some words sadly inlcude remarks in brackets. Example:
   ;; A synonym for erstellen is errichten (Testament, Patientenverfügung, ...).
   ;; Need to clean the synonyms by removing the text starting with ' ('.
-  ;; Regexp is probably: " (.*". Rather test it.
+  ;; Regexp is probably: " (.*)". Rather test it.
   ;; Hmm, it is only needed to clean when using a function to select and insert a
   ;; synonym. Else it is better to leave it as it is. Example:
   ;; - abfassen, erstellen, aufsetzen (Schreiben, Kaufvertrag, ...), errichten
@@ -599,7 +546,20 @@ nil if synsets are not empty."
     (map-elt raw-synonyms :baseforms)
     (car-safe (seq-into (plist-get raw-synonyms :baseforms) 'list))))
 
-(defun woerterbuch--synonyms-retrieve-as-list (word)
+(defun woerterbuch--synonyms-clean-text (synonyms)
+  "Clean the text of each synonym in the list of SYNONYMS.
+Synonyms sometimes contains additional information in parentheses. That
+information should be stripped when reading from minibuffer."
+  (mapcar
+   (lambda (synonyms-group)
+     (mapcar (lambda (synonym)
+               ;; Sometimes it has additional information in brackets for the
+               ;; synonym.
+               (replace-regexp-in-string " ?(.*?) ?" "" synonym))
+             synonyms-group))
+   synonyms))
+
+(defun woerterbuch--synonyms-retrieve-as-list (word &optional clean)
   "Retrieve the synonyms for WORD as a list of lists.
 Each list consist of the synonyms for one meaning of the word.
 Returns a cons with car being the word and cdr the synonyms. The
@@ -611,7 +571,10 @@ Returns nil if no synonyms are retrieved."
     ;; If a baseform was found use that to retrieve the synonyms.
     (when baseform
       (setq raw-synonyms (woerterbuch--synonyms-retrieve-raw baseform)))
-    (let ((synonyms (woerterbuch--synonyms-to-list raw-synonyms)))
+    (let* ((synonyms (woerterbuch--synonyms-to-list raw-synonyms))
+           (synonyms (if clean
+                         (woerterbuch--synonyms-clean-text synonyms)
+                       synonyms)))
       (cons (or baseform word) synonyms))))
 
 (defun woerterbuch--synonyms-to-string (synonyms)
@@ -657,7 +620,7 @@ synonyms."
 (defun woerterbuch--synonyms-read-synonym (word)
   "Read a synonym for WORD in the minibuffer and return it.
 Returns nil if no synonym was selected."
-  (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word))
+  (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word t))
            (word-used (car-safe word-and-synonyms))
            (synonyms (cdr-safe word-and-synonyms)))
       (when-let ((synonyms-flattened (apply #'append synonyms))
