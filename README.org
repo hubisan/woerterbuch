@@ -97,10 +97,10 @@ Set the following variables to change the behaviour of the package:
   #+BEGIN_SRC emacs-lisp
     ;; Set the variable:
     (setq woerterbuch-org-buffer-display-function
-          (apply-partially #'woerterbuch--display-in-side-window 'right nil nil))
+          (apply-partially #'woerterbuch--display-in-side-window 'right nil))
     ;; Or use it in a let binding:
     (let* ((woerterbuch-org-buffer-display-function
-            (apply-partially #'woerterbuch--display-in-side-window 'right nil nil)))
+            (apply-partially #'woerterbuch--display-in-side-window 'right 20)))
       (woerterbuch-synonyms-show-in-org-buffer))
   #+END_SRC
 - ~woerterbuch-list-bullet-point~  "-" \\
