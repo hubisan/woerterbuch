@@ -9,7 +9,10 @@
 (eldev-add-loading-roots 'test "tests")
 
 ;; I need this for testing interactive functions.
-(eldev-add-extra-dependencies 'test 'with-simulated-input)
+;; Version from nongnu-elpa sometimes gives me an error on Emacs 30 about the
+;; signature not being correct.
+(eldev-add-extra-dependencies 'test
+                              '(:package with-simulated-input :archive melpa))
 
 ;; Tell checkdoc not to demand two spaces after a period.
 (setq sentence-end-double-space nil)

@@ -60,8 +60,6 @@
 ;; - Katze because it has those strange links with (1), (b) etc.
 ;; - test a word without defintions (word that doesn't exists on dwds)
 
-
-
 (describe "Definitions:"
   :var* (;; Create a buffer with the content of a dwsds definitions page
          ;; stored as a text-file. It is not a good idea to get the content

@@ -521,7 +521,9 @@ Each list consist of the synonyms for one meaning of the word.
 Returns a cons with car being the word and cdr the synonyms. The
 word is returned as it can differntiate from the WORD used as
 parameter when a baseform is used to retrieve the synonyms.
-Returns nil if no synonyms are retrieved."
+Returns nil if no synonyms are retrieved
+If CLEAN is non-nil `woerterbuch--synonyms-clean-text' is called to clean the
+synonyms. Additional information in parantheses is removed."
   (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
          (baseform (when raw-synonyms
                      (woerterbuch--synonyms-baseform raw-synonyms))))
@@ -589,7 +591,7 @@ Returns nil if no synonym was selected."
     (user-error "No synonyms found for %s" word)))
 
 (defun woerterbuch--synonyms-wiktionary-retrieve-as-string (word)
-  "Get a list of synonyms from wiktionary for WORD in org-mode syntax.
+  "Get a list of synonyms from wiktionary for WORD in `org-mode' syntax.
 The WORD needs to be in baseform."
   (let* ((url (format woerterbuch--synonyms-wiktionary-url
                       (url-hexify-string (string-trim word))))
