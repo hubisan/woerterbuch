@@ -21,6 +21,12 @@ Example:
     (insert-file-contents path)
     (buffer-string)))
 
+(defun test-helper-retrieve-url (url)
+  "Retrieve the URL and display in buffer. Can be used to make the test files."
+  (when-let* ((url (url-retrieve-synchronously url t)))
+    (switch-to-buffer url)
+    (set-buffer-multibyte t)))
+
 (provide 'test-helper)
 
 ;;; test-helper.el ends here
