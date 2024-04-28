@@ -9,7 +9,9 @@ Retrieve definitions (meanings) and synonyms for German words with Emacs.
 ** TODOS
 
 *** NEXT Add synonyms from Wiktionary
+
 There is already some code in the file that sort of works.
+Also make this work if no synonyms where found on Openthesaurus.
 
 *** TODO Add tests to cover more
 
@@ -146,10 +148,37 @@ In any case please check out the [[./CONTRIBUTING.org::*Contributing][contributi
 
 **** Openthesaurus
 
-The text returned can contains additional information in parentheses. Examples:
+The text returned can contains additional information in parentheses.
 
+Examples:
+
+#+BEGIN_EXAMPLE
 - aufsetzen (Schreiben, Kaufvertrag, ...)
 - errichten (Testament, Patientenverfügung, ...)
 - (die) Probe aufs Exempel
+#+END_EXAMPLE
 
-This information is removed, when reading from the minibuffer. Else it is not removed and inserted into the buffer
+This information is removed, when reading from the minibuffer. Else it is not removed and inserted into the buffer.
+
+**** Wiktionary
+
+It appears that when composing synonyms on Wiktionary, users have the a lot of freedom to formulate the text. Therefore, I avoid parsing the synonyms into a list which is used when reading from the minibuffer. Similar to OpenThesaurus, the synonyms are inserted into an Org buffer exactly as they are formulated.
+
+Examples of texts used (word 'geben'):
+
+#+BEGIN_EXAMPLE
+- abtreten, reichen, übertragen, vermachen
+- aushändigen, hinreichen, in die Hand drücken, übergeben, überlassen, überreichen
+  gehoben: darbieten, darreichen, zukommen/zuteilwerden lassen
+  oft gehoben: reichen
+  bildungssprachlich: präsentieren
+  umgangssprachlich: langen, rüberwachsen lassen
+  Papierdeutsch: verabreichen; Papierdeutsch veraltend: verabfolgen
+- schenken, gewähren, zum Geschenk machen, zustecken
+  schweizerisch: vergaben
+  gehoben: bedenken, beglücken, stiften, zukommen/zuteilwerden lassen
+  umgangssprachlich: spendieren
+  gehoben oder ironisch angedeihen lassen
+  leicht scherzhaft: verehren
+  veraltet: zueignen
+#+END_EXAMPLE

@@ -83,7 +83,7 @@ You most likely only want to change this, if you want to change the number of
 newlines.
 Format is called with three parameters:
 - Stars to start a heading
-- Text of the heading
+- Text of the heading (see also other customization variables)
 - The content"
   :type 'string)
 
@@ -116,25 +116,30 @@ Format is called with one parameters:
   :type 'string)
 
 (defcustom woerterbuch-synonyms-add-synonyms-from-wiktionary nil
-  "If non-nil synoyms taken from Wiktionary are added (if in org buffer).
+  "If non-nil synoyms taken from Wiktionary are added.
+This is only the case when using a function that displays the synonyms in an
+org-buffer. If reading from the minibuffer the synonyms are not added.
 The synonyms are added below those of Openthesaurus. The synonyms are not added
 if reading from minibuffer."
   :type 'string)
 
-(defcustom woerterbuch-process-timeout 5
-  "Number of seconds to wait for the process to return output."
-  :type 'integer)
-
-(defcustom woerterbuch-process-python-programm "python3"
-  "The name of the command to start the python process"
-  :type 'integer)
+(defcustom woerterbuch-quit-window-key-binding "C-c C-k"
+  "Key binding to use for `quit-window' in the woerterbuch buffer.
+If set to nil no key binding is set."
+  :type 'string)
 
 ;;; Major-Mode & Key Bindings
 
+(defvar woerterbuch-mode-map
+  (let ((map (make-sparse-keymap)))
+    ;; Not needed and makes it possible to not require `org-mode'.
+    ;; (set-keymap-parent map org-mode-map)
+    (when woerterbuch-quit-window-key-binding
+      (define-key map (kbd woerterbuch-quit-window-key-binding) 'quit-window))
+    map))
+
 (define-derived-mode woerterbuch-mode org-mode "Woerterbuch"
   "Major mode for displaying woerterbuch buffer.")
-
-(define-key woerterbuch-mode-map (kbd "C-c C-k") 'quit-window)
 
 ;;; Global Variables
 
@@ -465,8 +470,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
   (let* ((url (format woerterbuch--synonyms-openthesaurus-api-url
                       (url-hexify-string (string-trim word))))
          (buffer (url-retrieve-synchronously url t)))
-    (if (not buffer)
-        (error "Could not retrieve synonyms")
+    (when buffer
       (with-current-buffer buffer
         (goto-char (point-min))
         (re-search-forward "^$")
@@ -519,15 +523,17 @@ word is returned as it can differntiate from the WORD used as
 parameter when a baseform is used to retrieve the synonyms.
 Returns nil if no synonyms are retrieved."
   (let* ((raw-synonyms (woerterbuch--synonyms-retrieve-raw word))
-         (baseform (woerterbuch--synonyms-baseform raw-synonyms)))
+         (baseform (when raw-synonyms
+                     (woerterbuch--synonyms-baseform raw-synonyms))))
     ;; If a baseform was found use that to retrieve the synonyms.
     (when baseform
       (setq raw-synonyms (woerterbuch--synonyms-retrieve-raw baseform)))
-    (let* ((synonyms (woerterbuch--synonyms-to-list raw-synonyms))
-           (synonyms (if clean
-                         (woerterbuch--synonyms-clean-text synonyms)
-                       synonyms)))
-      (cons (or baseform word) synonyms))))
+    (when raw-synonyms
+      (let* ((synonyms (woerterbuch--synonyms-to-list raw-synonyms))
+             (synonyms (if clean
+                           (woerterbuch--synonyms-clean-text synonyms)
+                         synonyms)))
+        (cons (or baseform word) synonyms)))))
 
 (defun woerterbuch--synonyms-to-string (synonyms)
   "Convert the list of SYNONYMS to a string.
@@ -559,7 +565,7 @@ synonyms."
          (text (if synonyms
                    (format "%s\n" (woerterbuch--synonyms-to-string synonyms))
                  (format woerterbuch-synonyms-no-matches-text-format
-                         word-used)))
+                         (or word-used word))))
          ;; Add a heading if needed.
          (synonyms-string
           (if with-heading
@@ -582,7 +588,7 @@ Returns nil if no synonym was selected."
         (completing-read "Select synonym: " synonyms-sorted nil t))
     (user-error "No synonyms found for %s" word)))
 
-(defun woerterbuch--synonyms-wiktionary-in-org-mode-syntax (word)
+(defun woerterbuch--synonyms-wiktionary-retrieve-as-string (word)
   "Get a list of synonyms from wiktionary for WORD in org-mode syntax.
 The WORD needs to be in baseform."
   (let* ((url (format woerterbuch--synonyms-wiktionary-url
@@ -594,37 +600,40 @@ The WORD needs to be in baseform."
             (progn
               (set-buffer-multibyte t)
               (goto-char (point-min))
-              (when-let* ((start
-                      (1+ (re-search-forward
-                           "\\(>Synonyme:</p>\\|>Sinnverwandte Wörter:</p>\\)")))
-                     (end (search-forward "</dl>"))
-                     (dom (libxml-parse-html-region start end))
-                     (text (dom-texts dom))
-                     ;; Change the leading [1] to - for org-mode.
-                     (text-cleaned
-                      (replace-regexp-in-string "\\[[^]]+]" "-" text))
-                     ;; Replace spaces with one space.
-                     (text-cleaned
-                      (replace-regexp-in-string " +" " " text-cleaned))
-                     ;; Remove space before punctuation.
-                     (text-cleaned
-                      (replace-regexp-in-string "\\( \\)[,:;.]" "" text-cleaned
-                                                nil nil 1))
-                     ;; Remove space at end of line.
-                     (text-cleaned
-                      (replace-regexp-in-string " $" "" text-cleaned))
-                     ;; Remove remarks with Siehe auch
-                     (text-cleaned
-                      (replace-regexp-in-string
-                       "\\(; siehe auch:.*;\\|; siehe auch:.*$\\)" ""
-                       text-cleaned))
-                     ;; Second line and following have a space at the beginning.
-                     (text-cleaned (replace-regexp-in-string "^ -" "-"
-                                                             text-cleaned))
-                     ;; Add spaces at the beginning if not starting with -.
-                     (text-cleaned (replace-regexp-in-string "^[^-]" "  "
-                                                             text-cleaned)))
-                text-cleaned))
+              (when-let*
+                  ((found (re-search-forward
+                           "\\(>Synonyme:</p>\\|>Sinnverwandte Wörter:</p>\\)"
+                           nil t))
+                   (start (1+ found))
+                   (end (search-forward "</dl>"))
+                   (dom (libxml-parse-html-region start end))
+                   (text (dom-texts dom))
+                   ;; Change the leading [1] to - for org-mode.
+                   (text-cleaned
+                    (replace-regexp-in-string "\\[[^]]+]" "-" text))
+                   ;; Replace spaces with one space.
+                   (text-cleaned
+                    (replace-regexp-in-string " +" " " text-cleaned))
+                   ;; Remove space before punctuation.
+                   (text-cleaned
+                    (replace-regexp-in-string "\\( \\)[,:;.]" "" text-cleaned
+                                              nil nil 1))
+                   ;; Remove space at end of line.
+                   (text-cleaned
+                    (replace-regexp-in-string " $" "" text-cleaned))
+                   ;; Remove remarks with Siehe auch
+                   (text-cleaned
+                    (replace-regexp-in-string
+                     "\\(; siehe auch:.*;\\|; siehe auch:.*$\\)" ""
+                     text-cleaned))
+                   ;; Second line and following have a space at the beginning.
+                   (text-cleaned (replace-regexp-in-string "^ -" "-"
+                                                           text-cleaned))
+                   ;; Add spaces at the beginning if not starting with -.
+                   (text-cleaned (replace-regexp-in-string "^[^-]" "  "
+                                                           text-cleaned)))
+                (format "\n[[%1$s][Wiktionary:]]\n\n%3$s"
+                        url word text-cleaned)))
           (kill-buffer buffer))))))
 
 ;;;###autoload
@@ -666,8 +675,12 @@ openthesaurus."
   (interactive "sWort: \nP")
   (let* ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-string
                              word with-heading))
+         (word-used (car-safe word-and-synonyms))
          (synonyms (cdr-safe word-and-synonyms)))
-    ;; TODO If Wiktonary should be added add this to the string.
+    (when woerterbuch-synonyms-add-synonyms-from-wiktionary
+      (when-let* ((wiki-synonyms
+              (woerterbuch--synonyms-wiktionary-retrieve-as-string word-used)))
+        (setq synonyms (concat synonyms wiki-synonyms))))
     (save-excursion
       (woerterbuch--org-insert synonyms with-heading))))
 
