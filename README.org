@@ -15,6 +15,20 @@ Also make this work if no synonyms where found on Openthesaurus.
 
 *** TODO Add tests to cover more
 
+*** TODO Add customization to include more text from DWDS
+
+Especially the following:
+
+- Beispiele ~<div class="dwdswb-verwendungsbeispiele">~
+- Die ganze Definition ~<div class="dwdswb-lesart-def">~ anstelle von nur dem Wort.
+  
+Either use a defcustom or a function parameter. This doesn't make sense when showing the words in the minibuffer with completion. So only for functions which show the definitions in an org mode buffer.
+  
+*** TODO Add a way to lookup Redewendungen
+
+- [[https://de.wiktionary.org/wiki/Verzeichnis:Deutsch/Sprichw%C3%B6rter][Verzeichnis:Deutsch/Sprichwörter – Wiktionary]]
+- [[https://de.wikipedia.org/wiki/Liste_deutscher_Redewendungen][Liste deutscher Redewendungen – Wikipedia]]
+
 ** TODO Add image before Main features
 
 ** Main features                                                :noexport_0:
