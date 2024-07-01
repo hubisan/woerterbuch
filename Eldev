@@ -1,5 +1,13 @@
 ; -*- mode: emacs-lisp; lexical-binding: t -*-
 
+(eval-when-compile
+  (defvar eldev-project-main-file)
+  (defvar eldev-add-loading-roots)
+  (defvar checkdoc-verb-check-experimental-flag)
+  (declare-function eldev-use-package-archive "eldev")
+  (declare-function eldev-add-loading-roots "eldev")
+  (declare-function eldev-add-extra-dependencies "eldev"))
+
 (setq eldev-project-main-file "woerterbuch.el")
 
 (eldev-use-package-archive 'gnu-elpa)
