@@ -6,7 +6,7 @@
 ;; Maintainer: Daniel Hubmann <hubisan@gmail.com>
 ;; URL: https://github.com/hubisan/woerterbuch
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "28.1"))
+;; Package-Requires: ((emacs "29.4"))
 ;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs
@@ -246,7 +246,10 @@ the text. Gets the definition from URL `https://www.dwds.de.'"
                                     (text (dom-texts
                                            (dom-by-class
                                             leseart
-                                            "^dwdswb-definition$"))))
+                                            ;; So ging es nicht, z. B. mit Wort
+                                            ;; kirre
+                                            ;; "^dwdswb-definition$"
+                                            "^dwdswb-definitionen$"))))
                            (when (and (stringp id) (not (string-empty-p text)))
                              (cons id text))))
                        lesearten)))
@@ -681,7 +684,8 @@ openthesaurus."
          (synonyms (cdr-safe word-and-synonyms)))
     (when woerterbuch-synonyms-add-synonyms-from-wiktionary
       (when-let* ((wiki-synonyms
-              (woerterbuch--synonyms-wiktionary-retrieve-as-string word-used)))
+                   (woerterbuch--synonyms-wiktionary-retrieve-as-string
+                    word-used)))
         (setq synonyms (concat synonyms wiki-synonyms))))
     (save-excursion
       (woerterbuch--org-insert synonyms with-heading))))
