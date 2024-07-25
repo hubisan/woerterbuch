@@ -249,7 +249,11 @@ the text. Gets the definition from URL `https://www.dwds.de.'"
                                             ;; So ging es nicht, z. B. mit Wort
                                             ;; kirre
                                             ;; "^dwdswb-definition$"
-                                            "^dwdswb-definitionen$"))))
+                                            ;; Und dies ging nicht mit
+                                            ;; jmdn. auf dem Kieker haben
+                                            ;; "^dwdswb-definitionen$"
+                                            "^dwdswb-lesart-def$"
+                                            ))))
                            (when (and (stringp id) (not (string-empty-p text)))
                              (cons id text))))
                        lesearten)))
