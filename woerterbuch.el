@@ -233,6 +233,28 @@ Specify WIDTH and HEIGHT or set em to nil to not change it manually."
 (defconst woerterbuch--definitions-dwds-url "https://www.dwds.de/wb/%s"
   "Url to retrieve the definitions for a word as html from DWDS.")
 
+(defun woerterbuch--definitions-retrieve-examples (leseart)
+  "Retrieve the examples for LESEART"
+  (when-let* ((dom (dom-children
+                    (car (dom-by-class
+                          leseart
+                          "^dwdswb-lesart-content$"))))
+              (examples-dom (catch 'result
+                              (dolist (element dom)
+                                (cond
+                                 ((string= (dom-attr element 'class)
+                                           "dwdswb-verwendungsbeispiele")
+                                  (throw 'result element))
+                                 ((string= (dom-attr element 'class)
+                                           "dwdswb-lesart")
+                                  (throw 'result nil))))))
+              (examples-texts (mapcar #'dom-texts
+                                     (dom-by-class examples-dom
+                                                   "^dwdswb-belegtext$"))))
+    (if woerterbuch-definitions-examples-max
+        (take woerterbuch-definitions-examples-max examples-texts)
+      examples-texts)))
+
 (defun woerterbuch--definitions-retrieve-raw (word &optional add-examples)
   "Return a raw list of definitions for WORD.
 Each element is a cons with the car being the id of the defintion and the cadr
@@ -274,17 +296,10 @@ TODO Refactor this, should be separated into multiple functions."
                                 (text (or text ""))
                                 (examples
                                  (when add-examples
-                                   (mapcar #'dom-texts
-                                           (dom-by-class
-                                            (car (dom-by-class
-                                                  leseart
-                                                  "^dwdswb-verwendungsbeispiele$"))
-                                            "^dwdswb-belegtext$"))))
-                                (examples (if woerterbuch-definitions-examples-max
-                                              (take woerterbuch-definitions-examples-max examples)
-                                            examples)))
+                                   (woerterbuch--definitions-retrieve-examples
+                                    leseart))))
                            (when (and (stringp id) (stringp text))
-                             (if (listp examples)
+                             (if (and examples (listp examples))
                                  (cons id (list text examples))
                                (cons id text)))))
                        lesearten)))
