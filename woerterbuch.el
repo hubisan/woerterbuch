@@ -101,6 +101,18 @@ Format is called with one parameters:
 - The word (or baseform) used to try to get definitions."
   :type 'string)
 
+(defcustom woerterbuch-definitions-examples-add nil
+  "If non-nil examples for definitions are added.
+Use `woerterbuch-definitions-examples-max' to limit the number of examples, it
+defaults to 3."
+  :type 'integer
+  :group 'woerterbuch)
+
+(defcustom woerterbuch-definitions-examples-max 2
+  "The maximum number of examples to add for each definition."
+  :type 'integer
+  :group 'woerterbuch)
+
 (defcustom woerterbuch-synonyms-heading-text-format
   "[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"
   "Format used for the heading text when inserting an Org heading before content.
@@ -121,6 +133,11 @@ This is only the case when using a function that displays the synonyms in an
 org-buffer. If reading from the minibuffer the synonyms are not added.
 The synonyms are added below those of Openthesaurus. The synonyms are not added
 if reading from minibuffer."
+  :type 'string)
+
+(defcustom woerterbuch-synonyms-wiktionary-format "\nWiktionary:\n\n%3$s"
+  "Format used for the synonyms added from wiktionary.
+It is called with the url, the word and the text cleaned."
   :type 'string)
 
 (defcustom woerterbuch-quit-window-key-binding "C-c C-k"
@@ -184,7 +201,7 @@ current."
         (newline))
       (insert text))))
 
-(defun woerterbuch--get-word-at-point-or-selection ()
+(defun woerterbuch--word-at-point-or-selection ()
   "Get the word at point or the selection if region is active.
 Returns a cons cell with the car being the word and cdr the bounds."
   (if-let ((bounds (if (use-region-p)
@@ -216,10 +233,13 @@ Specify WIDTH and HEIGHT or set em to nil to not change it manually."
 (defconst woerterbuch--definitions-dwds-url "https://www.dwds.de/wb/%s"
   "Url to retrieve the definitions for a word as html from DWDS.")
 
-(defun woerterbuch--definitions-retrieve-raw (word)
+(defun woerterbuch--definitions-retrieve-raw (word &optional add-examples)
   "Return a raw list of definitions for WORD.
 Each element is a cons with the car being the id of the defintion and the cadr
-the text. Gets the definition from URL `https://www.dwds.de.'"
+the text. Gets the definition from URL `https://www.dwds.de.'
+If ADD-EXAMPLES is non-nil add the examples as well. Then the cadr is a cons
+cell with the car being the meaning and its cadr the examples.
+TODO Refactor this, should be separated into multiple functions."
   (let* ((url (format woerterbuch--definitions-dwds-url
                       (url-hexify-string (string-trim word))))
          (buffer (url-retrieve-synchronously url t)))
@@ -242,24 +262,35 @@ the text. Gets the definition from URL `https://www.dwds.de.'"
                       ;; all.
                       (mapcar
                        (lambda (leseart)
-                         (when-let ((id (dom-attr leseart 'id))
-                                    (text (dom-texts
+                         (let* ((id (dom-attr leseart 'id))
+                                ;; So ging es nicht, z. B. mit Wort kirre
+                                ;; "^dwdswb-definition$". Und dies ging nicht mit
+                                ;; jmdn. auf dem Kieker haben
+                                ;; "^dwdswb-definitionen$"
+                                (text (dom-texts (car (dom-by-class
+                                                       leseart
+                                                       "^dwdswb-lesart-def$"))))
+                                ;; Empty string if there is none.
+                                (text (or text ""))
+                                (examples
+                                 (when add-examples
+                                   (mapcar #'dom-texts
                                            (dom-by-class
-                                            leseart
-                                            ;; So ging es nicht, z. B. mit Wort
-                                            ;; kirre
-                                            ;; "^dwdswb-definition$"
-                                            ;; Und dies ging nicht mit
-                                            ;; jmdn. auf dem Kieker haben
-                                            ;; "^dwdswb-definitionen$"
-                                            "^dwdswb-lesart-def$"
-                                            ))))
-                           (when (and (stringp id) (not (string-empty-p text)))
-                             (cons id text))))
+                                            (car (dom-by-class
+                                                  leseart
+                                                  "^dwdswb-verwendungsbeispiele$"))
+                                            "^dwdswb-belegtext$"))))
+                                (examples (if woerterbuch-definitions-examples-max
+                                              (take woerterbuch-definitions-examples-max examples)
+                                            examples)))
+                           (when (and (stringp id) (stringp text))
+                             (if (listp examples)
+                                 (cons id (list text examples))
+                               (cons id text)))))
                        lesearten)))
           (kill-buffer buffer))))))
 
-(defun woerterbuch--definitions-get-baseform (word &optional raw-synonyms)
+(defun woerterbuch--definitions-word-baseform (word &optional raw-synonyms)
   "Return the baseform (lemma) of the WORD.
 If the WORD is already the baseform return WORD.
 If RAW-SYNONYMS has already been retrieved, it can be passed as parameter.
@@ -278,13 +309,20 @@ therefore this function is designed to also work with more than one level."
          definition previous-id)
     (while (setq definition (pop raw-definitions))
       (let* ((id (car definition))
+             (content (cdr definition))
              ;; Get the text and clean it.
-             (text (woerterbuch--definitions-clean-text (cdr definition))))
+             (text (woerterbuch--definitions-clean-text
+                    (if (listp content) (car content) content)))
+             (examples (when (listp content)
+                         (mapcar 'woerterbuch--definitions-clean-text
+                                 (cadr content)))))
         (cond
          ;; If it is the first definition or the same level as before.
          ((or (not previous-id) (length= previous-id (length id)))
-          ;; Add the defintion to definitions and cleanf
-          (push (list text) definitions)
+          ;; Add the defintion to definitions.
+          (if examples
+              (push (list :definition text :examples examples) definitions)
+            (push (list :definition text) definitions))
           (setq previous-id id))
          ;; If the id is longer than the previous one handle child definitions.
          ((and previous-id (length> id (length previous-id)))
@@ -299,22 +337,26 @@ therefore this function is designed to also work with more than one level."
               (setq children (append children (list definition))))
             ;; Recursively call the function to add the children to the first
             ;; item in the definitions.
-            (setcar definitions (list (caar definitions)
-                                      (woerterbuch--definitions-to-list
-                                       children))))))))
+            (let ((parent-definition (pop definitions)))
+              (push (plist-put parent-definition :children
+                               (woerterbuch--definitions-to-list children))
+                    definitions)))))))
     (when definitions
       (nreverse definitions))))
 
 (defun woerterbuch--definitions-clean-text (text)
   "Clean the TEXT of the definitions."
   (when-let*
-      ((text-trimmed (string-trim text))
+      ((text-new-lines-removed
+        (replace-regexp-in-string "\n" " " text))
+       (text-trimmed (string-trim text-new-lines-removed))
        ;; Remove those targets placed after links to other defintions. Either a
        ;; number, a letter or dot symbol ● in parentheses like (1), (2), (●). Or
        ;; actually multiple of those if it is nested like (1 b). A good example
        ;; is if getting the definitions for Katze or Wurst.
        (text-link-targets-removed
-        (replace-regexp-in-string "([[:alnum:]● ]+)" "" text-trimmed))
+        (replace-regexp-in-string "([●[:alnum:]])\\|(\\(?:[●[:alnum:]] \\)+)"
+                                  "" text-trimmed))
        ;; If a word has more than one tab a superscript is used in links.
        ;; For instance in the definitions for word Wurst.
        (text-superscripts-removed
@@ -323,21 +365,33 @@ therefore this function is designed to also work with more than one level."
        (text-multiple-spaces-removed
         (replace-regexp-in-string "[[:blank:]]+" " "
                                   text-superscripts-removed))
+       ;; Replace strange parentheses with real ones.
+       (text-strange-parens-changed
+        (replace-regexp-in-string
+         "⟩" ")" (replace-regexp-in-string "⟨" "(" text-multiple-spaces-removed)))
+       (text-paren-and-space-removed
+        ;; Remove after starting paren or before closing paren.
+        (replace-regexp-in-string "\\(?1:(\\) \\| \\(?1:)\\)" "\\1"
+                          text-strange-parens-changed))
        ;; Sometimes there are spaces before commas.
        (text-space-before-comma-removed
         (replace-regexp-in-string " ," ","
-                                  text-multiple-spaces-removed)))
+                                  text-paren-and-space-removed)))
     text-space-before-comma-removed))
 
 (defun woerterbuch--definitions-retrieve-as-list (word)
   "Retrieve the definitions for WORD as a list.
+If INCLUDE-EXAMPLES is non-nil the examples are also returned.
 Each list consist of one or multiple definitions (meanings) of a word. Each
 definition can a list of hold subdefinitions. Returns a cons with car being the
 word and cdr the definitions. The word is returned as it can differntiate from
 the WORD used as parameter when a baseform is used to retrieve the definitions.
+When INCLUDE-EXAMPLES is non-nil then each definition is a cons cell with the
+car being the definition and the cdr the examples.
 Returns nil if no definition was found."
-  (let* ((baseform (woerterbuch--definitions-get-baseform word))
-         (raw-definitions (woerterbuch--definitions-retrieve-raw baseform)))
+  (let* ((baseform (woerterbuch--definitions-word-baseform word))
+         (raw-definitions (woerterbuch--definitions-retrieve-raw
+                           baseform woerterbuch-definitions-examples-add)))
     (let ((definitions (woerterbuch--definitions-to-list raw-definitions)))
       (cons baseform definitions))))
 
@@ -348,11 +402,22 @@ The list bullet point can be configured with `woerterbuch-list-bullet-point'."
   (let ((lvl (or lvl 0)))
     (mapconcat
      (lambda (definition)
-       (let ((text (format "%s%s %s"
-                           (make-string (* 2 lvl) ? )
-                           woerterbuch-list-bullet-point
-                           (car definition)))
-             (children (car-safe (cdr-safe definition))))
+       (let* ((examples (woerterbuch--definitions-examples-to-string
+                         definition lvl))
+              ;; If examples are added make the meaning be bold.
+              (definition-text (plist-get definition :definition))
+              (text-format (if (and examples
+                                    (not (string-empty-p definition-text)))
+                               "%s%s *%s*"
+                             "%s%s %s"))
+              (text (format text-format
+                            (make-string (* 2 lvl) ? )
+                            woerterbuch-list-bullet-point
+                            (plist-get definition :definition)))
+              (text (if examples
+                        (concat text "\n" examples)
+                      text))
+              (children (plist-get definition :children)))
          (if children
              ;; Call function again with children.
              (format
@@ -361,6 +426,23 @@ The list bullet point can be configured with `woerterbuch-list-bullet-point'."
            text)))
      definitions "\n")))
 
+(defun woerterbuch--definitions-examples-to-string (definition lvl)
+  "Convert the examples in DEFINITION to a string.
+If no examples exist nil is returned.
+LVL is used when the function is called recursively to process the children."
+  (when-let ((examples (plist-get definition :examples))
+             (heading (format "%s%s Beispiele"
+                              (make-string (+ 2 (* 2 lvl)) ? )
+                              woerterbuch-list-bullet-point)))
+    (concat heading
+            "\n"
+            (mapconcat (lambda (example)
+                         (format "%s%s %s"
+                                 (make-string (+ 4 (* 2 lvl)) ? )
+                                 woerterbuch-list-bullet-point
+                                 example))
+                       examples "\n"))))
+
 (defun woerterbuch--definitions-retrieve-as-string (word &optional with-heading)
   "Retrieve the definitions for WORD as a string.
 Returns a cons with car being the WORD and cdr the definitions as string.
@@ -368,8 +450,7 @@ The car will be the baseform if the WORD was not a baseform.
 If no definitions are found it inserts a link to the dwds page as string.
 If WITH-HEADING is non-nil a heading with the WORD as text is added above the
 definitions."
-  (let* ((word-and-definitions (woerterbuch--definitions-retrieve-as-list
-                                word))
+  (let* ((word-and-definitions (woerterbuch--definitions-retrieve-as-list word))
          (word-used (car-safe word-and-definitions))
          (definitions (cdr-safe word-and-definitions))
          (text (if definitions
@@ -419,7 +500,7 @@ Returns the buffer."
   "Show the definitions for the word at point in an `org-mode' buffer.
 Returns the buffer."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
+  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
       (woerterbuch-definitions-show-in-org-buffer word)
     (user-error "No word at point")))
@@ -641,7 +722,7 @@ The WORD needs to be in baseform."
                    ;; Add spaces at the beginning if not starting with -.
                    (text-cleaned (replace-regexp-in-string "^[^-]" "  "
                                                            text-cleaned)))
-                (format "\n[[%1$s][Wiktionary:]]\n\n%3$s"
+                (format woerterbuch-synonyms-wiktionary-format
                         url word text-cleaned)))
           (kill-buffer buffer))))))
 
@@ -669,7 +750,7 @@ Returns the buffer."
   "Show the synonyms for the word at point in an `org-mode' buffer.
 Returns the buffer."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
+  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
       (woerterbuch-synonyms-show-in-org-buffer word)
     (user-error "No word at point")))
@@ -718,7 +799,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 (defun woerterbuch-synonyms-lookup-word-at-point ()
   "Lookup synonyms for word at point and add to kill ring."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
+  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
       (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
         (kill-new synonym)
@@ -729,7 +810,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 (defun woerterbuch-synonyms-replace-word-at-point ()
   "Lookup synonyms for wort at point or selection and replace it."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--get-word-at-point-or-selection))
+  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds))
            (bounds (cdr word-and-bounds)))
       (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
