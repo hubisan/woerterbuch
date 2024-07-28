@@ -67,7 +67,7 @@
 (defcustom woerterbuch-org-buffer-display-function #'pop-to-buffer
   "Function used to the display the org buffer with the definitions or synonyms.
 The function takes buffer as argument.
-The function `woerterbuch--display-in-side-window' may be used to show the org
+The function `woerterbuch-display-in-side-window' may be used to show the org
 buffer in a side window. Use with `apply-partially' to set the side."
   :type 'function)
 
@@ -218,7 +218,7 @@ Returns a cons cell with the car being the word and cdr the bounds."
     (insert-file-contents path)
     (buffer-string)))
 
-(defun woerterbuch--display-in-side-window (side width buffer)
+(defun woerterbuch-display-in-side-window (side width buffer)
   "Display BUFFER in side window on SIDE specified and select it.
 Specify WIDTH and HEIGHT or set em to nil to not change it manually."
   (let* ((alist (list (cons 'side side)))
