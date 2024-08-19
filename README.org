@@ -114,11 +114,11 @@ Set the following variables to change the behavior of the package:
     (setq woerterbuch-org-buffer-display-function
           (apply-partially #'woerterbuch-display-in-side-window 'right 80))
   #+END_SRC
-- ~woerterbuch-list-bullet-point~ ~"-"~ \\
+- ~woerterbuch-list-bullet-point~ ~"-"~ :: \\
   String to use as list bullet point when converting synonyms or definitions to a list.
-- ~woerterbuch-insert-org-heading-format~ ~"%s %s\n\n%s"~ \\
+- ~woerterbuch-insert-org-heading-format~ :: ~"%s %s\n\n%s"~ \\
   Format used when inserting an Org heading before content.
-- ~woerterbuch-definitions-heading-text-format~ \\
+- ~woerterbuch-definitions-heading-text-format~ ::
   ~"[[https://www.dwds.de/wb/%1$s][%1$s]] - Bedeutungen"~ \\
   Format used for the heading text when inserting an Org heading before content.
 - ~woerterbuch-definitions-no-matches-text-format~ \\
@@ -128,7 +128,7 @@ Set the following variables to change the behavior of the package:
   If non-nil examples for definitions are added.
 - ~woerterbuch-definitions-examples-max~ ~2~ \\
   The maximum number of examples to add for each definition.
-- ~woerterbuch-synonyms-heading-text-format~ \\
+- ~woerterbuch-synonyms-heading-text-format~  \\
   ~"[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"~ \\
   Format used for the heading text when inserting an Org heading before content.
 - ~woerterbuch-synonyms-no-matches-text-format~ \\
