@@ -50,14 +50,10 @@ If a word is not in its base form, the base form is determined and definitions o
 
 *** Show Definitions
 
-- ~woerterbuch-definitions-show-in-org-buffer~ \\
-  Show the definitions for a word in an Org buffer. Reads the word from the minibuffer.
-- ~woerterbuch-definitions-show-in-org-buffer-for-word-at-point~ \\
-  Show the definitions for a word at point in an Org buffer.
-- ~woerterbuch-definitions-insert-into-org-buffer~ \\
-  Read a word from the minibuffer and insert the definitions as a list into the current Org buffer. If called with a prefix arg (C-u), it adds a heading with the word as the title before the list.
-- ~woerterbuch-definitions-kill-as-org-mode-syntax~ \\
-  Add the definitions for word read from the minibuffer to the kill ring as Org syntax. If called with a prefix arg (C-u), it adds a heading with the word as title before the list.
+- woerterbuch-definitions-show-in-org-buffer :: Show the definitions for a word in an Org buffer. Reads the word from the minibuffer.
+- woerterbuch-definitions-show-in-org-buffer-for-word-at-point :: Show the definitions for a word at point in an Org buffer.
+- woerterbuch-definitions-insert-into-org-buffer :: Read a word from the minibuffer and insert the definitions as a list into the current Org buffer. If called with a prefix arg (C-u), it adds a heading with the word as the title before the list.
+- woerterbuch-definitions-kill-as-org-mode-syntax :: Add the definitions for word read from the minibuffer to the kill ring as Org syntax. If called with a prefix arg (C-u), it adds a heading with the word as title before the list.
 
 Example output for word "Wörterbuch":
 
@@ -71,20 +67,13 @@ Example output for word "Wörterbuch":
 
 *** Show Synonyms
 
-- ~woerterbuch-synonyms-show-in-org-buffer~ \\
-  Show the synonyms for a word in an Org buffer. Reads the word from the minibuffer.
-- ~woerterbuch-synonyms-show-in-org-buffer-for-word-at-point~ \\
-  Show the synonyms for a word at point in an Org buffer.
-- ~woerterbuch-synonyms-insert-into-org-buffer~ \\
-  Read a word from the minibuffer and insert the synonyms as a list into the current Org buffer. If called with a prefix arg (C-u), it adds a heading with the word as the title before the list.
-- ~woerterbuch-synonyms-kill-as-org-mode-syntax~ \\
-  Add the synonyms for word read from the minibuffer to the kill ring as Org syntax. If called with a prefix arg (C-u), it adds a heading with the word as title before the list.
-- ~woerterbuch-synonyms-insert~ \\
-  Lookup synonyms for word read from minibuffer and insert selected word at point. If called with a prefix arg (C-u) the selected word is added to the kill ring instead.
-- ~woerterbuch-synonyms-lookup-word-at-point~ \\
-  Lookup synonyms for word at point and add to kill ring. 
-- ~woerterbuch-synonyms-replace-word-at-point~ \\
-  Lookup synonyms for wort at point or selection and replace it. This is only of use if the word at point is in its baseform.
+- woerterbuch-synonyms-show-in-org-buffer :: Show the synonyms for a word in an Org buffer. Reads the word from the minibuffer.
+- woerterbuch-synonyms-show-in-org-buffer-for-word-at-point :: Show the synonyms for a word at point in an Org buffer.
+- woerterbuch-synonyms-insert-into-org-buffer :: Read a word from the minibuffer and insert the synonyms as a list into the current Org buffer. If called with a prefix arg (C-u), it adds a heading with the word as the title before the list.
+- woerterbuch-synonyms-kill-as-org-mode-syntax :: Add the synonyms for word read from the minibuffer to the kill ring as Org syntax. If called with a prefix arg (C-u), it adds a heading with the word as title before the list.
+- woerterbuch-synonyms-insert :: Lookup synonyms for word read from minibuffer and insert selected word at point. If called with a prefix arg (C-u) the selected word is added to the kill ring instead.
+- woerterbuch-synonyms-lookup-word-at-point :: Lookup synonyms for word at point and add to kill ring. 
+- woerterbuch-synonyms-replace-word-at-point :: Lookup synonyms for wort at point or selection and replace it. This is only of use if the word at point is in its baseform.
 
 Example output for the word "Wörterbuch", with synonyms from Wiktionary enabled:
 
@@ -107,8 +96,7 @@ Example output for the word "Wörterbuch", with synonyms from Wiktionary enabled
 
 Set the following variables to change the behavior of the package:
 
-- ~woerterbuch-org-buffer-display-function~  ~#'pop-to-buffer~ \\
-  Function used to the display the org buffer with the definitions or synonyms. The function takes buffer as argument. There is also a function provided to show it in a dedicated side window: 
+- woerterbuch-org-buffer-display-function :: ~#'pop-to-buffer~ Function used to the display the org buffer with the definitions or synonyms. The function takes buffer as argument. There is also a function provided to show it in a dedicated side window: 
   #+BEGIN_SRC emacs-lisp
     ;; Set the variable:
     (setq woerterbuch-org-buffer-display-function
@@ -116,28 +104,15 @@ Set the following variables to change the behavior of the package:
   #+END_SRC
 - woerterbuch-list-bullet-point :: ~"-"~ String to use as list bullet point when converting synonyms or definitions to a list.
 - woerterbuch-insert-org-heading-format :: ~"%s %s\n\n%s"~ Format used when inserting an Org heading before content.
-- ~woerterbuch-definitions-heading-text-format~ ::
-  ~"[[https://www.dwds.de/wb/%1$s][%1$s]] - Bedeutungen"~ \\
-  Format used for the heading text when inserting an Org heading before content.
-- ~woerterbuch-definitions-no-matches-text-format~ \\
-  ~"Keine Bedeutungen für [[https://www.dwds.de/wb/%1$s][%1$s]] gefunden.\n"~ \\
-  Format used for the text when no definitions are found.
-- ~woerterbuch-definitions-examples-add~ ~nil~ \\
-  If non-nil examples for definitions are added.
-- ~woerterbuch-definitions-examples-max~ ~2~ \\
-  The maximum number of examples to add for each definition.
-- ~woerterbuch-synonyms-heading-text-format~  \\
-  ~"[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"~ \\
-  Format used for the heading text when inserting an Org heading before content.
-- ~woerterbuch-synonyms-no-matches-text-format~ \\
-  ~"Keine Synonyme für [[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] gefunden.\n"~ \\
-  Format used for the text when no synonyms are found.
-- ~woerterbuch-synonyms-add-synonyms-from-wiktionary~ ~nil~
-  If non-nil synoyms taken from Wiktionary are added.
-- ~woerterbuch-synonyms-wiktionary-format~ ~"\nWiktionary:\n\n%3$s"~ \\
-  Format used for the synonyms added from wiktionary.
-- ~woerterbuch-quit-window-key-binding~ ~C-c C-k~ \\
-  Key binding to use for `quit-window' in the woerterbuch buffer. If set to nil no key binding is set.
+- woerterbuch-definitions-heading-text-format :: ~"[[https://www.dwds.de/wb/%1$s][%1$s]] - Bedeutungen"~ Format used for the heading text when inserting an Org heading before content.
+- woerterbuch-definitions-no-matches-text-format :: ~"Keine Bedeutungen für [[https://www.dwds.de/wb/%1$s][%1$s]] gefunden.\n"~ Format used for the text when no definitions are found.
+- woerterbuch-definitions-examples-add :: ~nil~ If non-nil examples for definitions are added.
+- woerterbuch-definitions-examples-max :: ~2~ The maximum number of examples to add for each definition.
+- woerterbuch-synonyms-heading-text-format :: ~"[[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] - Synonyme"~ Format used for the heading text when inserting an Org heading before content.
+- woerterbuch-synonyms-no-matches-text-format :: ~"Keine Synonyme für [[https://www.openthesaurus.de/synonyme/%1$s][%1$s]] gefunden.\n"~ Format used for the text when no synonyms are found.
+- woerterbuch-synonyms-add-synonyms-from-wiktionary :: ~nil~ If non-nil synoyms taken from Wiktionary are added.
+- woerterbuch-synonyms-wiktionary-format :: ~"\nWiktionary:\n\n%3$s"~ Format used for the synonyms added from wiktionary.
+- woerterbuch-quit-window-key-binding :: ~C-c C-k~ Key binding to use for `quit-window' in the woerterbuch buffer. If set to nil no key binding is set.
 
 ** Key Bindings
 :PROPERTIES:
