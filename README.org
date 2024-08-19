@@ -114,10 +114,8 @@ Set the following variables to change the behavior of the package:
     (setq woerterbuch-org-buffer-display-function
           (apply-partially #'woerterbuch-display-in-side-window 'right 80))
   #+END_SRC
-- ~woerterbuch-list-bullet-point~ ~"-"~ :: \\
-  String to use as list bullet point when converting synonyms or definitions to a list.
-- ~woerterbuch-insert-org-heading-format~ :: ~"%s %s\n\n%s"~ \\
-  Format used when inserting an Org heading before content.
+- woerterbuch-list-bullet-point :: ~"-"~ String to use as list bullet point when converting synonyms or definitions to a list.
+- woerterbuch-insert-org-heading-format :: ~"%s %s\n\n%s"~ Format used when inserting an Org heading before content.
 - ~woerterbuch-definitions-heading-text-format~ ::
   ~"[[https://www.dwds.de/wb/%1$s][%1$s]] - Bedeutungen"~ \\
   Format used for the heading text when inserting an Org heading before content.
