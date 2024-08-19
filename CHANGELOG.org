@@ -3,17 +3,13 @@
 * Changelog
 
 ** Planned
-
-- =Added= Functions to show definitions and synonyms.
-- =Added= Documentation for definitions.
-- =Added= Functions to lookup and show definitions.
-- =Added= Functions to retrieve German definitions for a word from [[https://www.dwds.de]]
+*** TODO Functions to show definitions and synonyms at once
 
 ** Unreleased
+  
+** 0.1.0 - [2024-08-19 Mon] 
 
-- =Added= Documentation for synonyms.
-- =Added= Functions to lookup and show synonyms.
-- =Added= Functions to retrieve German synonyms for a word from [[https://www.openthesaurus.de/]].
+Initial release after having used it for a while to sort of test.
 
 ** Remark
 

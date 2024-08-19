@@ -1,46 +1,82 @@
 # Makefile
 
-.PHONY: help all test test-as-is lint compile clean run-emacs
+EMACS ?= emacs
+EASK ?= eask
 
-verbose ?= 
+.PHONY: help all clean package install compile test test-local docker-test lint emacs
 
 help:
 	$(info )
 	$(info - make            # Show this help)
-	$(info - make help       # Show this help)
-	$(info - make all        # Run tests, lint and compile)
-	$(info - make test       # Run tests)
-	$(info - make test-as-is # Run tests and use as-is instead of packaged)
-	$(info - make lint       # Run linters)
-	$(info - make compile    # Compiles the files to check for errors/warnings)
+	$(info - make all        # Run clean, package, install, compile, lint and test)
 	$(info - make clean      # Clean everything)
-	$(info - make run-emacs  # Run Emacs with package and dependencies installed)
+	$(info - make package    # Build package artifact)
+	$(info - make install    # Install the package)
+	$(info - make compile    # Compiles the files to check for errors/warnings)
+	$(info - make test       # Run tests with buttercup)
+	$(info - make test-local # Test locally (compile, test, lint))
+	$(info - make lint       # Clean autoloads and run linters)
+	$(info - make emacs      # Run Emacs with package and dependencies installed)
 	$(info )
 	@echo > /dev/null
 
-all: test compile lint
+all: clean package install compile lint test
 
-test:
-	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> TEST'
-	@eldev --packaged --debug $(verbose) --time test
+clean:
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> CLEAN ALL'
+	@$(EASK) clean all
 
-test-as-is:
-	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> TEST'
-	@eldev --as-is --debug $(verbose) --time test
+package:
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> PACKAGING'
+	@$(EASK) package
 
-lint:
-	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> LINT'
-	@eldev --debug $(verbose) --time lint
+install:
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> INSTALL'
+	@$(EASK) install
 
 compile:
 	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> COMPILE'
-	@eldev --debug $(verbose) --time compile --warnings-as-errors
-	@eldev clean .elc > /dev/null
+	@$(EASK) recompile
 
-clean:
-	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> CLEAN'
-	@eldev clean
+test:
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> TEST'
+	@$(EASK) install-deps --dev
+	@$(EASK) test buttercup
 
-run-emacs:
+test-local: compile test lint
+
+lint:
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> LINT'
+	@$(EASK) clean autoloads --verbose 0
+	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> package-lint'
+	@$(EASK) lint package --verbose 0
+	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> elint'
+	@$(EASK) lint elint --verbose 0
+	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> checkdoc'
+	@$(EASK) lint checkdoc --verbose 0
+	@printf '\e[1;34m%-10s\e[0m\n' '>>> indent-lint'
+	@$(EASK) lint indent --verbose 0
+	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> relint'
+	@$(EASK) lint regexps --verbose 0
+
+docker-test:
+ifndef emacs
+	$(error emacs is undefined. Use 'make docker-test emacs=<version>')
+endif
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> COMPILE'
+	$(EASK) docker $(emacs) recompile
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> TEST'
+	$(EASK) docker $(emacs) install-deps --dev
+	$(EASK) docker $(emacs) test buttercup
+	$(EASK) docker $(emacs) clean autoloads
+	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> LINT'
+	$(EASK) docker $(emacs) lint package --verbose 0
+	$(EASK) docker $(emacs) lint elint --verbose 0
+	$(EASK) docker $(emacs) lint checkdoc --verbose 0
+	$(EASK) docker $(emacs) lint indent --verbose 0
+	$(EASK) docker $(emacs) lint regexps --verbose 0
+
+emacs:
 	@printf '\n\e[1;34m%-10s\e[0m\n\n' '>> RUN EMACS'
-	@eldev emacs
+	$(EASK) install
+	$(EASK) emacs &

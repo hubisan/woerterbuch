@@ -12,6 +12,10 @@ tramp
 # Eldev
 /.eldev/
 
+# Eask
+.eask/
+dist/
+
 # Flycheck
 flycheck_*.el
 

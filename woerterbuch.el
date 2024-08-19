@@ -1,4 +1,4 @@
-;;; woerterbuch.el --- German Dictionary and Thesaurus -*- lexical-binding: t -*-
+;;; woerterbuch.el --- Lookup definitions and synonyms for German words -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2023 Daniel Hubmann
 
@@ -6,8 +6,8 @@
 ;; Maintainer: Daniel Hubmann <hubisan@gmail.com>
 ;; URL: https://github.com/hubisan/woerterbuch
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "29.4"))
-;; Keywords: convenience
+;; Package-Requires: ((emacs "29.1"))
+;; Keywords: dictionary, thesaurus, convenience
 
 ;; This file is not part of GNU Emacs
 
@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 
-;; Lookup definitions and synonyms for German words with Emacs.
+;; Lookup definitions and synonyms for German words.
 
 ;; Main features:
 
@@ -52,10 +52,8 @@
 (require 'thingatpt)
 (require 'dom)
 (require 'find-func)
-
-;; Require `org' once it is used.
-(declare-function org-paste-subtree "org")
-(declare-function org-current-level "org")
+(require 'org)
+(require 'derived)
 
 ;;; Customization
 
@@ -104,7 +102,7 @@ Format is called with one parameters:
 (defcustom woerterbuch-definitions-examples-add nil
   "If non-nil examples for definitions are added.
 Use `woerterbuch-definitions-examples-max' to limit the number of examples, it
-defaults to 3."
+defaults to 2."
   :type 'integer
   :group 'woerterbuch)
 
@@ -176,6 +174,12 @@ If set to nil no key binding is set."
   (format woerterbuch-insert-org-heading-format
           (make-string level ?*) heading content))
 
+;;   "Insert TEXT on current line if empty else on a new line.
+;; If WITH-HEADING is non-nil the text includes an Org heading and is inserted
+;; using `org-paste-subtree'. Will paste with the same level as the current
+;; heading. If BUFFER is given, insert the text into that buffer instead of the
+;; current."
+
 (defun woerterbuch--org-insert (text with-heading &optional buffer)
   "Insert TEXT on current line if empty else on a new line.
 If WITH-HEADING is non-nil the text includes an Org heading and is inserted
@@ -186,8 +190,7 @@ current."
     (if with-heading
         (if (or (eq major-mode 'org-mode)
                 (eq major-mode 'woerterbuch-mode))
-            (progn (require 'org)
-                   (org-paste-subtree (or (org-current-level) 1) text))
+            (org-paste-subtree (or (org-current-level) 1) text)
           (user-error "Text can only be inserted in an Org buffer"))
       ;; NOTE Not using (thing-at-point 'line) as this returns nil, if a buffer
       ;; only contains whitespace.
@@ -234,7 +237,7 @@ Specify WIDTH and HEIGHT or set em to nil to not change it manually."
   "Url to retrieve the definitions for a word as html from DWDS.")
 
 (defun woerterbuch--definitions-retrieve-examples (leseart)
-  "Retrieve the examples for LESEART"
+  "Retrieve the examples for LESEART."
   (when-let* ((dom (dom-children
                     (car (dom-by-class
                           leseart
@@ -249,8 +252,8 @@ Specify WIDTH and HEIGHT or set em to nil to not change it manually."
                                            "dwdswb-lesart")
                                   (throw 'result nil))))))
               (examples-texts (mapcar #'dom-texts
-                                     (dom-by-class examples-dom
-                                                   "^dwdswb-belegtext$"))))
+                                      (dom-by-class examples-dom
+                                                    "^dwdswb-belegtext$"))))
     (if woerterbuch-definitions-examples-max
         (take woerterbuch-definitions-examples-max examples-texts)
       examples-texts)))
@@ -387,7 +390,7 @@ therefore this function is designed to also work with more than one level."
        (text-paren-and-space-removed
         ;; Remove after starting paren or before closing paren.
         (replace-regexp-in-string "\\(?1:(\\) \\| \\(?1:)\\)" "\\1"
-                          text-strange-parens-changed))
+                                  text-strange-parens-changed))
        ;; Sometimes there are spaces before commas.
        (text-space-before-comma-removed
         (replace-regexp-in-string " ," ","
@@ -481,16 +484,6 @@ definitions."
             text)))
     (cons word-used definitions-string)))
 
-(defun woerterbuch--definitions-read-definition (word)
-  "Read a definition for WORD in the minibuffer and return it.
-Returns nil if no definition was selected."
-  (if-let ((word-and-definitions (woerterbuch--definitions-retrieve-as-list word))
-           (word-used (car-safe word-and-definitions))
-           (definitions (cdr-safe word-and-definitions)))
-      (when-let ((definitions-flattened (flatten-list definitions)))
-        (completing-read "Select definition: " definitions-flattened nil t))
-    (user-error "No synonyms found for %s" word)))
-
 ;;;###autoload
 (defun woerterbuch-definitions-show-in-org-buffer (&optional word)
   "Show the defintions for WORD in an `org-mode' buffer.
@@ -540,16 +533,6 @@ before the definitions."
   (interactive "sWort: \nP")
   (kill-new (cdr-safe
              (woerterbuch--definitions-retrieve-as-string word with-heading))))
-
-;;;###autoload
-(defun woerterbuch-definitions-insert (word &optional to-kill-ring)
-  "Lookup definitions for WORD and insert selected definition at point.
-If TO-KILL-RING is non-nil it is added to the kill ring instead."
-  (interactive "sWort: \nP")
-  (when-let ((definition (woerterbuch--definitions-read-definition word)))
-    (if to-kill-ring
-        (kill-new definition)
-      (insert definition))))
 
 ;;; Synonyms
 
@@ -646,11 +629,11 @@ The string is a list. The group of synonyms for each meaning are
 shown as an item. The list bullet point can be configured with
 `woerterbuch-list-bullet-point'"
   (mapconcat
-     (lambda (elt)
-       (format "%s %s"
-               woerterbuch-list-bullet-point
-               (mapconcat #'identity elt ", ")))
-     synonyms "\n"))
+   (lambda (elt)
+     (format "%s %s"
+             woerterbuch-list-bullet-point
+             (mapconcat #'identity elt ", ")))
+   synonyms "\n"))
 
 (defun woerterbuch--synonyms-retrieve-as-string (word &optional with-heading)
   "Retrieve the synonyms for WORD as a string in Org-mode syntax.
