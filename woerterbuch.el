@@ -515,7 +515,7 @@ Returns the buffer."
 
 ;;;###autoload
 (defun woerterbuch-definitions-insert-into-org-buffer (word &optional with-heading)
-  "Insert the definitions for WORD into an `org-mode' buffer.
+  "Insert the definitions for WORD into the current `org-mode' buffer.
 If WITH-HEADING is non-nil it inserts a heading with
 the WORD as text before the definitions."
   (interactive "sWort: \nP")
@@ -755,7 +755,7 @@ Returns the buffer."
 
 ;;;###autoload
 (defun woerterbuch-synonyms-insert-into-org-buffer (word &optional with-heading)
-  "Insert the synonyms for WORD into an `org-mode' buffer.
+  "Insert the synonyms for WORD into the current `org-mode' buffer.
 Will insert a list with each item being the synonyms for a meaning. If
 WITH-HEADING is non-nil it inserts a heading with the WORD as text before the
 synonyms. If there are no synonyms found it will insert a text with a link to
@@ -815,6 +815,53 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
         (delete-region (car bounds) (cdr bounds))
         (insert synonym))
     (user-error "No word at point")))
+
+;;; Synonyms & Definitions
+
+;;;###autoload
+(defun woerterbuch-definitions-and-synonyms-show-in-org-buffer (&optional word)
+  "Show both the definitions and synonyms for WORD in an `org-mode' buffer.
+Returns the buffer."
+  (interactive "sWort: ")
+  (let ((buffer (get-buffer-create woerterbuch--org-buffer-name)))
+    (with-current-buffer buffer
+      (erase-buffer))
+    (funcall woerterbuch-org-buffer-display-function buffer)
+    (with-current-buffer buffer
+      (woerterbuch-mode)
+      (woerterbuch-definitions-and-synonyms-insert-into-org-buffer word)
+      buffer)))
+
+;;;###autoload
+(defun woerterbuch-definitions-and-synonyms-show-in-org-buffer-for-word-at-point ()
+  "Show both the definitions and synonyms for the word at point in an org buffer.
+Returns the buffer."
+  (interactive)
+  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
+           (word (car word-and-bounds)))
+      (woerterbuch-definitions-and-synonyms-show-in-org-buffer word)
+    (user-error "No word at point")))
+
+;;;###autoload
+(defun woerterbuch-definitions-and-synonyms-insert-into-org-buffer (word)
+  "Insert both the definitions and synonyms for WORD in the current buffer.
+Checks if the current buffer is in `org-mode' or `woerterbuch-mode'."
+  (interactive "sWort: ")
+  (if (or (eq major-mode 'org-mode)
+          (eq major-mode 'woerterbuch-mode))
+      (let (text)
+        (with-temp-buffer
+          (insert (format "* %s\n\n" word))
+          (insert "** Bedeutungen\n\n")
+          (woerterbuch-definitions-insert-into-org-buffer word)
+          (goto-char (point-max))
+          (insert "\n** Synonyme\n\n")
+          (woerterbuch-synonyms-insert-into-org-buffer word)
+          (goto-char (point-max))
+          (setq text (buffer-string)))
+        (save-excursion
+          (org-paste-subtree (or (org-current-level) 1) text)))
+    (user-error "Text can only be inserted in an Org buffer")))
 
 (provide 'woerterbuch)
 

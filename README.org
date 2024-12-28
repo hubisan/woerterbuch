@@ -6,7 +6,8 @@
 
 Retrieve definitions (meanings) and synonyms for German words with Emacs.
 
-** TODO Add image before Main features
+#+attr_org: :width 300px
+[[file:woerterbuch.webp]]
 
 ** Main features                                                :noexport_0:
 
@@ -87,6 +88,12 @@ Example output for the word "Wörterbuch", with synonyms from Wiktionary enabled
    - manchmal (veraltend) auch: Diktionär, Dictionnaire, Enzyklopädie, Lexikon, Thesaurus
  #+END_SRC
 
+*** Show Definitions & Synonyms 
+
+- woerterbuch-definitions-and-synonyms-show-in-org-buffer :: Show both the definitions and synonyms for a word in an Org buffer. Reads the word from the minibuffer.
+- woerterbuch-definitions-and-synonyms-show-in-org-buffer-for-word-at-point :: Show both the definitions and synonyms for the word at point in an Org buffer.
+- woerterbuch-definitions-and-synonyms-insert-into-org-buffer :: Read a word from the minibuffer and insert both definitions and synonyms into the current Org buffer.
+
 ** Customization
 :PROPERTIES:
 :CUSTOM_ID: customization
@@ -143,7 +150,7 @@ In any case please check out the [[./CONTRIBUTING.org::*Contributing][contributi
 
 **** Openthesaurus
 
-The text returned can contains additional information in parentheses.
+The text returned can contain additional information in parentheses.
 
 Examples:
 
