@@ -843,7 +843,7 @@ Returns the buffer."
     (user-error "No word at point")))
 
 ;;;###autoload
-(defun woerterbuch-definitions-and-synonyms-insert-into-org-buffer (word)
+(defun woerterbuch-definitions-and-synonyms-insert-into-org-buffer (&optional word)
   "Insert both the definitions and synonyms for WORD in the current buffer.
 Checks if the current buffer is in `org-mode' or `woerterbuch-mode'."
   (interactive "sWort: ")
