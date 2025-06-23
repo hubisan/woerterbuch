@@ -207,7 +207,7 @@ current."
 (defun woerterbuch--word-at-point-or-selection ()
   "Get the word at point or the selection if region is active.
 Returns a cons cell with the car being the word and cdr the bounds."
-  (if-let ((bounds (if (use-region-p)
+  (if-let* ((bounds (if (use-region-p)
                        (cons (region-beginning) (region-end))
                      (bounds-of-thing-at-point 'word))))
       (cons
@@ -448,7 +448,7 @@ The list bullet point can be configured with `woerterbuch-list-bullet-point'."
   "Convert the examples in DEFINITION to a string.
 If no examples exist nil is returned.
 LVL is used when the function is called recursively to process the children."
-  (when-let ((examples (plist-get definition :examples))
+  (when-let*((examples (plist-get definition :examples))
              (heading (format "%s%s Beispiele"
                               (make-string (+ 2 (* 2 lvl)) ? )
                               woerterbuch-list-bullet-point)))
@@ -508,7 +508,7 @@ Returns the buffer."
   "Show the definitions for the word at point in an `org-mode' buffer.
 Returns the buffer."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
+  (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
       (woerterbuch-definitions-show-in-org-buffer word)
     (user-error "No word at point")))
@@ -666,10 +666,10 @@ synonyms."
 (defun woerterbuch--synonyms-read-synonym (word)
   "Read a synonym for WORD in the minibuffer and return it.
 Returns nil if no synonym was selected."
-  (if-let ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word t))
+  (if-let* ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word t))
            (word-used (car-safe word-and-synonyms))
            (synonyms (cdr-safe word-and-synonyms)))
-      (when-let ((synonyms-flattened (apply #'append synonyms))
+      (when-let*((synonyms-flattened (apply #'append synonyms))
                  (synonyms-no-duplicates (seq-uniq synonyms-flattened))
                  (synonyms-sorted (seq-sort #'string-lessp
                                             synonyms-no-duplicates)))
@@ -748,7 +748,7 @@ Returns the buffer."
   "Show the synonyms for the word at point in an `org-mode' buffer.
 Returns the buffer."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
+  (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
       (woerterbuch-synonyms-show-in-org-buffer word)
     (user-error "No word at point")))
@@ -788,7 +788,7 @@ and the list of synonyms below."
   "Lookup synonyms for WORD and insert selected word at point.
 If TO-KILL-RING is non-nil it is added to the kill ring instead."
   (interactive "sWort: \nP")
-  (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
+  (when-let*((synonym (woerterbuch--synonyms-read-synonym word)))
     (if to-kill-ring
         (kill-new synonym)
       (insert synonym))))
@@ -797,9 +797,9 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 (defun woerterbuch-synonyms-lookup-word-at-point ()
   "Lookup synonyms for word at point and add to kill ring."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
+  (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
-      (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
+      (when-let*((synonym (woerterbuch--synonyms-read-synonym word)))
         (kill-new synonym)
         synonym)
     (user-error "No word at point")))
@@ -808,10 +808,10 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
 (defun woerterbuch-synonyms-replace-word-at-point ()
   "Lookup synonyms for wort at point or selection and replace it."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
+  (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds))
            (bounds (cdr word-and-bounds)))
-      (when-let ((synonym (woerterbuch--synonyms-read-synonym word)))
+      (when-let*((synonym (woerterbuch--synonyms-read-synonym word)))
         (delete-region (car bounds) (cdr bounds))
         (insert synonym))
     (user-error "No word at point")))
@@ -837,7 +837,7 @@ Returns the buffer."
   "Show both the definitions and synonyms for the word at point in an org buffer.
 Returns the buffer."
   (interactive)
-  (if-let ((word-and-bounds (woerterbuch--word-at-point-or-selection))
+  (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
            (word (car word-and-bounds)))
       (woerterbuch-definitions-and-synonyms-show-in-org-buffer word)
     (user-error "No word at point")))

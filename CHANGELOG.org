@@ -7,6 +7,7 @@
 
 ** Unreleased
 
+- =CHANGED= Using if-let* and when-let* to be future proof.
 - =CHANGED= Moved .el file into a lisp directory. Else using the package with use-package and ~:vc~ leads to compile errors as there is no ~:files~, only ~:lisp-dir~.
 - =REMOVED= Removed elint from linters, always gave an error. But this makes it possible to add other Emacs versions for testing. This was removed, should be added in other projects:
   #+BEGIN_SRC makefile
