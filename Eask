@@ -14,8 +14,10 @@
 (keywords "dictionary" "thesaurus" "convenience")
 (license "GPLv3")
 
-(package-file "woerterbuch.el")
-(files "woerterbuch.el")
+(package-file "lisp/woerterbuch.el")
+(files "lisp/*.el")
+
+(load-paths "./lisp/" "./tests/")
 
 ;; https://emacs-eask.github.io/DSL/#-source-alias
 (source "gnu")

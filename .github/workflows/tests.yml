@@ -27,11 +27,10 @@ jobs:
         # os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest]
         emacs-version:
-          - snapshot
           # for some reason 29.4 gives an error with elint. base64.el not
-          # in path or so. No idea why.
-          # - 29.4
-          # - snapshot
+          # in path or so. This was also the case with 30.1. Removed elint.
+          - 30.1
+          - snapshot
         experimental: [false]
         # include:
         # - os: ubuntu-latest

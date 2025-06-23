@@ -50,8 +50,6 @@ lint:
 	@$(EASK) clean autoloads --verbose 0
 	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> package-lint'
 	@$(EASK) lint package --verbose 0
-	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> elint'
-	@$(EASK) lint elint --verbose 0
 	@printf '\e[1;34m%-10s\e[0m\n\n' '>>> checkdoc'
 	@$(EASK) lint checkdoc --verbose 0
 	@printf '\e[1;34m%-10s\e[0m\n' '>>> indent-lint'

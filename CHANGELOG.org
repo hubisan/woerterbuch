@@ -6,7 +6,14 @@
 *** TODO Functions to show definitions and synonyms at once
 
 ** Unreleased
-  
+
+- =CHANGED= Moved .el file into a lisp directory. Else using the package with use-package and ~:vc~ leads to compile errors as there is no ~:files~, only ~:lisp-dir~.
+- =REMOVED= Removed elint from linters, always gave an error. But this makes it possible to add other Emacs versions for testing. This was removed, should be added in other projects:
+  #+BEGIN_SRC makefile
+  @printf '\e[1;34m%-10s\e[0m\n\n' '>>> elint'
+  @$(EASK) lint elint --verbose 0
+  #+END_SRC
+
 ** 0.1.0 - [2024-08-19 Mon] 
 
 Initial release after having used it for a while to sort of test.
