@@ -25,7 +25,7 @@
 (source "melpa")
 
 ;; https://emacs-eask.github.io/DSL/#-depends-on-package-name-rest-recipe
-(depends-on "emacs" "29.1")
+(depends-on "emacs" "29.4")
 
 ;; https://emacs-eask.github.io/DSL/#-development-rest-body
 (development

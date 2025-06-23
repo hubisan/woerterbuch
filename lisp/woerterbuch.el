@@ -6,7 +6,7 @@
 ;; Maintainer: Daniel Hubmann <hubisan@gmail.com>
 ;; URL: https://github.com/hubisan/woerterbuch
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "29.1"))
+;; Package-Requires: ((emacs "29.4"))
 ;; Keywords: dictionary, thesaurus, convenience
 
 ;; This file is not part of GNU Emacs
