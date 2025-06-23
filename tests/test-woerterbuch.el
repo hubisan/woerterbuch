@@ -1,4 +1,4 @@
-;;; test-woerterbuch.el --- Tests  -*- lexical-binding:t -*-
+;;; test-woerterbuch.el --- Tests  -*- lexical-binding:t; no-byte-compile: t -*-
 
 ;; Testing Synonyms.
 

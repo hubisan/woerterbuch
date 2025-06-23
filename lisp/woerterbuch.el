@@ -208,8 +208,8 @@ current."
   "Get the word at point or the selection if region is active.
 Returns a cons cell with the car being the word and cdr the bounds."
   (if-let* ((bounds (if (use-region-p)
-                       (cons (region-beginning) (region-end))
-                     (bounds-of-thing-at-point 'word))))
+                        (cons (region-beginning) (region-end))
+                      (bounds-of-thing-at-point 'word))))
       (cons
        (buffer-substring-no-properties (car bounds) (cdr bounds))
        bounds)
@@ -509,7 +509,7 @@ Returns the buffer."
 Returns the buffer."
   (interactive)
   (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
-           (word (car word-and-bounds)))
+            (word (car word-and-bounds)))
       (woerterbuch-definitions-show-in-org-buffer word)
     (user-error "No word at point")))
 
@@ -667,8 +667,8 @@ synonyms."
   "Read a synonym for WORD in the minibuffer and return it.
 Returns nil if no synonym was selected."
   (if-let* ((word-and-synonyms (woerterbuch--synonyms-retrieve-as-list word t))
-           (word-used (car-safe word-and-synonyms))
-           (synonyms (cdr-safe word-and-synonyms)))
+            (word-used (car-safe word-and-synonyms))
+            (synonyms (cdr-safe word-and-synonyms)))
       (when-let*((synonyms-flattened (apply #'append synonyms))
                  (synonyms-no-duplicates (seq-uniq synonyms-flattened))
                  (synonyms-sorted (seq-sort #'string-lessp
@@ -749,7 +749,7 @@ Returns the buffer."
 Returns the buffer."
   (interactive)
   (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
-           (word (car word-and-bounds)))
+            (word (car word-and-bounds)))
       (woerterbuch-synonyms-show-in-org-buffer word)
     (user-error "No word at point")))
 
@@ -798,7 +798,7 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
   "Lookup synonyms for word at point and add to kill ring."
   (interactive)
   (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
-           (word (car word-and-bounds)))
+            (word (car word-and-bounds)))
       (when-let*((synonym (woerterbuch--synonyms-read-synonym word)))
         (kill-new synonym)
         synonym)
@@ -809,8 +809,8 @@ If TO-KILL-RING is non-nil it is added to the kill ring instead."
   "Lookup synonyms for wort at point or selection and replace it."
   (interactive)
   (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
-           (word (car word-and-bounds))
-           (bounds (cdr word-and-bounds)))
+            (word (car word-and-bounds))
+            (bounds (cdr word-and-bounds)))
       (when-let*((synonym (woerterbuch--synonyms-read-synonym word)))
         (delete-region (car bounds) (cdr bounds))
         (insert synonym))
@@ -838,7 +838,7 @@ Returns the buffer."
 Returns the buffer."
   (interactive)
   (if-let* ((word-and-bounds (woerterbuch--word-at-point-or-selection))
-           (word (car word-and-bounds)))
+            (word (car word-and-bounds)))
       (woerterbuch-definitions-and-synonyms-show-in-org-buffer word)
     (user-error "No word at point")))
 

@@ -1,4 +1,4 @@
-;;; test-helper.el --- Helper functions  -*- lexical-binding: t -*-
+;;; test-helper.el --- Helper functions  -*- lexical-binding: t; no-byte-compile: t -*-
 
 ;; Helper functions for all tests.
 
