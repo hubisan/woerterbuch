@@ -1,0 +1,83 @@
+* TODO Alle Quellen einheitlich scrapen
+
+* TODO Output definieren
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-list-allow-alphabetical t)
+#+END_SRC
+
+#+BEGIN_SRC org
+  ,#+TITLE: Haus
+  allenfalls weitere Properties wie Time
+
+  ,* Bedeutungen
+
+  ,** *DWDS Bedeutungen*
+
+  1. *aus Wänden und Dach errichtetes Gebäude für Menschen*
+     a) *zum Wohnen, Wohnhaus*
+        - Beispiele
+          - ein großes, mehrstöckiges, neues, stattliches, modernes, ruhiges, wohnliches, hässliches, baufälliges, abgewohntes, leeres, verlassenes, zerbombtes, abgebranntes Haus
+          - sein elterliches Haus
+        - *das eigene Heim*
+          - Beispiele
+            - im Haus des Freundes ein- und ausgehen
+            - eine Einladung, ein Brief flattert ins Haus
+     b) ...
+
+  ,** *Duden Bedeutungen*
+
+  Bedeutungen
+  1. *aus Wänden und Dach errichtetes Gebäude für Menschen*
+     a) *zum Wohnen, Wohnhaus*
+
+  ,** *Wiktionary Bedeutungen*
+
+  ...
+
+  ,* Synonyme
+
+  ,** *Openthesaurus Synonyme*
+
+  ...
+
+  ,** *Duden Synonyme*
+
+  ...
+
+  ,** *Wiktionary Synonyme*
+
+  ...
+
+  ,* Redewendungen
+
+  ,* Herkunft
+#+END_SRC
+
+
+* Lemma
+
+** TODO Lemma über dies rausfinden, anstatt Openthesaurus Hack
+
+Mittels Openthesaurus nicht so gut.
+Über dies könnte es funktionieren [[https://www.dwds.de/api/frequency/?q=H%C3%A4user]]
+
+* Sources
+
+** DWDS
+
+*** TODO Allenfalls zuerst prüfen, ob Seite existiert
+
+So rausfinden, ob die Seite existiert und auch ob nicht mehrere, wobei, glaube die unterschiedlichen Seiten sind nur Anker:
+
+https://www.dwds.de/api/wb/snippet/?q=Bank
+
+Genau, nur Anker:
+
+- https://www.dwds.de/wb/Bank#2
+
+** Duden
+
+** Openthesaurus
+
+** Wiktionary (DE)
