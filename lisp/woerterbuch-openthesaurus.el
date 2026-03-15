@@ -1,109 +1,126 @@
-;;; woerterbuch-openthesaurus.el --- Query synonyms from OpenThesaurus  -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2026
-
-;; Author: Your Name <you@example.com>
-;; Keywords: language, dictionary
-;; Version: 0.1
-;; Package-Requires: ((emacs "27.1"))
-;; URL: https://www.openthesaurus.de
-
-;; This file is not part of GNU Emacs.
-
-;;; Commentary:
-
-;; Simple interface to the OpenThesaurus API.
-;;
-;; Example:
-;;
-;;   (woerterbuch-openthesaurus-synsets "Baum")
-;;
-;; returns
-;;
-;; ((:categories ("Botanik")
-;;   :synonyms ("Makrophanerophyt"))
-;;  (:categories ("Mathematik")
-;;   :synonyms ("azyklischer, zusammenhängender Graph"))
-;;  (:categories ("Computer" "Biologie")
-;;   :synonyms ("Baumstruktur" "Kladogramm" ...)))
-
-;;; Code:
+;;; woerterbuch-openthesaurus.el --- OpenThesaurus backend -*- lexical-binding: t; -*-
 
 (require 'url)
 (require 'json)
-(require 'cl-lib)
 (require 'subr-x)
+(require 'woerterbuch-core)
 
-(defgroup woerterbuch-openthesaurus nil
-  "Access the OpenThesaurus API."
-  :group 'applications)
+(defconst woerterbuch-openthesaurus-base-url
+  "https://www.openthesaurus.de/synonyme/search"
+  "Base URL for OpenThesaurus requests.")
 
-(defcustom woerterbuch-openthesaurus-user-agent
-  "emacs-woerterbuch-openthesaurus/0.1 (contact: you@example.com)"
-  "User-Agent sent to the OpenThesaurus API."
-  :type 'string
-  :group 'woerterbuch-openthesaurus)
+(defun woerterbuch-openthesaurus--build-url (word)
+  "Build OpenThesaurus API URL for WORD."
+  (concat woerterbuch-openthesaurus-base-url
+          "?format=application/json"
+          "&q=" (url-hexify-string word)))
 
-(defvar woerterbuch-openthesaurus-api-url
-  "https://www.openthesaurus.de/synonyme/search")
+(defun woerterbuch-openthesaurus-fetch (word sections callback)
+  "Fetch WORD asynchronously from OpenThesaurus.
 
-(defun woerterbuch-openthesaurus--request (word)
-  "Return parsed JSON result for WORD from OpenThesaurus."
-  (let* ((url-request-extra-headers
-          `(("User-Agent" . ,woerterbuch-openthesaurus-user-agent)))
-         (url (format "%s?q=%s&format=application/json"
-                      woerterbuch-openthesaurus-api-url
-                      (url-hexify-string word)))
-         (buffer (url-retrieve-synchronously url t t 10)))
-    (unless buffer
-      (error "OpenThesaurus request failed"))
+SECTIONS is the requested section list.
+CALLBACK receives exactly one normalized result plist."
+  (let ((url-request-extra-headers
+         '(("User-Agent" . "woerterbuch/0.1"))))
+    (url-retrieve
+     (woerterbuch-openthesaurus--build-url word)
+     #'woerterbuch-openthesaurus--request-callback
+     (list word sections callback)
+     t
+     t)))
+
+(defun woerterbuch-openthesaurus--request-callback (status word sections callback)
+  "Handle async response STATUS for WORD, SECTIONS, and CALLBACK."
+  (let (result)
     (unwind-protect
-        (with-current-buffer buffer
-          (goto-char (point-min))
-          (re-search-forward "^$" nil t)
-          (forward-char)
-          (json-parse-buffer :object-type 'alist :array-type 'list))
-      (kill-buffer buffer))))
+        (setq result
+              (condition-case err
+                  (cond
+                   ((plist-get status :error)
+                    (woerterbuch-core-make-error
+                     'openthesaurus
+                     word
+                     (format "Network error: %S" (plist-get status :error))))
 
-(defun woerterbuch-openthesaurus-synsets (word)
-  "Return synonym groups for WORD as plist structures.
+                   ((and (boundp 'url-http-response-status)
+                         (numberp url-http-response-status)
+                         (>= url-http-response-status 400))
+                    (woerterbuch-core-make-error
+                     'openthesaurus
+                     word
+                     (format "HTTP error: %s" url-http-response-status)))
 
-Each entry has the form:
+                   (t
+                    (woerterbuch-openthesaurus--parse-response word sections)))
+                (error
+                 (woerterbuch-core-make-error
+                  'openthesaurus
+                  word
+                  (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (funcall callback result)))
 
-  (:categories (STRING...)
-   :synonyms (STRING...))"
-  (let* ((data (woerterbuch-openthesaurus--request word))
-         (synsets (alist-get 'synsets data)))
-    (cl-loop
-     for synset in synsets
-     for categories = (alist-get 'categories synset)
-     for synonyms =
-     (cl-loop for term in (alist-get 'terms synset)
-              for value = (alist-get 'term term)
-              unless (string= value word)
-              collect value)
-     when synonyms
-     collect (list
-              :categories categories
-              :synonyms synonyms))))
+(defun woerterbuch-openthesaurus--parse-response (word sections)
+  "Parse current response buffer for WORD and SECTIONS."
+  (goto-char (point-min))
+  (if (and (boundp 'url-http-end-of-headers)
+   ((:source openthesaurus :word "Häuser" :lemma "Haus" :ok t :definitions nil :synonyms
+          ("Haus..." "hausintern"
+           "inhäusig" "inhouse"
+           "innerbetrieblich"
+           "intern" "firmenintern"
+           "Heim" "Behausung" "Bude"
+           "Hütte" "Familie"
+           "Familienbande" "Geblüt"
+           "Geschlecht" "Sippe"
+           "Stamm" "Mischpoke"
+           "Bungalow"
+           "(eingeschossiges) Haus"
+           "Betriebs..."
+           "betriebseigen"
+           "betriebsintern"
+           "hauseigen" "vor Ort"
+           "bewährt"
+           "(jemandes) Haus..."
+           "langjährig"
+           "... meines Vertrauens"
+           "(jemandes) Haus- und Hof-..." "(jemandes) Leib-und-Magen-..." "Geschäft" "Laden (...laden)"
+           "Handel (für ..., ...handel)" "Handlung (...handlung)" "...haus" "Kauf(manns)laden" "Ladengeschäft"
+           "...markt" "Shop (...shop)" "Store" "Detailgeschäft" "Einzelhandelsgeschäft" "Anwesen" "Domaine"
+           "Finca (span., südamer.)" "Herrenhaus" "Landgut" "Landhaus" "Landsitz" "Manor" "Villa" "Ministerium"
+           "(das) Haus (+ Ministername)") :origin nil :idioms nil))
+        (integerp url-http-end-of-headers))
+      (goto-char url-http-end-of-headers)
+    (re-search-forward "\r?\n\r?\n" nil t))
+  (skip-chars-forward "\r\n")
+  (let* ((json-object-type 'alist)
+         (json-array-type 'list)
+         (json-key-type 'symbol)
+         (data (json-read))
+         (result (woerterbuch-core-make-result 'openthesaurus word)))
+    (when (woerterbuch-core-section-requested-p :synonyms sections)
+      (setq result
+            (plist-put result :synonyms
+                       (woerterbuch-openthesaurus--extract-synonyms data word))))
+    result))
 
-(defun woerterbuch-openthesaurus-synonyms (word)
-  "Return a flat list of synonyms for WORD."
-  (delete-dups
-   (cl-loop for entry in (woerterbuch-openthesaurus-synsets word)
-            append (plist-get entry :synonyms))))
-
-;;;###autoload
-(defun woerterbuch-openthesaurus-lookup (word)
-  "Display synonyms for WORD in the echo area."
-  (interactive "sWord: ")
-  (let ((result (woerterbuch-openthesaurus-synsets word)))
-    (if result
-        (dolist (entry result)
-          (message "%s → %s"
-                   (string-join (plist-get entry :categories) ", ")
-                   (string-join (plist-get entry :synonyms) ", ")))
-      (message "No synonyms found for %s" word))))
+(defun woerterbuch-openthesaurus--extract-synonyms (data word)
+  "Extract synonym list from OpenThesaurus DATA for WORD."
+  (let ((sets (alist-get 'synsets data))
+        (seen (make-hash-table :test #'equal))
+        synonyms)
+    (dolist (synset sets)
+      (dolist (term (alist-get 'terms synset))
+        (let ((candidate (alist-get 'term term)))
+          (when (and (stringp candidate)
+                     (not (string-empty-p candidate))
+                     (not (string-equal (downcase candidate)
+                                        (downcase word)))
+                     (not (gethash candidate seen)))
+            (puthash candidate t seen)
+            (push candidate synonyms)))))
+    (nreverse synonyms)))
 
 (provide 'woerterbuch-openthesaurus)
 

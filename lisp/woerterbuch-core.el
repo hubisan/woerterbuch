@@ -1,15 +1,36 @@
 ;;; woerterbuch-core.el --- Core helpers for woerterbuch -*- lexical-binding: t; -*-
 
 (require 'cl-lib)
+(require 'url)
+(require 'json)
+(require 'subr-x)
+
+(defgroup woerterbuch nil
+  "Dictionary lookup helpers."
+  :group 'applications
+  :prefix "woerterbuch-")
+
+(defcustom woerterbuch-normalize-lemma-by-default t
+  "Whether `woerterbuch-fetch-all' should normalize words to their lemma by default.
+
+If `woerterbuch-fetch-all' is called with a non-nil or nil optional
+NORMALIZE-LEMMA argument, that argument overrides this variable."
+  :type 'boolean
+  :group 'woerterbuch)
 
 (defconst woerterbuch-core-sources
   '(openthesaurus)
-  "Ordered list of enabled woerterbuch sources for Phase 1.")
+  "Ordered list of enabled woerterbuch sources.")
+
+(defconst woerterbuch-core-lemma-url
+  "https://www.dwds.de/api/frequency/"
+  "DWDS endpoint used for lemma normalization.")
 
 (defun woerterbuch-core-make-result (source word)
   "Create normalized success result for SOURCE and WORD."
   (list :source source
         :word word
+        :lemma word
         :ok t
         :definitions nil
         :synonyms nil
@@ -20,6 +41,7 @@
   "Create normalized error result for SOURCE, WORD, and MESSAGE."
   (list :source source
         :word word
+        :lemma word
         :ok nil
         :error message))
 
@@ -33,8 +55,91 @@
     ('openthesaurus #'woerterbuch-openthesaurus-fetch)
     (_ (error "Unknown woerterbuch source: %S" source))))
 
-(defun woerterbuch-fetch-all (word sections final-callback)
-  "Fetch WORD for SECTIONS from all configured sources.
+(defun woerterbuch-core--build-lemma-url (word)
+  "Build DWDS lemma lookup URL for WORD."
+  (concat woerterbuch-core-lemma-url
+          "?q="
+          (url-hexify-string word)))
+
+(defun woerterbuch-core-normalize-lemma (word callback)
+  "Normalize WORD to a lemma via DWDS and call CALLBACK once.
+
+CALLBACK receives a plist:
+
+Success:
+  (:ok t :word WORD :lemma LEMMA :source dwds)
+
+Failure:
+  (:ok nil :word WORD :lemma WORD :source dwds :error MESSAGE)"
+  (let ((url-request-extra-headers
+         '(("User-Agent" . "woerterbuch/0.1"))))
+    (url-retrieve
+     (woerterbuch-core--build-lemma-url word)
+     #'woerterbuch-core--normalize-lemma-callback
+     (list word callback)
+     t
+     t)))
+
+(defun woerterbuch-core--normalize-lemma-callback (status word callback)
+  "Handle DWDS lemma response STATUS for WORD and CALLBACK."
+  (let ((result nil))
+    (unwind-protect
+        (setq result
+              (condition-case err
+                  (cond
+                   ((plist-get status :error)
+                    (list :ok nil
+                          :word word
+                          :lemma word
+                          :source 'dwds
+                          :error (format "Network error: %S"
+                                         (plist-get status :error))))
+
+                   ((and (boundp 'url-http-response-status)
+                         (numberp url-http-response-status)
+                         (>= url-http-response-status 400))
+                    (list :ok nil
+                          :word word
+                          :lemma word
+                          :source 'dwds
+                          :error (format "HTTP error: %s"
+                                         url-http-response-status)))
+
+                   (t
+                    (woerterbuch-core--parse-lemma-response word)))
+                (error
+                 (list :ok nil
+                       :word word
+                       :lemma word
+                       :source 'dwds
+                       :error (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (funcall callback result)))
+
+(defun woerterbuch-core--parse-lemma-response (word)
+  "Parse current DWDS lemma response buffer for WORD."
+  (goto-char (point-min))
+  (if (and (boundp 'url-http-end-of-headers)
+           (integerp url-http-end-of-headers))
+      (goto-char url-http-end-of-headers)
+    (re-search-forward "\r?\n\r?\n" nil t))
+  (skip-chars-forward "\r\n")
+  (let* ((json-object-type 'alist)
+         (json-array-type 'list)
+         (json-key-type 'symbol)
+         (data (json-read))
+         (lemma (alist-get 'lemma data)))
+    (list :ok t
+          :word word
+          :lemma (if (and (stringp lemma)
+                          (not (string-empty-p lemma)))
+                     lemma
+                   word)
+          :source 'dwds)))
+
+(defun woerterbuch-core--fetch-all-with-query (word lemma sections final-callback)
+  "Fetch SECTIONS for WORD using LEMMA as backend query.
 
 FINAL-CALLBACK is called exactly once with a list of normalized
 results in stable source order."
@@ -48,17 +153,41 @@ results in stable source order."
         (let ((fetcher (woerterbuch-core--source-fetcher source)))
           (funcall
            fetcher
-           word
+           lemma
            sections
            (lambda (result)
              (unless done
-               (puthash source result results)
+               (puthash
+                source
+                (plist-put
+                 (plist-put result :word word)
+                 :lemma lemma)
+                results)
                (setq pending (1- pending))
                (when (zerop pending)
                  (setq done t)
                  (funcall
                   final-callback
                   (mapcar (lambda (s) (gethash s results)) sources)))))))))))
+
+(cl-defun woerterbuch-fetch-all
+    (word sections final-callback
+          &key (normalize-lemma woerterbuch-normalize-lemma-by-default))
+  "Fetch WORD for SECTIONS from all configured sources."
+  (if normalize-lemma
+      (woerterbuch-core-normalize-lemma
+       word
+       (lambda (lemma-result)
+         (woerterbuch-core--fetch-all-with-query
+          word
+          (or (plist-get lemma-result :lemma) word)
+          sections
+          final-callback)))
+    (woerterbuch-core--fetch-all-with-query
+     word
+     word
+     sections
+     final-callback)))
 
 (provide 'woerterbuch-core)
 
