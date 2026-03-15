@@ -1,7 +1,135 @@
 #+TITLE: Wörterbuch - TODOs
 #+STARTUP: showall
 
-* Vorgehen für die Implementation mit =url-retrieve= und Callback
+* Prompt für das nächste Mal
+
+I am implementing an Emacs Lisp dictionary package called *woerterbuch* .
+
+The architecture uses asynchronous HTTP requests via =url-retrieve=  and a normalized result format across multiple dictionary sources.
+
+Current architecture:
+
+Files
+
+- woerterbuch-core.el
+- woerterbuch.el
+- woerterbuch-openthesaurus.el
+- woerterbuch-dwds.el (next backend to implement)
+- woerterbuch-duden.el (future)
+- woerterbuch-wiktionary.el (future)
+
+Responsibilities
+
+woerterbuch-core.el
+
+- shared helpers
+- normalized result constructors
+- lemma normalization via DWDS API
+- aggregator that runs multiple backends in parallel
+
+woerterbuch-.el
+
+- backend specific implementation
+- build URL
+- async HTTP request via =url-retrieve=
+- parse JSON or HTML
+- extract requested sections
+- return normalized plist result
+
+woerterbuch.el
+
+- only requires the modules
+- thin entry point
+
+Current normalized result format (success):
+
+( SYMBOL  
+STRING  
+STRING  
+t  
+LIST-OR-NIL  
+LIST-OR-NIL  
+STRING-OR-LIST-OR-NIL  
+LIST-OR-NIL)
+
+Error result:
+
+( SYMBOL  
+STRING  
+STRING  
+nil  
+STRING)
+
+Current working backend:
+
+- OpenThesaurus
+- section implemented:
+
+Lemma normalization:  
+Before dictionary queries, the word can optionally be normalized using the DWDS frequency API:
+
+[[https://www.dwds.de/api/frequency/?q=WORD][https://www.dwds.de/api/frequency/?q=WORD]]
+
+Example response:
+
+{"total":"52972658701","lemma":"Haus","hits":19116773,"q":"Häuser","frequency":5}
+
+This is implemented in:
+
+woerterbuch-core-normalize-lemma
+
+Aggregator entry point:
+
+(cl-defun woerterbuch-fetch-all  
+(word sections final-callback  
+&key (normalize-lemma woerterbuch-normalize-lemma-by-default)))
+
+Behavior:
+
+- normalize lemma optionally
+- run all backends asynchronously
+- collect results
+- call final-callback once
+
+Working example:
+
+(woerterbuch-fetch-all  
+"Häuser"  
+'()  
+(lambda (results)  
+(message "%S" results)))
+
+Next implementation goal:
+
+Implement the DWDS backend in:
+
+woerterbuch-dwds.el
+
+Requirements:
+
+1. Provide the public function:
+  (woerterbuch-dwds-fetch word sections callback)
+  
+2. Use =url-retrieve=  asynchronously.
+3. Handle:
+  - network errors
+  - HTTP errors
+  - parser errors
+4. Ensure the callback is always called exactly once.
+5. Parse DWDS to extract at least:
+6. Return results using the normalized plist structure.
+7. Follow the same style used in the OpenThesaurus backend.
+
+Important constraints:
+
+- lexical-binding must be enabled
+- use unwind-protect to clean response buffers
+- skip HTTP headers correctly
+- do not block Emacs
+  
+Please implement the DWDS backend step by step with explanations.
+
+* TODO Vorgehen für die Implementation mit =url-retrieve= und Callback
 
 ** Ziel
 
