@@ -1,9 +1,363 @@
 #+TITLE: Wörterbuch - TODOs
 #+STARTUP: showall
 
-* TODO Vorgehen für die Implementation mit =url-retrieve= und Callback
+* Vorgehen für die Implementation mit =url-retrieve= und Callback
 
 ** Ziel
+
+Für mehrere Dictionary-Sources (z. B. Duden, DWDS, OpenThesaurus, Wiktionary) sollen Requests *asynchron gleichzeitig gestartet* werden.
+
+Jede Source implementiert dieselbe öffentliche API und liefert das Resultat in einem gemeinsamen plist-Format zurück.
+
+Die Argumente und internen Bezeichner bleiben auf Englisch, auch wenn das Package sonst deutsch ist.
+
+** Korrigierte Architektur
+
+Der Aggregator sollte direkt in =woerterbuch-core.el= liegen.
+
+Begründung:
+
+- dort liegen bereits die gemeinsamen Datenstrukturen und Hilfsfunktionen
+- der Aggregator ist keine UI-Schicht, sondern gemeinsame Infrastruktur
+- =woerterbuch.el= kann dadurch bewusst dünn bleiben
+- so verhindert man, dass Logik versehentlich zwischen =core= und =woerterbuch.el= auseinanderläuft
+
+*** Dateien
+
+- =woerterbuch-core.el=
+- =woerterbuch.el=
+- =woerterbuch-duden.el=
+- =woerterbuch-dwds.el=
+- =woerterbuch-openthesaurus.el=
+- =woerterbuch-wiktionary.el=
+
+*** Verantwortlichkeiten
+
+**** =woerterbuch-core.el=
+Gemeinsame Infrastruktur:
+- section handling
+- common result helpers
+- error/result constructors
+- buffer/header helpers
+- gemeinsame Request-Helfer
+- *Aggregator für alle Sources*
+- ggf. zentrale Source-Reihenfolge oder Source-Registry
+
+**** =woerterbuch-<source>.el=
+Jeweils source-spezifisch:
+- URL building
+- HTTP request via =url-retrieve=
+- parsing of HTML or JSON
+- extraction of requested sections
+- returning a normalized plist result
+
+**** =woerterbuch.el=
+Nur öffentliche Hülle:
+- =require= von =woerterbuch-core.el=
+- =require= der einzelnen Sources
+- ggf. sehr kleine öffentliche Einstiegspunkte
+- keine eigentliche Aggregator- oder Parsing-Logik
+
+** Empfohlene öffentliche API
+
+*** Pro Source
+Jede Source exportiert genau eine Fetch-Funktion:
+
+#+begin_src elisp
+(woerterbuch-<source>-fetch word sections callback)
+#+end_src
+
+*** Zentraler Aggregator in =core=
+Der gemeinsame Aggregator liegt in =woerterbuch-core.el=:
+
+#+begin_src elisp
+(woerterbuch-fetch-all word sections final-callback)
+#+end_src
+
+*** Rolle von =woerterbuch.el=
+=woerterbuch.el= soll im Wesentlichen nur die Module zusammenziehen, z. B. über:
+
+#+begin_src elisp
+(require 'woerterbuch-core)
+(require 'woerterbuch-duden)
+(require 'woerterbuch-dwds)
+(require 'woerterbuch-openthesaurus)
+(require 'woerterbuch-wiktionary)
+#+end_src
+
+** Gemeinsames Result-Format
+
+Das Result-Format sollte *streng stabil* sein.
+
+*** Erfolgsfall
+Auch wenn nicht alle Sections angefragt wurden, sollte ein Erfolgsresultat immer dieselben Standard-Keys enthalten:
+
+#+begin_src elisp
+(:source openthesaurus
+ :word "Baum"
+ :ok t
+ :definitions nil
+ :synonyms ("Makrophanerophyt" "Baumstruktur")
+ :origin nil
+ :idioms nil)
+#+end_src
+
+*** Fehlerfall
+#+begin_src elisp
+(:source dwds
+ :word "Baum"
+ :ok nil
+ :error "HTTP 404")
+#+end_src
+
+*** Begründung
+- alle Backends bleiben gleich konsumierbar
+- Aggregator und UI brauchen keine source-spezifischen Sonderfälle
+- nicht angeforderte oder nicht gefundene Werte bleiben einfach =nil=
+- spätere Merge-Logik wird deutlich einfacher
+
+** Verbindliche Invarianten
+
+Diese Regeln sollten von Anfang an feststehen.
+
+*** 1. =lexical-binding= in jeder Datei
+Ganz oben:
+
+#+begin_src elisp
+;;; -*- lexical-binding: t; -*-
+#+end_src
+
+Ohne das funktionieren die Closures für Aggregator und Callbacks nicht sauber.
+
+*** 2. Jedes Backend ruft den äußeren Callback genau einmal
+Das ist die wichtigste Regel.
+
+Egal ob:
+- Netzwerkfehler
+- HTTP-Fehler
+- Parserfehler
+- leere Antwort
+- unerwartete Struktur
+
+Am Ende muss immer genau ein normalisiertes Resultat an den übergebenen =callback= gehen.
+
+*** 3. Erfolgsresultate haben immer dasselbe Shape
+Nicht angeforderte Sections werden nicht befüllt, bleiben aber als Key vorhanden und stehen auf =nil=.
+
+*** 4. Buffer immer freigeben
+Bei =url-retrieve= immer mit =unwind-protect= arbeiten und den Response-Buffer danach schließen.
+
+*** 5. HTTP-Fehler zusätzlich zu Netzwerkfehlern prüfen
+=(plist-get status :error)= deckt meist nur Netzwerkfehler ab.
+
+HTTP-Fehler wie 404 oder 500 müssen zusätzlich über den HTTP-Status behandelt werden.
+
+*** 6. Result-Reihenfolge im Aggregator stabil halten
+Die Requests kommen asynchron zurück. Deshalb sollen Resultate *nicht* in Ankunftsreihenfolge, sondern in einer festen Source-Reihenfolge zurückgegeben werden.
+
+Empfohlene Reihenfolge:
+- =duden=
+- =dwds=
+- =openthesaurus=
+- =wiktionary=
+
+** Rolle des Callback
+
+*** =callback=
+Wird pro Source genau einmal aufgerufen und erhält *ein* normalisiertes Resultat.
+
+*** =final-callback=
+Wird genau einmal aufgerufen, wenn alle Source-Requests abgeschlossen sind und alle Resultate gesammelt wurden.
+
+** Typischer Ablauf je Source
+
+*** Schritt 1: öffentliche Fetch-Funktion
+Die öffentliche Funktion:
+- baut die URL
+- setzt Header
+- startet =url-retrieve=
+- übergibt =word=, =sections= und =callback= an den internen Request-Callback
+
+*** Schritt 2: interner Request-Callback
+Der interne Callback:
+- prüft =status=
+- prüft zusätzlich den HTTP-Status
+- springt hinter die Header
+- parsed JSON oder HTML
+- extrahiert die gewünschten Sections
+- baut ein normiertes Resultat
+- ruft den äußeren =callback= auf
+- gibt den Buffer sicher frei
+
+*** Schritt 3: Parse- und Extract-Logik
+Die Parse-Funktion:
+- liest den Body
+- parsed Rohdaten
+- extrahiert nur die angeforderten Sections
+- befüllt das stabile Result-Format
+
+** Parser-Regel: nur angeforderte Sections extrahieren
+
+Die Source soll nur die angeforderten Bereiche *aufbereiten*.
+
+Beispiel:
+
+#+begin_src elisp
+(when (memq :synonyms sections)
+  ...)
+
+(when (memq :definitions sections)
+  ...)
+
+(when (memq :origin sections)
+  ...)
+
+(when (memq :idioms sections)
+  ...)
+#+end_src
+
+Wichtig:
+- das Result-Shape bleibt vollständig
+- nur die tatsächliche Befüllung der Felder ist selektiv
+
+** Empfohlene Core-Helfer
+
+In =woerterbuch-core.el= sollten möglichst früh diese Bausteine liegen:
+
+- Result-Constructor
+- Error-Constructor
+- Helper zum Prüfen angeforderter Sections
+- Helper zum Initialisieren eines leeren Standard-Resultats
+- optional zentrale Source-Liste
+- Aggregator-Funktion =woerterbuch-fetch-all=
+
+Beispielhafte Kernidee:
+
+#+begin_src elisp
+(defun woerterbuch-core-make-result (source word)
+  (list :source source
+        :word word
+        :ok t
+        :definitions nil
+        :synonyms nil
+        :origin nil
+        :idioms nil))
+
+(defun woerterbuch-core-make-error (source word message)
+  (list :source source
+        :word word
+        :ok nil
+        :error message))
+#+end_src
+
+** Aggregator in =woerterbuch-core.el=
+
+Der Aggregator soll:
+- alle konfigurierten Sources starten
+- alle Resultate sammeln
+- die feste Reihenfolge garantieren
+- =final-callback= genau einmal aufrufen
+
+Wichtig:
+- keine UI-Logik
+- keine source-spezifische Logik
+- nur Koordination und Sammlung
+
+Konzeptionell:
+
+#+begin_src elisp
+(defun woerterbuch-fetch-all (word sections final-callback)
+  ...)
+#+end_src
+
+Die Source-Liste kann entweder:
+- fest in =core= stehen
+- oder später konfigurierbar gemacht werden
+
+** Empfohlene Minimalstrategie zum Start
+
+Nicht alles sofort bauen.
+
+*** Phase 1
+- =woerterbuch-core.el= anlegen
+- Standard-Result-Format definieren
+- Error-Helpers definieren
+- Aggregator in =core= anlegen
+- zunächst nur eine Source vollständig implementieren: =openthesaurus=
+- zunächst nur eine Section unterstützen: =:synonyms=
+
+*** Phase 2
+- zweite Source ergänzen, vorzugsweise =dwds=
+- Aggregator mit mehreren Sources testen
+- stabile Reihenfolge absichern
+
+*** Phase 3
+- =duden= und =wiktionary= ergänzen
+- weiterhin erst einmal nur =:synonyms=
+
+*** Phase 4
+- =:definitions=
+- danach =:origin=
+- danach =:idioms=
+
+*** Phase 5
+- Timeout
+- Caching
+- Merge-Logik
+- Ranking
+- UI-Rendering
+
+** Praktische Startreihenfolge
+
+Ich würde konkret so anfangen:
+
+*** 1. =woerterbuch-core.el=
+Zuerst:
+- Result-Constructor
+- Error-Constructor
+- Section-Helper
+- Source-Reihenfolge
+- Aggregator
+
+*** 2. =woerterbuch-openthesaurus.el=
+Dann:
+- =woerterbuch-openthesaurus-fetch=
+- interner Request-Callback
+- Parser nur für =:synonyms=
+
+*** 3. =woerterbuch.el=
+Dann nur als dünne Hülle:
+- =require= von =core=
+- =require= der Source-Dateien
+
+** Tests und Prüfpunkte
+
+Schon in Phase 1 sollte geprüft werden:
+
+- Source-Callback wird genau einmal aufgerufen
+- Fehlerresultat ist normiert
+- Erfolgsresultat enthält alle Standard-Keys
+- nicht angeforderte Sections bleiben =nil=
+- Aggregator ruft =final-callback= genau einmal auf
+- Resultate kommen in stabiler Reihenfolge zurück
+
+** Revidiertes Fazit
+
+Das Vorgehen ist tragfähig, mit einer wichtigen strukturellen Anpassung:
+
+- Der *Aggregator gehört nach =woerterbuch-core.el=*
+- =woerterbuch.el= bleibt bewusst nur eine dünne öffentliche Hülle mit =require=
+
+Damit liegt die gesamte gemeinsame Infrastruktur an einem Ort, und die Trennung wird sauber:
+
+- =core= = gemeinsame Logik
+- =source-files= = Backend-spezifische Implementierung
+- =woerterbuch.el= = Einstiegspunkt ohne eigentliche Fachlogik
+
+* CANCEL Altes Vorgehen für die Implementation mit =url-retrieve= und Callback
+
+** Ziel
+
 Für mehrere Dictionary-Sources (z. B. Duden, DWDS, OpenThesaurus, Wiktionary) sollen Requests *parallel* gestartet werden.  
 Jede Source implementiert dieselbe öffentliche API und liefert das Resultat in einem gemeinsamen plist-Format zurück.
 
@@ -433,6 +787,296 @@ Implementation goals:
 
 Please provide the implementation in small, well-structured steps and explain the role of callback, final-callback, and result normalization.
 #+end_src
+
+** Anmerkung zum Vorgehen von Gemini pro
+
+#+BEGIN_SRC markdown
+  Das vorgeschlagene Vorgehen ist exzellent strukturiert und zeigt ein tiefes Verständnis für Emacs Lisp und asynchrone Programmierung. Die Architektur ist durchdacht, modular und folgt den gängigen Best Practices für Emacs-Pakete.
+
+  Besonders positiv hervorzuheben sind:
+
+  ,* **Lexical Binding:** Dass du dies explizit als Regel aufnimmst, ist essenziell. Ohne Lexical Binding würde der Aggregator-Callback (Closure über `pending` und `results`) nicht funktionieren.
+  ,* **Buffer-Management:** Der Einsatz von `unwind-protect` in Kombination mit `kill-buffer` verhindert das Ansammeln von unsichtbaren Netzwerk-Buffern.
+  ,* **Datenstruktur:** Die Verwendung von standardisierten Plists ermöglicht eine sehr saubere Trennung zwischen Datenbeschaffung und UI-Darstellung.
+
+  Es gibt jedoch ein paar architektonische Details und Edge-Cases rund um `url.el`, die in der Praxis oft Probleme bereiten. Hier sind meine Anmerkungen und Korrekturvorschläge, um das Design wasserdicht zu machen:
+
+  ### 1. Nicht-deterministische Resultat-Reihenfolge im Aggregator
+
+  In deinem `woerterbuch-fetch-all` pusht du die Ergebnisse in eine Liste und machst am Ende ein `nreverse`.
+  Da die Netzwerkanfragen unterschiedlich lange dauern, treffen die Callbacks in einer zufälligen Reihenfolge ein. Das bedeutet, dass Duden mal an erster, mal an dritter Stelle im UI auftaucht.
+
+  ,**Lösungsvorschlag:** Sortiere die Resultate am Ende im `final-callback` (z. B. nach einer definierten Prioritätenliste der Sources) oder weise jedem Fetcher einen festen Index zu.
+
+  ### 2. Die Tücken von =url-retrieve= und HTTP-Fehlern
+
+  Dein Fehler-Check `(plist-get status :error)` fängt nur Fehler auf Netzwerkebene ab (z. B. DNS-Fehler oder Verbindungsabbrüche). Wenn ein Server aber mit **HTTP 404 (Not Found)** oder **HTTP 500 (Server Error)** antwortet, betrachtet `url-retrieve` den Request als "erfolgreich" durchgeführt, liefert keinen `:error` im Status, generiert aber einen Buffer mit der Fehlerseite.
+
+  ,**Lösungsvorschlag:** Du musst zusätzlich die dynamisch gebundene Variable `url-http-response-status` prüfen (diese wird von `url.el` im Response-Buffer gesetzt).
+
+  ```elisp
+  (defun woerterbuch-openthesaurus--request-callback (status word sections callback)
+    (let (result)
+      (unwind-protect
+          (setq result
+                (cond
+                 ;; 1. Netzwerkfehler
+                 ((plist-get status :error)
+                  (list :source 'openthesaurus :word word :ok nil
+                        :error (format "Network error: %S" (plist-get status :error))))
+                 ;; 2. HTTP-Fehler (z. B. 404, 500)
+                 ((and (boundp 'url-http-response-status)
+                       (>= url-http-response-status 400))
+                  (list :source 'openthesaurus :word word :ok nil
+                        :error (format "HTTP error: %s" url-http-response-status)))
+                 ;; 3. Erfolgsfall
+                 (t
+                  (woerterbuch-openthesaurus--parse-response word sections))))
+        (kill-buffer (current-buffer)))
+      (funcall callback result)))
+
+  ```
+
+  ### 3. Fehlende Timeouts (Der ewige Request)
+
+  Das Paket `url.el` hat keinen robusten, eingebauten Timeout-Mechanismus für `url-retrieve`. Wenn ein Dictionary-Server hängt und die Verbindung weder akzeptiert noch ablehnt, blockiert dieser eine Request den kompletten `final-callback`, da `pending` nie auf 0 fällt.
+  ,*Hinweis für Phase 3:* Du wirst im Aggregator vermutlich einen Timer (`run-with-timer`) einbauen müssen, der nach z. B. 5 Sekunden den `final-callback` mit den bis dahin gesammelten Ergebnissen erzwingt und die noch laufenden Requests ignoriert.
+
+  ### 4. Header-Parsing robuster machen
+
+  Dein Ansatz zum Überspringen der Header `(re-search-forward "^$" nil t)` funktioniert meistens, ist aber fehleranfällig, falls der Body mit ungewöhnlichen Zeilenumbrüchen beginnt. Die von `url.el` vorgesehene Funktion dafür ist `url-http-end-of-headers`.
+
+  ```elisp
+  (defun woerterbuch-openthesaurus--parse-response (word sections)
+    ;; Springe sicher hinter die HTTP-Header
+    (goto-char url-http-end-of-headers)
+    ;; ... Rest des Parsings
+    )
+
+  ```
+
+  ---
+
+  ,**Fazit zur Verifikation:** Dein Design-Dokument und der Prompt sind hervorragend. Wenn du die oben genannten Punkte (besonders das Handling von HTTP-Statuscodes und `url-http-end-of-headers`) noch in deine Spezifikation oder den Prompt aufnimmst, hast du ein extrem solides Fundament.
+
+  Möchtest du, dass wir dieses aktualisierte Wissen direkt nutzen, um den Code für "Phase 1" (Aggregator plus das OpenThesaurus-Backend) jetzt funktionsfähig zu implementieren?
+#+END_SRC
+
+** Inputs Chat GPT Thinking zum Vorgehen
+
+#+BEGIN_SRC markdown
+  Ja — das Vorgehen ist grundsätzlich tragfähig und für Emacs Lisp mit `url-retrieve` sauber gedacht.
+
+  Die Architektur passt:
+
+  ,* `woerterbuch-core.el` für gemeinsame Helfer
+  ,* `woerterbuch-<source>.el` pro Backend
+  ,* `woerterbuch.el` als Aggregator
+  ,* einheitliche öffentliche Signatur
+  ,* normalisierte Resultate
+  ,* `final-callback` erst nach Abschluss aller Requests
+
+  Ein paar Stellen würde ich aber leicht schärfen.
+
+  ## 1. Einheitliches Result-Format wirklich strikt halten
+
+  Hier gibt es bei dir eine kleine Spannung:
+
+  ,* einerseits: „nur gewünschte Sections extrahieren“
+  ,* andererseits: „alle Backends liefern dieselbe Struktur“
+
+  Das lässt sich gut kombinieren, indem jede Source **immer alle Standard-Keys** zurückgibt, aber nur die angeforderten Felder tatsächlich befüllt. Nicht angeforderte oder nicht gefundene Felder bleiben `nil`.
+
+  So bleibt das Format stabil, ohne unnötig viel zu parsen.
+
+  ```elisp
+  (defun woerterbuch-core-make-result (source word)
+    (list :source source
+          :word word
+          :ok t
+          :definitions nil
+          :synonyms nil
+          :origin nil
+          :idioms nil))
+
+  (defun woerterbuch-core-make-error (source word message)
+    (list :source source
+          :word word
+          :ok nil
+          :error message))
+  ```
+
+  Das würde ich klar so machen.
+
+  ---
+
+  ## 2. Der Request-Callback muss **immer genau einmal** den äußeren Callback rufen
+
+  Das ist der wichtigste Punkt.
+
+  Dein Entwurf behandelt Netzwerkfehler schon gut, aber Parserfehler müssen ebenfalls abgefangen werden. Sonst passiert leicht das hier:
+
+  ,* Request kommt erfolgreich zurück
+  ,* Parser wirft einen Fehler
+  ,* Buffer wird zwar dank `unwind-protect` freigegeben
+  ,* aber `callback` wird nie aufgerufen
+  ,* der Aggregator wartet dann ewig auf `pending = 0`
+
+  Darum besser so:
+
+  ```elisp
+  (defun woerterbuch-openthesaurus--request-callback (status word sections callback)
+    "Handle async response for WORD."
+    (let (result)
+      (unwind-protect
+          (setq result
+                (condition-case err
+                    (cond
+                     ((plist-get status :error)
+                      (woerterbuch-core-make-error
+                       'openthesaurus
+                       word
+                       (format "%S" (plist-get status :error))))
+
+                     ((and (boundp 'url-http-response-status)
+                           (>= url-http-response-status 400))
+                      (woerterbuch-core-make-error
+                       'openthesaurus
+                       word
+                       (format "HTTP %s" url-http-response-status)))
+
+                     (t
+                      (woerterbuch-openthesaurus--parse-response word sections)))
+                  (error
+                   (woerterbuch-core-make-error
+                    'openthesaurus
+                    word
+                    (error-message-string err)))))
+        (kill-buffer (current-buffer)))
+      (funcall callback result)))
+  ```
+
+  Das ist deutlich robuster.
+
+  ---
+
+  ## 3. Header überspringen: `^$` ist etwas fragil
+
+  Dieser Teil:
+
+  ```elisp
+  (re-search-forward "^$" nil t)
+  (forward-char 1)
+  ```
+
+  ist die Stelle, die ich am ehesten ändern würde. Grund: HTTP trennt Header und Body mit CRLF, also kann die Leerzeile intern auch als `\r\n` auftreten. Dann ist `^$` nicht immer die beste Wahl.
+
+  Robuster sind zwei Varianten:
+
+  ### Variante A: `url-http-end-of-headers`
+
+  Wenn verfügbar, ist das am saubersten.
+
+  ### Variante B: explizit nach Header-Trenner suchen
+
+  ```elisp
+  (re-search-forward "\r?\n\r?\n" nil t)
+  ```
+
+  Für deinen Fall würde ich sagen: Idee richtig, konkrete Umsetzung besser etwas robuster machen.
+
+  ---
+
+  ## 4. Der Aggregator ist korrekt, aber die Result-Reihenfolge ist aktuell nicht stabil
+
+  Dein Aggregator funktioniert logisch. Er sammelt alle Antworten ein und ruft `final-callback`, wenn `pending` bei null ist.
+
+  Was dabei oft übersehen wird: Diese Version liefert die Resultate in **Ankunftsreihenfolge**, nicht in der festen Source-Reihenfolge.
+
+  Wenn dir stabile Reihenfolge wichtig ist, würde ich die Fetcher mit Source-Namen paaren und nach Abschluss in derselben Reihenfolge zurückgeben:
+
+  ```elisp
+  (defun woerterbuch-fetch-all (word sections final-callback)
+    "Fetch WORD from all configured backends in parallel."
+    (let* ((fetchers `((duden . ,#'woerterbuch-duden-fetch)
+                       (dwds . ,#'woerterbuch-dwds-fetch)
+                       (openthesaurus . ,#'woerterbuch-openthesaurus-fetch)
+                       (wiktionary . ,#'woerterbuch-wiktionary-fetch)))
+           (pending (length fetchers))
+           (results (make-hash-table :test #'eq)))
+      (dolist (entry fetchers)
+        (pcase-let ((`(,source . ,fetcher) entry))
+          (funcall
+           fetcher
+           word
+           sections
+           (lambda (result)
+             (puthash source result results)
+             (setq pending (1- pending))
+             (when (zerop pending)
+               (funcall
+                final-callback
+                (mapcar (lambda (e) (gethash (car e) results))
+                        fetchers)))))))))
+  ```
+
+  Wenn dir Reihenfolge egal ist, reicht deine Version.
+
+  ---
+
+  ## 5. „Parallel“ ist hier richtig, aber im Emacs-Sinn
+
+  Dein Sprachgebrauch ist okay, nur technisch präzise wäre:
+
+  ,* die Requests werden **asynchron gleichzeitig gestartet**
+  ,* Emacs blockiert dabei nicht
+  ,* die Verarbeitung läuft ereignisbasiert über Callbacks
+  ,* es ist keine echte Multithread-CPU-Parallelität
+
+  Für das Paketdesign ist das aber genau das Richtige.
+
+  ---
+
+  ## 6. Die Rollen von `callback` und `final-callback` sind sauber getrennt
+
+  Deine Trennung ist genau richtig:
+
+  `callback`
+  : pro Source einmal, mit genau **einem normalisierten Resultat**
+
+  `final-callback`
+  : genau einmal, wenn **alle** Sources geantwortet haben
+
+  Das ist die richtige Abstraktion. So bleiben Backends klein und der Aggregator dumm und robust.
+
+  ---
+
+  ## 7. Die Minimalstrategie ist sehr vernünftig
+
+  Deine Phasenplanung ist gut:
+
+  ,* zuerst überall dieselbe Signatur
+  ,* dann nur `:synonyms`
+  ,* dann Aggregation
+  ,* später weitere Sections, Merge-Logik, Caching, Timeout, Ranking
+
+  Genau so würde ich anfangen. Alles gleichzeitig zu bauen macht den Debugging-Aufwand unnötig groß.
+
+  ---
+
+  ## Mein Gesamturteil
+
+  Dein Vorgehen ist **architektonisch richtig** und bereits nah an einer guten ersten Implementierung.
+
+  Ich würde nur diese vier Punkte verbindlich nachziehen:
+
+  1. **immer ein vollständiges normalisiertes Result-Shape zurückgeben**
+  2. **im internen Request-Callback auch Parserfehler abfangen**
+  3. **Header robuster überspringen**
+  4. **entscheiden, ob Result-Reihenfolge stabil sein soll**
+
+  Wenn du möchtest, formuliere ich dir als Nächstes daraus ein kleines, konsistentes Grundgerüst für alle sechs Dateien.
+#+END_SRC
 
 * TODO Output definieren
 
