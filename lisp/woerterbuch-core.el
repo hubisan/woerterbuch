@@ -14,20 +14,20 @@
   :link '(url-link "https://github.com/hubisan/woerterbuch"))
 
 (defcustom woerterbuch-sources
-  '(openthesaurus)
+  '(openthesaurus dwds)
   "Ordered list of enabled woerterbuch sources.
 
 Each symbol must correspond to a loaded backend.  The order determines
 the order in which results are returned by `woerterbuch-fetch-all'."
   :type '(repeat (choice (const openthesaurus)
-                         (const duden)
                          (const dwds)
+                         (const duden)
                          (const wiktionary)
                          symbol))
   :group 'woerterbuch)
 
 (defcustom woerterbuch-normalize-lemma-by-default t
-  "Whether `woerterbuch-fetch-all' should normalize words to their lemma by default.
+  "Whether `woerterbuch-fetch-all' normalizes words to their lemma by default.
 
 If `woerterbuch-fetch-all' is called with a non-nil or nil optional
 NORMALIZE-LEMMA argument, that argument overrides this variable."
@@ -71,6 +71,7 @@ NORMALIZE-LEMMA argument, that argument overrides this variable."
   "Return fetch function symbol for SOURCE."
   (pcase source
     ('openthesaurus #'woerterbuch-openthesaurus-fetch)
+    ('dwds          #'woerterbuch-dwds-fetch)
     (_ (error "Unknown woerterbuch source: %S" source))))
 
 ;;; Lemma normalization

@@ -1,353 +1,351 @@
-;;; woerterbuch-dwds.el --- Parse DWDS HTML into nested Elisp data -*- lexical-binding: t; -*-
-
-;; Copyright (C) 2026
-
-;; Author: OpenAI
-;; Keywords: data, html, dictionary, tools
-;; Package-Requires: ((emacs "28.1"))
-
-;;; Commentary:
-
-;; This library fetches and parses DWDS article pages.
-;;
-;; The parser focuses on three sections:
-;;
-;; - meanings
-;; - examples attached to meanings
-;; - etymology
-;;
-;; Returned values are plain property lists. Meaning nodes are nested via
-;; `:children'. Examples are stored separately in `:examples'.
-
-;;; Code:
+;;; woerterbuch-dwds.el --- DWDS backend for woerterbuch -*- lexical-binding: t; -*-
 
 (require 'cl-lib)
 (require 'dom)
 (require 'subr-x)
 (require 'url)
-(require 'url-http)
 (require 'url-util)
+(require 'woerterbuch-core)
 
-(defgroup woerterbuch-dwds nil
-  "Parse DWDS HTML into nested Elisp data."
-  :group 'applications
-  :prefix "woerterbuch-dwds-")
+(defconst woerterbuch-dwds-base-url
+  "https://www.dwds.de/wb/"
+  "Base URL for DWDS dictionary pages.")
 
-(defcustom woerterbuch-dwds-base-url "https://www.dwds.de/wb/"
-  "Base URL for DWDS article pages."
-  :type 'string
-  :group 'woerterbuch-dwds)
-
-(defcustom woerterbuch-dwds-user-agent
-  "Mozilla/5.0 (compatible; Emacs woerterbuch-dwds)"
-  "User-Agent header used for HTTP requests to DWDS."
-  :type 'string
-  :group 'woerterbuch-dwds)
-
-(defcustom woerterbuch-dwds-request-timeout 15
-  "Maximum number of seconds to wait for a DWDS response."
-  :type 'integer
-  :group 'woerterbuch-dwds)
-
-(defcustom woerterbuch-dwds-include-empty-sections nil
-  "When non-nil, include empty `:meanings' and `:etymology' lists."
-  :type 'boolean
-  :group 'woerterbuch-dwds)
-
-(defcustom woerterbuch-dwds-keep-raw-ids t
-  "When non-nil, preserve DWDS raw ids such as"
-  :type 'boolean
-  :group 'woerterbuch-dwds)
-
-(defun woerterbuch-dwds-parse-file (file)
-  "Parse local DWDS HTML FILE and return structured data."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (woerterbuch-dwds-parse-string (buffer-string))))
-
-(defun woerterbuch-dwds-parse-url (url)
-  "Fetch URL and parse the returned DWDS article HTML."
-  (woerterbuch-dwds-parse-string
-   (woerterbuch-dwds-fetch-url url)))
-
-(defun woerterbuch-dwds-parse-lemma (lemma)
-  "Fetch and parse the DWDS article page for LEMMA."
-  (woerterbuch-dwds-parse-url
-   (woerterbuch-dwds-lemma-url lemma)))
-
-(defun woerterbuch-dwds-parse-string (html)
-  "Parse DWDS HTML from HTML and return a plist.
-
-The return value contains at least `:lemma'. Depending on the article, it may
-also contain `:meanings' and `:etymology'."
-  (with-temp-buffer
-    (insert html)
-    (let* ((dom (libxml-parse-html-region (point-min) (point-max)))
-           (lemma (woerterbuch-dwds--extract-lemma dom))
-           (meanings (woerterbuch-dwds--extract-meanings dom))
-           (etymology (woerterbuch-dwds--extract-etymology dom))
-           (result (list :lemma lemma)))
-      (when (or meanings woerterbuch-dwds-include-empty-sections)
-        (setq result (plist-put result :meanings meanings)))
-      (when (or etymology woerterbuch-dwds-include-empty-sections)
-        (setq result (plist-put result :etymology etymology)))
-      result)))
-
-(defun woerterbuch-dwds-fetch-url (url)
-  "Fetch URL and return the decoded HTML body as a string."
-  (let ((url-request-extra-headers
-         `(("User-Agent" . ,woerterbuch-dwds-user-agent)
-           ("Accept" . "text/html,application/xhtml+xml"))))
-    (with-current-buffer
-        (or (url-retrieve-synchronously
-             url t t woerterbuch-dwds-request-timeout)
-            (error "Failed to retrieve URL: %s" url))
-      (unwind-protect
-          (progn
-            (goto-char (point-min))
-            (when (re-search-forward "^HTTP/[0-9.]+ \([0-9]+\)" nil t)
-              (let ((status (string-to-number (match-string 1))))
-                (unless (<= 200 status 299)
-                  (error "DWDS request failed with HTTP status %d for %s"
-                         status url))))
-            (unless (re-search-forward "?
-?
-" nil t)
-              (error "Could not find HTTP headers end for %s" url))
-            (let* ((coding (or (and (boundp 'url-http-content-type)
-                                    (woerterbuch-dwds--charset-from-content-type
-                                     url-http-content-type))
-                               'utf-8))
-                   (html (decode-coding-string
-                          (buffer-substring-no-properties (point) (point-max))
-                          coding t)))
-              (when (string-empty-p (string-trim html))
-                (error "DWDS returned an empty response for %s" url))
-              html))
-        (kill-buffer (current-buffer))))))
-
-(defun woerterbuch-dwds-lemma-url (lemma)
-  "Return the DWDS article URL for LEMMA."
+(defun woerterbuch-dwds--build-url (lemma)
+  "Build the canonical DWDS page URL for LEMMA."
   (concat woerterbuch-dwds-base-url
           (url-hexify-string lemma)))
 
-(defun woerterbuch-dwds--charset-from-content-type (content-type)
-  "Extract and intern the charset from CONTENT-TYPE."
-  (when (and content-type
-             (string-match "charset=\([^;[:space:]]+\)" content-type))
-    (let* ((charset (downcase (match-string 1 content-type)))
-           (coding (intern charset)))
-      (cond
-       ((coding-system-p coding) coding)
-       ((member charset '("utf8" "utf-8")) 'utf-8)
-       (t nil)))))
+(defun woerterbuch-dwds--clean-text (string)
+  "Normalize whitespace in STRING."
+  (when string
+    (string-trim
+     (replace-regexp-in-string "[[:space:] ]+" " " string))))
 
-(defun woerterbuch-dwds--extract-lemma (dom)
-  "Extract the article lemma from DOM."
-  (or (woerterbuch-dwds--text-of-first-by-class dom "dwdswb-stichwort")
-      (woerterbuch-dwds--text-of-first-by-class dom "dwdswb-ft-lemmaansatz")
-      (let ((title (woerterbuch-dwds--text-of-first-tag dom 'title)))
-        (when (and title (string-match "\`\([^–]+\) –" title))
-          (string-trim (match-string 1 title))))))
+(defun woerterbuch-dwds--element-children (node)
+  "Return only element children of NODE."
+  (cl-remove-if-not #'listp (dom-children node)))
 
-(defun woerterbuch-dwds--extract-meanings (dom)
-  "Extract top-level meaning nodes from DOM."
-  (let ((container (car (dom-by-class dom "dwdswb-lesarten"))))
-    (when container
-      (mapcar #'woerterbuch-dwds--parse-lesart
-              (woerterbuch-dwds--direct-child-elements-by-class
-               container "dwdswb-lesart")))))
+(defun woerterbuch-dwds--text (node)
+  "Return normalized text content for NODE."
+  (woerterbuch-dwds--clean-text
+   (cond
+    ((null node) "")
+    ((stringp node) node)
+    ((listp node)
+     (mapconcat #'woerterbuch-dwds--text (dom-children node) " "))
+    (t ""))))
+
+(defun woerterbuch-dwds--class-list (node)
+  "Return CSS class list for NODE."
+  (split-string (or (dom-attr node 'class) "") "[[:space:]]+" t))
+
+(defun woerterbuch-dwds--has-class-p (node class)
+  "Return non-nil when NODE has CLASS."
+  (member class (woerterbuch-dwds--class-list node)))
+
+(defun woerterbuch-dwds--find-all (node predicate)
+  "Collect all descendants of NODE matching PREDICATE in document order."
+  (let (acc)
+    (dolist (child (woerterbuch-dwds--element-children node))
+      (when (funcall predicate child)
+        (setq acc (nconc acc (list child))))
+      (setq acc (nconc acc (woerterbuch-dwds--find-all child predicate))))
+    acc))
+
+(defun woerterbuch-dwds--find-first (node predicate)
+  "Return first descendant of NODE matching PREDICATE."
+  (catch 'found
+    (dolist (child (woerterbuch-dwds--element-children node))
+      (when (funcall predicate child)
+        (throw 'found child))
+      (let ((match (woerterbuch-dwds--find-first child predicate)))
+        (when match
+          (throw 'found match))))
+    nil))
+
+(defun woerterbuch-dwds--children-by-class (node class)
+  "Return direct children of NODE that have CLASS."
+  (cl-remove-if-not
+   (lambda (child)
+     (woerterbuch-dwds--has-class-p child class))
+   (woerterbuch-dwds--element-children node)))
+
+(defun woerterbuch-dwds--descendants-by-class (node class)
+  "Return all descendants of NODE that have CLASS."
+  (woerterbuch-dwds--find-all
+   node
+   (lambda (child)
+     (woerterbuch-dwds--has-class-p child class))))
+
+(defun woerterbuch-dwds--canonical-url (dom fallback)
+  "Read canonical URL from DOM or return FALLBACK."
+  (let ((link (woerterbuch-dwds--find-first
+               dom
+               (lambda (node)
+                 (and (eq (dom-tag node) 'link)
+                      (equal (dom-attr node 'rel) "canonical"))))))
+    (or (and link (dom-attr link 'href))
+        fallback)))
+
+(defun woerterbuch-dwds--field-text (article label)
+  "Return ARTICLE form field text for LABEL."
+  (cl-loop for block in (woerterbuch-dwds--descendants-by-class article "dwdswb-ft-block")
+           for block-label = (woerterbuch-dwds--text
+                              (woerterbuch-dwds--find-first
+                               block
+                               (lambda (node)
+                                 (woerterbuch-dwds--has-class-p node "dwdswb-ft-blocklabel"))))
+           when (and block-label
+                     (string-match-p (regexp-quote label) block-label))
+           return (woerterbuch-dwds--text
+                   (woerterbuch-dwds--find-first
+                    block
+                    (lambda (node)
+                      (woerterbuch-dwds--has-class-p node "dwdswb-ft-blocktext"))))))
+
+(defun woerterbuch-dwds--wortart-from-grammar (grammar)
+  "Extract word class from GRAMMAR."
+  (when grammar
+    (string-trim (car (split-string grammar "·" t)))))
+
+(defun woerterbuch-dwds--definition-text (def-node)
+  "Return flattened definition text from DEF-NODE."
+  (when def-node
+    (let* ((defs (woerterbuch-dwds--descendants-by-class def-node "dwdswb-definition"))
+           (joined (woerterbuch-dwds--clean-text
+                    (mapconcat #'woerterbuch-dwds--text defs " | ")))
+           (fallback (woerterbuch-dwds--text def-node)))
+      (if (not (string-empty-p joined))
+          joined
+        fallback))))
+
+(defun woerterbuch-dwds--collect-examples (container)
+  "Collect examples from CONTAINER."
+  (when container
+    (cl-delete-duplicates
+     (cl-loop for node in (woerterbuch-dwds--find-all
+                           container
+                           (lambda (child)
+                             (or (woerterbuch-dwds--has-class-p child "dwdswb-kompetenzbeispiel")
+                                 (woerterbuch-dwds--has-class-p child "dwdswb-beleg"))))
+              for txt = (woerterbuch-dwds--text node)
+              unless (string-empty-p txt)
+              collect txt)
+     :test #'equal)))
 
 (defun woerterbuch-dwds--parse-lesart (node)
-  "Parse one DWDS meaning NODE into a nested plist."
-  (let* ((raw-id (dom-attr node 'id))
-         (label-node (woerterbuch-dwds--first-direct-child-by-class node "dwdswb-lesart-n"))
-         (content-node (woerterbuch-dwds--first-direct-child-by-class node "dwdswb-lesart-content"))
-         (label (woerterbuch-dwds--node-text label-node))
-         (text (woerterbuch-dwds--extract-lesart-definition content-node))
-         (type (woerterbuch-dwds--detect-lesart-type content-node label text))
-         (examples (woerterbuch-dwds--extract-examples content-node))
-         (children (mapcar #'woerterbuch-dwds--parse-lesart
-                           (woerterbuch-dwds--direct-child-elements-by-class
-                            content-node "dwdswb-lesart")))
-         (usage (woerterbuch-dwds--extract-diasystematics content-node))
-         (grammar (woerterbuch-dwds--extract-grammar content-node))
-         (result (list :id (woerterbuch-dwds--node-id raw-id)
-                       :type type
-                       :label (woerterbuch-dwds--nil-if-empty label)
-                       :text (woerterbuch-dwds--nil-if-empty text)
-                       :examples examples
-                       :children children)))
-    (when (and raw-id woerterbuch-dwds-keep-raw-ids)
-      (setq result (plist-put result :raw-id raw-id)))
-    (when usage
-      (setq result (plist-put result :usage usage)))
-    (when grammar
-      (setq result (plist-put result :grammar grammar)))
+  "Parse a DWDS meaning NODE recursively."
+  (let* ((label-node (car (woerterbuch-dwds--children-by-class node "dwdswb-lesart-n")))
+         (content-node (car (woerterbuch-dwds--children-by-class node "dwdswb-lesart-content")))
+         (def-node (and content-node
+                        (car (woerterbuch-dwds--children-by-class content-node "dwdswb-lesart-def"))))
+         (usage-node (and content-node
+                          (car (woerterbuch-dwds--children-by-class content-node "dwdswb-verwendungsbeispiele"))))
+         (child-lesarten (and content-node
+                              (woerterbuch-dwds--children-by-class content-node "dwdswb-lesart")))
+         (qualifiers (and def-node
+                          (mapcar #'woerterbuch-dwds--text
+                                  (woerterbuch-dwds--descendants-by-class def-node "dwdswb-diasystematik")))))
+    (list :id (dom-attr node 'id)
+          :label (woerterbuch-dwds--text label-node)
+          :definition (woerterbuch-dwds--definition-text def-node)
+          :qualifiers (cl-remove-if #'string-empty-p qualifiers)
+          :examples (or (woerterbuch-dwds--collect-examples usage-node) '())
+          :submeanings (mapcar #'woerterbuch-dwds--parse-lesart child-lesarten))))
+
+(defun woerterbuch-dwds--article-scope-p (node)
+  "Return non-nil when NODE is a usable article scope.
+
+For homograph pages DWDS contains an overview pane with id 0. That pane must
+be ignored for parsing and only the real article panes are used."
+  (and (woerterbuch-dwds--find-first
+        node
+        (lambda (child)
+          (woerterbuch-dwds--has-class-p child "dwdswb-artikel")))
+       (not (equal (dom-attr node 'id) "0"))))
+
+(defun woerterbuch-dwds--article-scopes (dom)
+  "Return all scopes that each contain exactly one article.
+
+For pages with homographs this returns one scope per tab. For normal pages
+without article tabs the whole DOM is returned as a single scope."
+  (let ((panes (woerterbuch-dwds--find-all
+                dom
+                (lambda (node)
+                  (and (woerterbuch-dwds--has-class-p node "tab-pane")
+                       (woerterbuch-dwds--article-scope-p node))))))
+    (if panes
+        panes
+      (list dom))))
+
+(defun woerterbuch-dwds--parse-etymology (scope)
+  "Extract etymology text from SCOPE."
+  (let ((entry (woerterbuch-dwds--find-first
+                scope
+                (lambda (node)
+                  (woerterbuch-dwds--has-class-p node "etymwb-entry")))))
+    (let ((text (woerterbuch-dwds--text entry)))
+      (unless (string-empty-p text)
+        text))))
+
+(defun woerterbuch-dwds--parse-synonyms (scope)
+  "Extract a conservative synonym list from SCOPE.
+
+This intentionally only reads the OpenThesaurus block from the rendered DWDS
+page and returns unique linked entries."
+  (let (synonyms)
+    (dolist (block (woerterbuch-dwds--descendants-by-class scope "ot-synset-block"))
+      (dolist (link (woerterbuch-dwds--find-all
+                     block
+                     (lambda (node)
+                       (eq (dom-tag node) 'a))))
+        (let ((text (woerterbuch-dwds--text link)))
+          (when (and (not (string-empty-p text))
+                     (string-prefix-p "/wb/" (or (dom-attr link 'href) "")))
+            (push text synonyms)))))
+    (nreverse (cl-delete-duplicates synonyms :test #'equal))))
+
+(defun woerterbuch-dwds--parse-article (scope)
+  "Parse one article from SCOPE.
+
+Returns a homograph plist with meanings nested as a tree."
+  (let* ((article (woerterbuch-dwds--find-first
+                   scope
+                   (lambda (node)
+                     (woerterbuch-dwds--has-class-p node "dwdswb-artikel"))))
+         (bookmark (and article
+                        (woerterbuch-dwds--find-first
+                         article
+                         (lambda (node)
+                           (woerterbuch-dwds--has-class-p node "dwds-bookmark-button")))))
+         (heading (and article
+                       (woerterbuch-dwds--find-first
+                        article
+                        (lambda (node)
+                          (woerterbuch-dwds--has-class-p node "dwdswb-ft-lemmaansatz")))))
+         (lemma-node (and heading
+                          (woerterbuch-dwds--find-first
+                           heading
+                           (lambda (node)
+                             (eq (dom-tag node) 'b)))))
+         (grammar (and article (woerterbuch-dwds--field-text article "Grammatik")))
+         (lesarten-root (woerterbuch-dwds--find-first
+                         scope
+                         (lambda (node)
+                           (woerterbuch-dwds--has-class-p node "dwdswb-lesarten"))))
+         (meanings (if lesarten-root
+                       (mapcar #'woerterbuch-dwds--parse-lesart
+                               (woerterbuch-dwds--children-by-class lesarten-root "dwdswb-lesart"))
+                     '()))
+         (origin (woerterbuch-dwds--parse-etymology scope))
+         (synonyms (woerterbuch-dwds--parse-synonyms scope)))
+    (list :hidx (or (and bookmark (dom-attr bookmark 'data-hidx))
+                    (dom-attr scope 'id)
+                    "1")
+          :lemma (woerterbuch-dwds--text lemma-node)
+          :heading (woerterbuch-dwds--text heading)
+          :wortart (woerterbuch-dwds--wortart-from-grammar grammar)
+          :grammar grammar
+          :origin origin
+          :meanings meanings
+          :synonyms synonyms)))
+
+(defun woerterbuch-dwds--parse-dom (dom lemma)
+  "Parse DWDS DOM for LEMMA and return one canonical page object."
+  (let* ((canonical-url (woerterbuch-dwds--canonical-url dom
+                                                         (woerterbuch-dwds--build-url lemma)))
+         (homographs (mapcar #'woerterbuch-dwds--parse-article
+                             (woerterbuch-dwds--article-scopes dom)))
+         (page-lemma (or (plist-get (car homographs) :lemma)
+                         lemma))
+         (all-synonyms (cl-delete-duplicates
+                        (apply #'append
+                               (or (mapcar (lambda (homograph)
+                                             (or (plist-get homograph :synonyms) '()))
+                                           homographs)
+                                   '(nil)))
+                        :test #'equal))
+         (origins (cl-loop for homograph in homographs
+                           for origin = (plist-get homograph :origin)
+                           when origin
+                           collect (list :hidx (plist-get homograph :hidx)
+                                         :lemma (or (plist-get homograph :lemma) page-lemma)
+                                         :text origin))))
+    (list :lemma page-lemma
+          :url canonical-url
+          :homographs homographs
+          :definitions homographs
+          :origin origins
+          :synonyms all-synonyms)))
+
+(defun woerterbuch-dwds--parse-current-buffer (lemma sections)
+  "Parse current HTTP buffer as a DWDS page for LEMMA.
+
+SECTIONS controls which standard result slots are populated, but the parser also
+returns extra DWDS-specific data such as :url and :homographs."
+  (goto-char (point-min))
+  (if (and (boundp 'url-http-end-of-headers)
+           (integerp url-http-end-of-headers))
+      (goto-char url-http-end-of-headers)
+    (re-search-forward "\r?\n\r?\n" nil t))
+  (skip-chars-forward "\r\n")
+  (let* ((dom (libxml-parse-html-region (point) (point-max)))
+         (entry (woerterbuch-dwds--parse-dom dom lemma))
+         (result (woerterbuch-core-make-result 'dwds lemma)))
+    (setq result (plist-put result :lemma (or (plist-get entry :lemma) lemma)))
+    (setq result (plist-put result :url (plist-get entry :url)))
+    (setq result (plist-put result :homographs (plist-get entry :homographs)))
+    (when (woerterbuch-core-section-requested-p :definitions sections)
+      (setq result (plist-put result :definitions (plist-get entry :definitions))))
+    (when (woerterbuch-core-section-requested-p :origin sections)
+      (setq result (plist-put result :origin (plist-get entry :origin))))
+    (when (woerterbuch-core-section-requested-p :synonyms sections)
+      (setq result (plist-put result :synonyms (plist-get entry :synonyms))))
     result))
 
-(defun woerterbuch-dwds--detect-lesart-type (content-node label text)
-  "Return the semantic type for CONTENT-NODE, LABEL, and TEXT."
-  (cond
-   ((woerterbuch-dwds--has-direct-child-by-class-p content-node "dwdswb-phraseme")
-    'phrase)
-   ((and label (string-match-p "●" label))
-    'subsense)
-   ((and text (not (string-empty-p text)))
-    'meaning)
-   (t 'node)))
-
-(defun woerterbuch-dwds--extract-lesart-definition (content-node)
-  "Extract the definition text from CONTENT-NODE."
-  (let ((def-node (woerterbuch-dwds--first-direct-child-by-class
-                   content-node "dwdswb-lesart-def")))
-    (woerterbuch-dwds--node-text def-node)))
-
-(defun woerterbuch-dwds--extract-examples (node)
-  "Extract examples from NODE.
-
-The return value is a list of plists with `:type' and `:text'."
+(defun woerterbuch-dwds--fetch-callback (status lemma sections callback)
+  "Handle DWDS response STATUS for LEMMA and invoke CALLBACK."
   (let ((result nil))
-    (when (listp node)
-      (dolist (block (dom-by-class node "dwdswb-verwendungsbeispiele"))
+    (unwind-protect
         (setq result
-              (nconc result
-                     (woerterbuch-dwds--extract-examples-from-block block)))))
-    result))
+              (condition-case err
+                  (cond
+                   ((plist-get status :error)
+                    (woerterbuch-core-make-error
+                     'dwds lemma
+                     (format "Network error: %S" (plist-get status :error))))
+                   ((and (boundp 'url-http-response-status)
+                         (numberp url-http-response-status)
+                         (>= url-http-response-status 400))
+                    (woerterbuch-core-make-error
+                     'dwds lemma
+                     (format "HTTP error: %s" url-http-response-status)))
+                   (t
+                    (woerterbuch-dwds--parse-current-buffer lemma sections)))
+                (error
+                 (woerterbuch-core-make-error
+                  'dwds lemma
+                  (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (funcall callback result)))
 
-(defun woerterbuch-dwds--extract-examples-from-block (block)
-  "Extract examples from one example BLOCK."
-  (let ((result nil))
-    (dolist (child (dom-children block))
-      (when (listp child)
-        (cond
-         ((woerterbuch-dwds--node-has-class-p child "dwdswb-kompetenzbeispiel")
-          (let ((example (woerterbuch-dwds--parse-kompetenzbeispiel child)))
-            (when example
-              (push example result))))
-         ((woerterbuch-dwds--node-has-class-p child "dwdswb-beleg")
-          (let ((example (woerterbuch-dwds--parse-beleg child)))
-            (when example
-              (push example result)))))))
-    (nreverse result)))
+(defun woerterbuch-dwds-fetch (lemma sections callback)
+  "Fetch LEMMA from DWDS and invoke CALLBACK once.
 
-(defun woerterbuch-dwds--parse-kompetenzbeispiel (node)
-  "Parse one competence example NODE."
-  (let ((text (woerterbuch-dwds--text-of-first-by-class node "dwdswb-belegtext"))
-        (usage (woerterbuch-dwds--extract-diasystematics node)))
-    (when (not (string-empty-p (or text "")))
-      (let ((result (list :type 'example
-                          :text text)))
-        (when usage
-          (setq result (plist-put result :usage usage)))
-        result))))
-
-(defun woerterbuch-dwds--parse-beleg (node)
-  "Parse one citation example NODE."
-  (let* ((text (or (woerterbuch-dwds--text-of-first-by-class node "dwdswb-belegtext")
-                   (woerterbuch-dwds--node-text node)))
-         (source (woerterbuch-dwds--text-of-first-by-class node "dwdswb-fundstelle"))
-         (usage (woerterbuch-dwds--extract-diasystematics node)))
-    (when (not (string-empty-p (or text "")))
-      (let ((result (list :type 'citation-example
-                          :text text)))
-        (when (not (string-empty-p (or source "")))
-          (setq result (plist-put result :source source)))
-        (when usage
-          (setq result (plist-put result :usage usage)))
-        result))))
-
-(defun woerterbuch-dwds--extract-etymology (dom)
-  "Extract the etymology section from DOM."
-  (let* ((wrapper (car (dom-by-class dom "etymwb-wrapper")))
-         (details (and wrapper (car (dom-by-class wrapper "details"))))
-         (summary (and wrapper (car (dom-by-class wrapper "summary"))))
-         (entry (or (and details (car (dom-by-class details "etymwb-entry")))
-                    (and summary (car (dom-by-class summary "etymwb-entry")))
-                    (and wrapper (car (dom-by-class wrapper "etymwb-entry")))))
-         (text (woerterbuch-dwds--node-text entry))
-         (heading (car (dom-by-id dom "etymwb-1"))))
-    (when (not (string-empty-p (or text "")))
-      (list (list :id (or (and heading (dom-attr heading 'id)) "etymwb-1")
-                  :type 'etymology
-                  :text text)))))
-
-(defun woerterbuch-dwds--extract-diasystematics (node)
-  "Extract diasystematic labels from NODE."
-  (let ((result nil))
-    (when (listp node)
-      (dolist (diasystematic (dom-by-class node "dwdswb-diasystematik"))
-        (dolist (child (dom-children diasystematic))
-          (when (listp child)
-            (let ((text (woerterbuch-dwds--node-text child)))
-              (unless (string-empty-p text)
-                (push text result)))))))
-    (nreverse (delete-dups result))))
-
-(defun woerterbuch-dwds--extract-grammar (node)
-  "Extract grammar text from NODE or return nil."
-  (let ((text (woerterbuch-dwds--text-of-first-by-class node "dwdswb-ft-la")))
-    (woerterbuch-dwds--nil-if-empty text)))
-
-(defun woerterbuch-dwds--text-of-first-by-class (node class)
-  "Return normalized text of the first descendant of NODE with CLASS."
-  (let ((match (and (listp node) (car (dom-by-class node class)))))
-    (woerterbuch-dwds--node-text match)))
-
-(defun woerterbuch-dwds--text-of-first-tag (node tag)
-  "Return normalized text of the first descendant of NODE with TAG."
-  (let ((match (and (listp node) (car (dom-by-tag node tag)))))
-    (woerterbuch-dwds--node-text match)))
-
-(defun woerterbuch-dwds--node-id (raw-id)
-  "Return the preferred id for RAW-ID."
-  (or raw-id
-      (format "woerterbuch-dwds-node-%s" (cl-gensym))))
-
-(defun woerterbuch-dwds--node-text (node)
-  "Return normalized text content for NODE."
-  (if (null node)
-      ""
-    (let* ((texts (dom-texts node))
-           (raw-text (cond
-                      ((stringp texts) texts)
-                      ((listp texts) (mapconcat #'identity texts " "))
-                      (t (format "%s" texts)))))
-      (replace-regexp-in-string
-       "[[:space:]]+" " "
-       (string-trim raw-text)))))
-
-(defun woerterbuch-dwds--nil-if-empty (string)
-  "Return STRING unless it is nil or empty."
-  (unless (string-empty-p (or string ""))
-    string))
-
-(defun woerterbuch-dwds--node-has-class-p (node class)
-  "Return non-nil when NODE has CSS CLASS."
-  (and (listp node)
-       (member class
-               (split-string (or (dom-attr node 'class) "") "[[:space:]]+" t))))
-
-(defun woerterbuch-dwds--first-direct-child-by-class (node class)
-  "Return the first direct child of NODE with CSS CLASS."
-  (cl-find-if
-   (lambda (child)
-     (and (listp child)
-          (woerterbuch-dwds--node-has-class-p child class)))
-   (and (listp node) (dom-children node))))
-
-(defun woerterbuch-dwds--has-direct-child-by-class-p (node class)
-  "Return non-nil when NODE has a direct child with CLASS."
-  (and (woerterbuch-dwds--first-direct-child-by-class node class) t))
-
-(defun woerterbuch-dwds--direct-child-elements-by-class (node class)
-  "Return all direct child elements of NODE with CSS CLASS."
-  (let ((result nil))
-    (dolist (child (and (listp node) (dom-children node)))
-      (when (and (listp child)
-                 (woerterbuch-dwds--node-has-class-p child class))
-        (push child result)))
-    (nreverse result)))
+The request goes directly to the canonical dictionary page
+https://www.dwds.de/wb/<lemma>. Homographs such as Bank#1 and Bank#2 are kept
+as subentries in :homographs but always share the same canonical :url."
+  (let ((url-request-extra-headers
+         '(("User-Agent" . "woerterbuch/0.1")
+           ("Accept-Language" . "de,en;q=0.8"))))
+    (url-retrieve
+     (woerterbuch-dwds--build-url lemma)
+     #'woerterbuch-dwds--fetch-callback
+     (list lemma sections callback)
+     t
+     t)))
 
 (provide 'woerterbuch-dwds)
 
