@@ -16,18 +16,19 @@
           "&q=" (url-hexify-string word)))
 
 (defun woerterbuch-openthesaurus-fetch (word sections callback)
-  "Fetch WORD asynchronously from OpenThesaurus.
-
-SECTIONS is the requested section list.
-CALLBACK receives exactly one normalized result plist."
-  (let ((url-request-extra-headers
-         '(("User-Agent" . "woerterbuch/0.1"))))
-    (url-retrieve
-     (woerterbuch-openthesaurus--build-url word)
-     #'woerterbuch-openthesaurus--request-callback
-     (list word sections callback)
-     t
-     t)))
+  "Fetch WORD asynchronously from OpenThesaurus."
+  (if (not (woerterbuch-core-section-requested-p :synonyms sections))
+      (let ((result (woerterbuch-core-make-result 'openthesaurus word)))
+        ;; (plist-put result :synonyms nil)
+        (funcall callback result))
+    (let ((url-request-extra-headers
+           '(("User-Agent" . "woerterbuch/0.1"))))
+      (url-retrieve
+       (woerterbuch-openthesaurus--build-url word)
+       #'woerterbuch-openthesaurus--request-callback
+       (list word sections callback)
+       'silent
+       'inhibit-cookies))))
 
 (defun woerterbuch-openthesaurus--request-callback (status word sections callback)
   "Handle async response STATUS for WORD, SECTIONS, and CALLBACK."
@@ -61,11 +62,11 @@ CALLBACK receives exactly one normalized result plist."
         (kill-buffer (current-buffer))))
     (funcall callback result)))
 
-(defun woerterbuch-openthesaurus--parse-response (word sections)
-  "Parse current response buffer for WORD and SECTIONS."
+(defun woerterbuch-openthesaurus--parse-response (word _sections)
+  "Parse current response buffer for WORD."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
-        (integerp url-http-end-of-headers))
+           (integerp url-http-end-of-headers))
       (goto-char url-http-end-of-headers)
     (re-search-forward "\r?\n\r?\n" nil t))
   (skip-chars-forward "\r\n")
@@ -74,11 +75,8 @@ CALLBACK receives exactly one normalized result plist."
          (json-key-type 'symbol)
          (data (json-read))
          (result (woerterbuch-core-make-result 'openthesaurus word)))
-    (when (woerterbuch-core-section-requested-p :synonyms sections)
-      (setq result
-            (plist-put result :synonyms
-                       (woerterbuch-openthesaurus--extract-synonyms data word))))
-    result))
+    (plist-put result :synonyms
+               (woerterbuch-openthesaurus--extract-synonyms data word))))
 
 (defun woerterbuch-openthesaurus--extract-synonyms (data word)
   "Extract synonym list from OpenThesaurus DATA for WORD."

@@ -26,12 +26,25 @@ the order in which results are returned by `woerterbuch-fetch-all'."
                          symbol))
   :group 'woerterbuch)
 
-(defcustom woerterbuch-normalize-lemma-by-default t
+(defcustom woerterbuch-normalize-lemma t
   "Whether `woerterbuch-fetch-all' normalizes words to their lemma by default.
-
 If `woerterbuch-fetch-all' is called with a non-nil or nil optional
 NORMALIZE-LEMMA argument, that argument overrides this variable."
   :type 'boolean
+  :group 'woerterbuch)
+
+(defcustom woerterbuch-default-sections
+  '(:definitions :examples :synonyms :origin)
+  "Default sections to fetch from dictionary sources.
+
+Used by `woerterbuch-fetch-all' when :sections is not provided."
+  :type
+  '(repeat
+    (choice
+     (const :tag "Definitions" :definitions)
+     (const :tag "Examples" :examples)
+     (const :tag "Synonyms" :synonyms)
+     (const :tag "Origin / Etymology" :origin)))
   :group 'woerterbuch)
 
 ;;; Constants
@@ -194,17 +207,20 @@ results in stable source order."
                   (mapcar (lambda (s) (gethash s results)) sources)))))))))))
 
 (cl-defun woerterbuch-fetch-all
-    (word sections final-callback
-          &key (normalize-lemma woerterbuch-normalize-lemma-by-default))
-  "Fetch WORD for SECTIONS from all configured sources.
+    (word final-callback
+          &key
+          (sections woerterbuch-default-sections)
+          (normalize-lemma woerterbuch-normalize-lemma))
+  "Fetch WORD from all configured sources.
 
-WORD is the search term, SECTIONS a list of keywords such as
-`:synonyms' or `:definitions'.  FINAL-CALLBACK is called once with
-a list of result plists, one per source in `woerterbuch-sources'.
+FINAL-CALLBACK is called once with a list of result plists, one per
+source in `woerterbuch-sources'.
 
-When NORMALIZE-LEMMA is non-nil (the default, controlled by
-`woerterbuch-normalize-lemma-by-default'), the word is first
-normalized to its base form via DWDS before querying backends."
+SECTIONS is a list of keywords such as `:synonyms' or `:definitions'.
+When omitted, `woerterbuch-default-sections' is used.
+
+When NORMALIZE-LEMMA is non-nil, WORD is first normalized to its base
+form via DWDS before querying backends."
   (if normalize-lemma
       (woerterbuch-core-normalize-lemma
        word
