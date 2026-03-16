@@ -59,6 +59,11 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
   :type '(alist :key-type symbol :value-type number)
   :group 'woerterbuch)
 
+(defcustom woerterbuch-sync-poll-interval 0.05
+  "Polling interval in seconds for `woerterbuch-fetch-all-sync'."
+  :type 'number
+  :group 'woerterbuch)
+
 ;;; Constants
 
 (defconst woerterbuch-core-lemma-url
@@ -98,6 +103,56 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
     ('openthesaurus #'woerterbuch-openthesaurus-fetch)
     ('dwds          #'woerterbuch-dwds-fetch)
     (_ (error "Unknown woerterbuch source: %S" source))))
+
+(defun woerterbuch-core--source-timeout (source)
+  "Return timeout in seconds for SOURCE."
+  (or (cdr (assq source woerterbuch-source-timeouts))
+      woerterbuch-default-source-timeout))
+
+(defun woerterbuch-core--normalize-result (source word lemma result)
+  "Normalize RESULT for SOURCE, original WORD, and query LEMMA."
+  (let ((result (or result (woerterbuch-core-make-result source word))))
+    (setq result (plist-put result :source source))
+    (setq result (plist-put result :word word))
+    (setq result (plist-put result :lemma lemma))
+    result))
+
+(defun woerterbuch-core--make-timeout-error (source word timeout)
+  "Create timeout error result for SOURCE, WORD, and TIMEOUT."
+  (woerterbuch-core-make-error
+   source word
+   (format "Timeout after %ss" timeout)))
+
+(defun woerterbuch-core--call-fetcher-with-timeout
+    (source fetcher word lemma sections callback)
+  "Call FETCHER for SOURCE with timeout handling.
+
+WORD is the original user input, LEMMA the normalized backend query,
+SECTIONS the requested sections.  CALLBACK is called exactly once."
+  (let* ((timeout (woerterbuch-core--source-timeout source))
+         (finished nil)
+         timer)
+    (setq timer
+          (run-at-time
+           timeout nil
+           (lambda ()
+             (unless finished
+               (setq finished t)
+               (funcall callback
+                        (woerterbuch-core--make-timeout-error
+                         source word timeout))))))
+    (funcall
+     fetcher
+     lemma
+     sections
+     (lambda (result)
+       (unless finished
+         (setq finished t)
+         (when (timerp timer)
+           (cancel-timer timer))
+         (funcall callback
+                  (woerterbuch-core--normalize-result
+                   source word lemma result)))))))
 
 ;;; Lemma normalization
 
@@ -194,29 +249,30 @@ results in stable source order."
   (let* ((sources woerterbuch-sources)
          (pending (length sources))
          (results (make-hash-table :test #'eq))
-         (done nil))
+         (finished nil))
     (if (zerop pending)
         (funcall final-callback nil)
       (dolist (source sources)
         (let ((fetcher (woerterbuch-core--source-fetcher source)))
-          (funcall
+          (woerterbuch-core--call-fetcher-with-timeout
+           source
            fetcher
+           word
            lemma
            sections
            (lambda (result)
-             (unless done
-               (puthash
-                source
-                (plist-put
-                 (plist-put result :word word)
-                 :lemma lemma)
-                results)
+             (unless finished
+               (puthash source result results)
                (setq pending (1- pending))
                (when (zerop pending)
-                 (setq done t)
+                 (setq finished t)
                  (funcall
                   final-callback
-                  (mapcar (lambda (s) (gethash s results)) sources)))))))))))
+                  (mapcar (lambda (s)
+                            (or (gethash s results)
+                                (woerterbuch-core-make-error
+                                 s word "No result returned")))
+                          sources)))))))))))
 
 (cl-defun woerterbuch-fetch-all
     (word final-callback
@@ -247,6 +303,39 @@ form via DWDS before querying backends."
      word
      sections
      final-callback)))
+
+(cl-defun woerterbuch-fetch-all-sync
+    (word &key
+          (sections woerterbuch-default-sections)
+          (normalize-lemma woerterbuch-normalize-lemma)
+          timeout)
+  "Synchronously fetch WORD from all configured sources.
+
+Returns the final result list that `woerterbuch-fetch-all' would pass to
+its callback.
+
+TIMEOUT limits the total wait time in seconds for the whole operation.
+When nil, use the maximum configured source timeout plus 1 second."
+  (let* ((done nil)
+         (result nil)
+         (timeout (or timeout
+                      (1+ (apply #'max
+                                 woerterbuch-default-source-timeout
+                                 (mapcar #'cdr woerterbuch-source-timeouts)))))
+         (deadline (+ (float-time) timeout)))
+    (woerterbuch-fetch-all
+     word
+     (lambda (res)
+       (setq result res)
+       (setq done t))
+     :sections sections
+     :normalize-lemma normalize-lemma)
+    (while (and (not done)
+                (< (float-time) deadline))
+      (accept-process-output nil woerterbuch-sync-poll-interval))
+    (unless done
+      (error "woerterbuch-fetch-all-sync timed out after %ss" timeout))
+    result))
 
 (provide 'woerterbuch-core)
 
