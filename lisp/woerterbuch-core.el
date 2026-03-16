@@ -47,6 +47,18 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
      (const :tag "Origin / Etymology" :origin)))
   :group 'woerterbuch)
 
+(defcustom woerterbuch-default-source-timeout 10
+  "Fallback timeout if source is not in `woerterbuch-source-timeouts`."
+  :type 'number
+  :group 'woerterbuch)
+
+(defcustom woerterbuch-source-timeouts
+  '((dwds . 10)
+    (openthesaurus . 5))
+  "Per-source timeout in seconds."
+  :type '(alist :key-type symbol :value-type number)
+  :group 'woerterbuch)
+
 ;;; Constants
 
 (defconst woerterbuch-core-lemma-url
