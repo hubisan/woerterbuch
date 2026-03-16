@@ -65,31 +65,6 @@ CALLBACK receives exactly one normalized result plist."
   "Parse current response buffer for WORD and SECTIONS."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
-   ((:source openthesaurus :word "Häuser" :lemma "Haus" :ok t :definitions nil :synonyms
-          ("Haus..." "hausintern"
-           "inhäusig" "inhouse"
-           "innerbetrieblich"
-           "intern" "firmenintern"
-           "Heim" "Behausung" "Bude"
-           "Hütte" "Familie"
-           "Familienbande" "Geblüt"
-           "Geschlecht" "Sippe"
-           "Stamm" "Mischpoke"
-           "Bungalow"
-           "(eingeschossiges) Haus"
-           "Betriebs..."
-           "betriebseigen"
-           "betriebsintern"
-           "hauseigen" "vor Ort"
-           "bewährt"
-           "(jemandes) Haus..."
-           "langjährig"
-           "... meines Vertrauens"
-           "(jemandes) Haus- und Hof-..." "(jemandes) Leib-und-Magen-..." "Geschäft" "Laden (...laden)"
-           "Handel (für ..., ...handel)" "Handlung (...handlung)" "...haus" "Kauf(manns)laden" "Ladengeschäft"
-           "...markt" "Shop (...shop)" "Store" "Detailgeschäft" "Einzelhandelsgeschäft" "Anwesen" "Domaine"
-           "Finca (span., südamer.)" "Herrenhaus" "Landgut" "Landhaus" "Landsitz" "Manor" "Villa" "Ministerium"
-           "(das) Haus (+ Ministername)") :origin nil :idioms nil))
         (integerp url-http-end-of-headers))
       (goto-char url-http-end-of-headers)
     (re-search-forward "\r?\n\r?\n" nil t))

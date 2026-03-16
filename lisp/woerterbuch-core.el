@@ -5,10 +5,26 @@
 (require 'json)
 (require 'subr-x)
 
+;;; Customization
+
 (defgroup woerterbuch nil
-  "Dictionary lookup helpers."
-  :group 'applications
-  :prefix "woerterbuch-")
+  "German dictionary and thesaurus."
+  :group 'convenience
+  :prefix "woerterbuch-"
+  :link '(url-link "https://github.com/hubisan/woerterbuch"))
+
+(defcustom woerterbuch-sources
+  '(openthesaurus)
+  "Ordered list of enabled woerterbuch sources.
+
+Each symbol must correspond to a loaded backend.  The order determines
+the order in which results are returned by `woerterbuch-fetch-all'."
+  :type '(repeat (choice (const openthesaurus)
+                         (const duden)
+                         (const dwds)
+                         (const wiktionary)
+                         symbol))
+  :group 'woerterbuch)
 
 (defcustom woerterbuch-normalize-lemma-by-default t
   "Whether `woerterbuch-fetch-all' should normalize words to their lemma by default.
@@ -18,13 +34,13 @@ NORMALIZE-LEMMA argument, that argument overrides this variable."
   :type 'boolean
   :group 'woerterbuch)
 
-(defconst woerterbuch-core-sources
-  '(openthesaurus)
-  "Ordered list of enabled woerterbuch sources.")
+;;; Constants
 
 (defconst woerterbuch-core-lemma-url
   "https://www.dwds.de/api/frequency/"
   "DWDS endpoint used for lemma normalization.")
+
+;;; Result constructors
 
 (defun woerterbuch-core-make-result (source word)
   "Create normalized success result for SOURCE and WORD."
@@ -45,6 +61,8 @@ NORMALIZE-LEMMA argument, that argument overrides this variable."
         :ok nil
         :error message))
 
+;;; Helpers
+
 (defun woerterbuch-core-section-requested-p (section sections)
   "Return non-nil when SECTION is present in SECTIONS."
   (memq section sections))
@@ -54,6 +72,8 @@ NORMALIZE-LEMMA argument, that argument overrides this variable."
   (pcase source
     ('openthesaurus #'woerterbuch-openthesaurus-fetch)
     (_ (error "Unknown woerterbuch source: %S" source))))
+
+;;; Lemma normalization
 
 (defun woerterbuch-core--build-lemma-url (word)
   "Build DWDS lemma lookup URL for WORD."
@@ -138,12 +158,14 @@ Failure:
                    word)
           :source 'dwds)))
 
+;;; Fetching
+
 (defun woerterbuch-core--fetch-all-with-query (word lemma sections final-callback)
   "Fetch SECTIONS for WORD using LEMMA as backend query.
 
 FINAL-CALLBACK is called exactly once with a list of normalized
 results in stable source order."
-  (let* ((sources woerterbuch-core-sources)
+  (let* ((sources woerterbuch-sources)
          (pending (length sources))
          (results (make-hash-table :test #'eq))
          (done nil))
@@ -173,7 +195,15 @@ results in stable source order."
 (cl-defun woerterbuch-fetch-all
     (word sections final-callback
           &key (normalize-lemma woerterbuch-normalize-lemma-by-default))
-  "Fetch WORD for SECTIONS from all configured sources."
+  "Fetch WORD for SECTIONS from all configured sources.
+
+WORD is the search term, SECTIONS a list of keywords such as
+`:synonyms' or `:definitions'.  FINAL-CALLBACK is called once with
+a list of result plists, one per source in `woerterbuch-sources'.
+
+When NORMALIZE-LEMMA is non-nil (the default, controlled by
+`woerterbuch-normalize-lemma-by-default'), the word is first
+normalized to its base form via DWDS before querying backends."
   (if normalize-lemma
       (woerterbuch-core-normalize-lemma
        word
