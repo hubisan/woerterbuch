@@ -62,82 +62,7 @@ Nur öffentliche Hülle:
 
 ** Fehler
 
-*** TODO Fehler in Ouptut
-
-DWDS hat einen Fehler beim Output, Definition doppelt:
-
-#+BEGIN_SRC emacs-lisp
-  :definition "aus Wänden und Dach errichtetes Gebäude für Menschen | aus Wänden und Dach errichtetes Gebäude für Menschen"
-#+END_SRC
-
-Problem wohl in dieser Funktion:
-
-#+BEGIN_SRC emacs-lisp
-  (defun woerterbuch-dwds--extract-definition-text (def-node)
-    "Extract definition text from DEF-NODE."
-    (let* ((definition-parts
-            (mapcar #'woerterbuch-dwds--text
-                    (woerterbuch-dwds--descendants-with-class def-node "dwdswb-definition")))
-           (xref-parts
-            (mapcar #'woerterbuch-dwds--text
-                    (woerterbuch-dwds--descendants-with-class def-node "dwdswb-verweis")))
-           (text (string-join (append definition-parts xref-parts) " | ")))
-      (setq text (woerterbuch-dwds--normalize-definition-text text))
-      (unless (string-empty-p text)
-        text)))
-#+END_SRC
-
-*** TODO Idioms richtig implementieren
-
-Bei den Sections fehlt :idioms
-
-**** TODO Defcustom in Core anpassen
-
-#+BEGIN_SRC emacs-lisp
-  (defcustom woerterbuch-default-sections
-    '(:definitions :examples :synonyms :origin)
-    "Default sections to fetch from dictionary sources.
-
-  Used by `woerterbuch-fetch-all' when :sections is not provided."
-    :type
-    '(repeat
-      (choice
-       (const :tag "Definitions" :definitions)
-       (const :tag "Examples" :examples)
-       (const :tag "Synonyms" :synonyms)
-       (const :tag "Origin / Etymology" :origin)))
-    :group 'woerterbuch)
-#+END_SRC
-
-**** TODO DWDS ist dies da schon drin?
-
-Sieht so aus:
-
-#+BEGIN_SRC emacs-lisp
-  (want-idioms (woerterbuch-core-section-requested-p :idioms sections))
-#+END_SRC
-
 ** Notwendige Anpassungen
-
-*** TODO DWDS id nicht fortlaufend, reset pro Stufe
-
-Die ID muss bei Sub-Definitions wieder bei 1 starten. Hier anstatt :id 4 wieder id 1:
-
-#+BEGIN_SRC emacs-lisp
-  (:id 3 :dwds-id "d-1-3" :label "3." :definition
-       "Stelle, wo gebaut wird | Stelle, wo gebaut wird"
-       :qualifiers nil :examples
-       ("er befindet sich auf dem Bau"
-        "er geht auf den Bau, kommt vom Bau"
-        "[…] ohne Schutz kann […] nicht mehr mit wassergebundenen und wasserlöslichen Baustoffen gearbeitet werden. Und davon gibt es viele auf dem Bau : Mörtel, Kleber, Putz, Anstriche."
-        "»Ich bin halt einer vom Bau, nicht von der Verwaltung«, sagt H […].")
-       :definitions
-       ((:id 4 :dwds-id "d-1-3-1" :label "●" :definition nil
-             :qualifiers nil :examples
-             ("die Leute vom Bau saßen im Parkett und kritisierten"
-              "bist du auch vom Bau ?" "einer vom Bau")
-             :definitions nil)))
-#+END_SRC
 
 *** TODO Openthesaurus anpassen
 
@@ -217,6 +142,20 @@ Sollte neu so aussehen, dann passt es auch zu DWDS
                              :definitions nil)))
 #+END_SRC
 
+Weitere Beispiele:
+
+#+BEGIN_SRC js-json
+  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:57:17 UTC 2026"},"synsets":[{"id":12288,"categories":["Gastronomie/Kulinarik"],"terms":[{"term":"Wurst"}]},{"id":1231,"categories":["Zoologie"],"terms":[{"term":"Ausscheidung(en)"},{"term":"F\u00e4kalien"},{"term":"Kot"},{"term":"Losung"},{"term":"Stuhl"},{"term":"Exkrement(e)","level":"fachsprachlich"},{"term":"F\u00e4zes","level":"fachsprachlich"},{"term":"(ein) Haufen","level":"umgangssprachlich"},{"term":"Schiete","level":"umgangssprachlich"},{"term":"(eine) Wurst","level":"umgangssprachlich"},{"term":"Kacke","level":"derb"},{"term":"Schei\u00dfe","level":"derb"}]},{"id":15523,"categories":[],"terms":[{"term":"Witzfigur","level":"umgangssprachlich"},{"term":"dummer August"},{"term":"Hanswurst"},{"term":"Lachplatte"},{"term":"(armer) Wicht"},{"term":"Witzblattfigur"},{"term":"Fuzzi","level":"umgangssprachlich"},{"term":"Komiker","level":"umgangssprachlich"},{"term":"Pflaumenaugust","level":"umgangssprachlich"},{"term":"Schie\u00dfbudenfigur","level":"umgangssprachlich"},{"term":"T\u00fcnnes","level":"umgangssprachlich"},{"term":"Wurst","level":"umgangssprachlich"}]},{"id":47566,"categories":[],"terms":[{"term":"Versager"},{"term":"Nichtsk\u00f6nner"},{"term":"Verlierer(typ)"},{"term":"armer Wicht","level":"umgangssprachlich"},{"term":"Blindg\u00e4nger","level":"umgangssprachlich"},{"term":"Dulli","level":"umgangssprachlich"},{"term":"Flasche","level":"umgangssprachlich"},{"term":"Graupe","level":"umgangssprachlich"},{"term":"Heini","level":"umgangssprachlich"},{"term":"Kr\u00fccke","level":"umgangssprachlich"},{"term":"Lellek","level":"umgangssprachlich"},{"term":"Lohle","level":"umgangssprachlich"},{"term":"Loser","level":"umgangssprachlich"},{"term":"Lulli","level":"umgangssprachlich"},{"term":"Lusche","level":"umgangssprachlich"},{"term":"Luschi","level":"umgangssprachlich"},{"term":"Niete","level":"umgangssprachlich"},{"term":"Null","level":"umgangssprachlich"},{"term":"Nulpe","level":"umgangssprachlich"},{"term":"Opfer","level":"umgangssprachlich"},{"term":"Pfeife","level":"umgangssprachlich"},{"term":"Pfeifenheini","level":"umgangssprachlich"},{"term":"Schwachmat","level":"umgangssprachlich"},{"term":"Waserl","level":"umgangssprachlich"},{"term":"Wurst","level":"umgangssprachlich"},{"term":"(armes) W\u00fcrstchen","level":"umgangssprachlich"}]}]}
+
+
+  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:57:47 UTC 2026"},"synsets":[{"id":4280,"categories":["Schifffahrt"],"terms":[{"term":"Boot"},{"term":"Kutter"},{"term":"Schiff"},{"term":"Kahn","level":"umgangssprachlich"},{"term":"Pott","level":"umgangssprachlich"},{"term":"Schaluppe","level":"umgangssprachlich"}]},{"id":38912,"categories":[],"terms":[{"term":"gro\u00dfes Auto"},{"term":"Stra\u00dfenkreuzer"},{"term":"dicker Brummer","level":"umgangssprachlich"},{"term":"Dickschiff","level":"umgangssprachlich"},{"term":"Schiff","level":"umgangssprachlich"},{"term":"schwerer Wagen","level":"umgangssprachlich"}]}]}
+
+  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:58:07 UTC 2026"},"synsets":[{"id":4408,"categories":[],"terms":[{"term":"Geld"},{"term":"klingende M\u00fcnze"},{"term":"Mammon","level":"gehoben"},{"term":"Asche","level":"umgangssprachlich"},{"term":"Bimbes","level":"umgangssprachlich"},{"term":"Chl\u00fcbis","level":"umgangssprachlich"},{"term":"Devisen","level":"umgangssprachlich"},{"term":"Diridari","level":"umgangssprachlich"},{"term":"Eier","level":"umgangssprachlich"},{"term":"Euronen","level":"umgangssprachlich"},{"term":"Fl\u00f6he","level":"umgangssprachlich"},{"term":"Forinthen","level":"umgangssprachlich"},{"term":"Heu","level":"umgangssprachlich"},{"term":"Kies","level":"umgangssprachlich"},{"term":"Klicker","level":"umgangssprachlich"},{"term":"Kl\u00f6pse","level":"umgangssprachlich"},{"term":"Knack","level":"umgangssprachlich"},{"term":"Knete","level":"umgangssprachlich"},{"term":"Kohle","level":"umgangssprachlich"},{"term":"Koks","level":"umgangssprachlich"},{"term":"Kr\u00f6nchen","level":"umgangssprachlich"},{"term":"Kr\u00f6ten","level":"umgangssprachlich"},{"term":"Lehm","level":"umgangssprachlich"},{"term":"Marie","level":"umgangssprachlich"},{"term":"M\u00e4use","level":"umgangssprachlich"},{"term":"Moneten","level":"umgangssprachlich"},{"term":"Moos","level":"umgangssprachlich"},{"term":"M\u00f6pse","level":"umgangssprachlich"},{"term":"Murmeln","level":"umgangssprachlich"},{"term":"Ocken","level":"umgangssprachlich"},{"term":"\u00d6cken","level":"umgangssprachlich"},{"term":"Patte","level":"umgangssprachlich"},{"term":"Penunse","level":"umgangssprachlich"},{"term":"Penunze","level":"umgangssprachlich"},{"term":"Piepen","level":"umgangssprachlich"},{"term":"Pinke","level":"umgangssprachlich"},{"term":"Pulver","level":"umgangssprachlich"},{"term":"Radatten","level":"umgangssprachlich"},{"term":"R\u00e4ppli","level":"umgangssprachlich"},{"term":"Rubel","level":"umgangssprachlich"},{"term":"Rubelchen","level":"umgangssprachlich"},{"term":"Scheinchen","level":"umgangssprachlich"},{"term":"Scheine","level":"umgangssprachlich"},{"term":"Schleifen (f\u00fcr Geldbetr\u00e4ge)","level":"umgangssprachlich"},{"term":"Schlotten","level":"umgangssprachlich"},{"term":"Schotter","level":"umgangssprachlich"},{"term":"Steine","level":"umgangssprachlich"},{"term":"Zaster","level":"umgangssprachlich"}]},{"id":5243,"categories":[],"terms":[{"term":"Geld..."},{"term":"W\u00e4hrungs..."}]},{"id":7654,"categories":[],"terms":[{"term":"W\u00e4hrung"},{"term":"Devisen"},{"term":"finanzielle Mittel"},{"term":"Geld"},{"term":"Kapital"},{"term":"Zahlungsmittel"},{"term":"Valuta","level":"fachsprachlich"}]},{"id":22194,"categories":[],"terms":[{"term":"Barschaft"},{"term":"Besitz"},{"term":"Geld"},{"term":"Verm\u00f6gen"}]},{"id":44768,"categories":[],"terms":[{"term":"(ein bisschen) Geld"},{"term":"kleiner Betrag"},{"term":"aus der Portokasse (bezahlen)","level":"umgangssprachlich"},{"term":"(nur) Centbetr\u00e4ge","level":"umgangssprachlich"},{"term":"Kleckerbetrag","level":"umgangssprachlich"},{"term":"(nur) Kleingeld","level":"umgangssprachlich"},{"term":"(ein bisschen) Klimpergeld","level":"umgangssprachlich"},{"term":"Peanuts","level":"umgangssprachlich"}]},{"id":41853,"categories":[],"terms":[{"term":"Zahlung"},{"term":"Geldleistung","level":"fachsprachlich"},{"term":"Leistung","level":"fachsprachlich"},{"term":"Geld (f\u00fcr)","level":"umgangssprachlich"}]}]}
+
+  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:58:29 UTC 2026"},"synsets":[{"id":305,"categories":[],"terms":[{"term":"Bank"},{"term":"Parkbank"},{"term":"Sitzbank"}]},{"id":10147,"categories":["\u00d6konomie"],"terms":[{"term":"Bank"},{"term":"Bankhaus"},{"term":"Finanzinstitut"},{"term":"Finanzinstitution"},{"term":"Geldhaus"},{"term":"Geldinstitut"},{"term":"Gesch\u00e4ftsbank"},{"term":"Kreditanstalt"},{"term":"Kreditinstitut"},{"term":"Sparkasse"}]}]}
+
+#+END_SRC
+
 ** Manuelle Tests
 
 *** TODO Timeout testen
@@ -249,119 +188,13 @@ Gute Tests:
     :timeout 10)
  #+END_SRC
 
- #+RESULTS:
- #+begin_src emacs-lisp
- ((:source openthesaurus :word "Bau" :lemma "Bau" :ok t :definitions nil
-           :synonyms
-           ("Aushöhlung" "Höhle" "Hohlraum" "Höhlung" "Bauwerk" "Gebäude"
-            "Gemäuer" "Gebäudlichkeit" "Errichtung" "Konstruktion" "Gefängnis"
-            "Haftanstalt" "Hafthaus" "Justizanstalt" "Justizvollzugsanstalt"
-            "JVA" "Kerker" "schwedische Gardinen" "Strafanstalt"
-            "Strafvollzugsanstalt" "Vollzugsanstalt" "Haftort" "Bunker" "Häfen"
-            "Kahn" "Kiste" "Kittchen" "Knast" "Zuchthaus" "Loch")
-           :origin nil :idioms nil)
-  (:source dwds :word "Bau" :lemma "Bau" :ok t :definitions nil :synonyms nil
-           :origin nil :idioms nil :url "https://www.dwds.de/wb/Bau" :homographs
-           ((:id 1 :hidx "" :lemma "Bau" :title "Bau, der" :wortart "Substantiv"
-                 :grammar
-                 "Substantiv (Maskulinum) · Genitiv Singular: Bau(e)s · Nominativ Plural: Bauten / Baue"
-                 :origin
-                 "Bau m. ‘Errichtung, Gebäude, Struktur’. Ahd. bū m. ‘Wohnung’ (8. Jh.), mhd. bū, bou m. (n.) ‘bestelltes Feld, Ackerbau, Wohnung, Hausbau’, asächs. bū n., mnd. būw(e) n., mnl. nl. bouw m., aengl. bū n., anord. bū n. ‘Wohnort, Wohnung, Haushalt, Vieh, Leute’, schwed. bo ‘Hausstand, Einrichtung, Unterschlupf von Tieren’ gehören zur gleichen Wurzel wie bauen (s. d.) und teilen weitgehend die Bedeutungsentwicklung des Verbs. Der Plural zu Bau ‘Wohnung, Unterschlupf von Tieren’ ist Baue, vgl. Fuchsbaue. Der Plural zu Bau ‘Gebäude’ lautet Bauten und ist nd. Ursprungs. Landschaftliche Entsprechungen von mnd. būwet(e), bouwete, būte gehen im 18. Jh. in pluralischer Form und hd. Lautung in die Literatursprache ein. Dagegen setzt sich der Singular Baute f. im Hd. nicht durch. Die Bedeutung ‘Ackerbau, Feldbestellung’ wird im Nhd. noch in Bildungen wie Ackerbau (s. d.) oder Anbau (16. Jh.) deutlich, im Simplex tritt sie zu zurück. – Neubau m. (18. Jh.). Überbau m., mhd. überbū m. n., ein Wort der Rechtssprache, ‘das Bauen über eine bestimmte festgesetzte Grenze oder Linie hinaus’, seit dem 18. Jh. jedes ‘Bauwerk, das über etw. errichtet wird’. Von Marx übertragen auf die Gesamtheit der politischen, juristischen, moralischen und weltanschaulichen Ideen und Institutionen, die sich über der jeweiligen ökonomischen Basis (s. d.) einer bestimmten Gesellschaft erheben, aus ihr entstanden sind und auf sie zurückwirken. baufällig Adj. ‘einsturzgefährdet’, spätmhd. bawfellig (von Mauerwerk, 14. Jh.), būvellec (von verwahrloster Feldfrucht, 15. Jh.), mnd. buwwelich ; s. fällig. Baukasten m. Kinderspielkasten mit Bausteinen (18. Jh.). baulich Adj. ‘den Bau betreffend’, mhd. būwenlich, biulich, būlich ‘den Bau betreffend, von festem Bau, wohnhaft, angesessen’, möglicherweise auch vom Verb bauen abgeleitet; Baulichkeit f. ‘Gesamtkomplex von Gebäuden’ (19. Jh.). Baumeister m. ‘Architekt, Bauleiter’, mhd. būmeister ‘Leiter der städtischen Bauten’. Baustein m. ‘Stein zum Bauen, Mauern’ (17. Jh.). Bauwerk n. ‘Gebäude’, spätmhd. būwerk (14. Jh.)."
-                 :idioms nil :synonyms nil :definitions
-                 ((:id 1 :dwds-id "d-1-1" :label "1." :definition
-                       "das Bauen, Errichten | das Bauen, Errichten" :qualifiers
-                       nil :examples
-                       ("der Bau von Wohnungen, neuen Häusern"
-                        "der Bau einer Straße, Eisenbahnlinie, eines Kanals"
-                        "mit dem Bau beginnen" "an den Bau gehen"
-                        "die Brücke ist, befindet sich im, in Bau"
-                        "die im Bau befindlichen, begriffenen Häuser"
-                        "unser Bau schreitet rüstig voran"
-                        "einen Bau leiten, ausführen" "vor Abschluss des Baues"
-                        "der Bau von Schiffen, Flugzeugen, Raketen"
-                        "er ist mit dem Bau einer neuen Maschine beschäftigt"
-                        "Die Elterntiere hatten beim Bau des Nests einen Kunststoffstrick mit eingeflochten."
-                        "Die Eröffnung markierte das vermeintlich versöhnliche Ende einer schwierigen Zeit, die von hitzigen Debatten über den Standort und zahlreichen Verzögerungen beim Bau des Gebäudes geprägt war.")
-                       :definitions nil)
-                  (:id 2 :dwds-id "d-1-2" :label "2." :definition
-                       "Art, wie etwas gebaut ist, Gliederung, Struktur | Art, wie etwas gebaut ist, Gliederung, Struktur"
-                       :qualifiers nil :examples
-                       ("der Bau des klassischen Dramas"
-                        "der Bau eines deutschen Satzes"
-                        "den grammatischen Bau einer Sprache studieren"
-                        "der innere Bau eines Atoms"
-                        "der Bau unserer Welt, der Gebirge, Vulkane, des Himmels, Universums"
-                        "der Bau des menschlichen Körpers, Auges"
-                        "sie ist von kräftigem, schlankem Bau (= Wuchs)"
-                        "Das Schiffswrack […] sei wie die Tierleichen, die Physiologen untersuchen, um aus dem Bau der Organe, Gewebe und Zellen die Funktion, die »organische Physik« der tierischen Maschine zu erkennen."
-                        "Mit den Augen eines modernen Technikers und Naturwissenschafters sieht man zunächst die vielfältige Planungs‑ und Entwicklungsarbeit, die zwangsweise am Anfang jeder technischen Entwicklung steht. Übertragen auf den Bau des Universums, ist demnach anzunehmen, dass das »Wort« (d. h. das griechische »Logos«) neben den bekannten, in den Bereich der Theologie fallenden Aussagen auch die Gesamtheit aller physikalischen, chemischen und biologischen Naturgesetze umfasst.")
-                       :definitions nil)
-                  (:id 3 :dwds-id "d-1-3" :label "3." :definition
-                       "Stelle, wo gebaut wird | Stelle, wo gebaut wird"
-                       :qualifiers nil :examples
-                       ("er befindet sich auf dem Bau"
-                        "er geht auf den Bau, kommt vom Bau"
-                        "[…] ohne Schutz kann […] nicht mehr mit wassergebundenen und wasserlöslichen Baustoffen gearbeitet werden. Und davon gibt es viele auf dem Bau : Mörtel, Kleber, Putz, Anstriche."
-                        "»Ich bin halt einer vom Bau, nicht von der Verwaltung«, sagt H […].")
-                       :definitions
-                       ((:id 4 :dwds-id "d-1-3-1" :label "●" :definition nil
-                             :qualifiers nil :examples
-                             ("die Leute vom Bau saßen im Parkett und kritisierten"
-                              "bist du auch vom Bau ?" "einer vom Bau")
-                             :definitions nil)))
-                  (:id 5 :dwds-id "d-1-4" :label "4." :definition
-                       "das Gebaute, Errichtete | das Gebaute, Errichtete"
-                       :qualifiers nil :examples nil :definitions
-                       ((:id 6 :dwds-id "d-1-4-1" :label "a)" :definition
-                             "Synonym zu Gebäude | Synonym zu Gebäude"
-                             :qualifiers nil :examples
-                             ("die modernen, großen, öffentlichen, gesellschaftlichen, ländlichen Bauten"
-                              "ein imposanter, gigantischer, stolzer, gewaltiger, stattlicher, prächtiger, repräsentativer, massiver, solider, schöner, schmucker, luftiger, leichter, schlanker, historischer, gotischer, barocker, hässlicher, dürftiger, billiger Bau"
-                              "den alten Bau abreißen, abtragen"
-                              "einen neuen Bau aufführen"
-                              "Frisch renoviert präsentiert sich der prachtvolle Bau im zarten Gelbton."
-                              "Der Ameisenbär kann mit seiner mächtigen, sichelförmigen Scharrkralle am dritten Finger selbst betonharte Bauten von Ameisen und Termiten aufreißen.")
-                             :definitions nil)
-                        (:id 7 :dwds-id "d-1-4-2" :label "b)" :definition
-                             "Behausung von Säugetieren | Behausung von Säugetieren"
-                             :qualifiers nil :examples
-                             ("der Bau des Fuchses, Kaninchens, Bibers"
-                              "die Murmeltiere besitzen mehrere Baue"
-                              "sich [Dativ] Baue in Felsgebieten anlegen"
-                              "in seinem unterirdischen Bau stecken"
-                              "aus seinem Bau kriechen, schlüpfen"
-                              "Bisher war es grundsätzlich erlaubt, Füchse, Dachse oder Waschbären mit Hunden aus ihren Bauen zu jagen, um sie zu schiessen."
-                              "Schuppentiere leben in Afrika und Südostasien. An ihren Füßen haben sie Klauen zum Graben. Damit können sie zum Beispiel die Baue von Termiten aufbrechen.")
-                             :definitions
-                             ((:id 8 :dwds-id "d-1-4-2-1" :label "●" :definition
-                                   "Synonym zu Wohnung DWDS, 04.07.2023 | Synonym zu Wohnung"
-                                   :qualifiers ("übertragen" "salopp") :examples
-                                   ("heute gehe ich nicht aus meinem Bau (= aus meiner Wohnung)"
-                                    "bei diesem Wetter bleibe ich lieber in meinem Bau"
-                                    "den ganzen Tag im Bau stecken"
-                                    "Vielleicht wäre eine Hausgeburt […] auch schön gewesen, dann könnte ich mich in meinen Bau verkriechen und müsste jetzt nicht über Schuhe nachdenken."
-                                    "Und ich bin […] müde [,] aber glücklich in meinem Bau ins Bettchen geplumpst.")
-                                   :definitions nil)))
-                        (:id 9 :dwds-id "d-1-4-3" :label "c)" :definition
-                             "Synonym zu Arrest | Synonym zu Arrest" :qualifiers
-                             ("salopp") :examples
-                             ("er bekam drei Tage Bau"
-                              "er muss, kommt, geht in den Bau"
-                              "Nach der Haft gehe ich arbeiten und nie wieder zurück in den Bau."
-                              "[…] Pensionist, der Ersatzfreiheitsstrafe absitzen wollte, »darf« doch nicht in den » Bau « [Überschrift]")
-                             :definitions nil)
-                        (:id 10 :dwds-id "d-1-4-4" :label "d)" :definition
-                             "künstlich hergestellter, unterirdisch oder oberirdisch verlaufender Hohlraum in der festen Erdrinde | künstlich hergestellter, unterirdisch oder oberirdisch verlaufender Hohlraum in der festen Erdrinde"
-                             :qualifiers nil :examples
-                             ("die Baue in einer Grube"
-                              "ein weiträumiger, quer verlaufender Bau"
-                              "Nun heiße es Abschied nehmen vom Dunkel der Tiefe, die uns Bergleute geformt hat, von den gefahrenbergenden Schächten und Bauen, die uns alle zu festen Kameraden vereinten.")
-                             :definitions nil))))))))
- #+end_src
-
 *** Output
 
 Am Schluss will ich das Ganze als Org ausgeben.
+
+**** Anpassung scharfes s zu ss
+
+Defcustom dafür und am Schluss erst beim Output machen.
 
 **** TODO Output definieren
 

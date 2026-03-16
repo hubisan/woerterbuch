@@ -17,7 +17,7 @@
   '(openthesaurus dwds)
   "Ordered list of enabled woerterbuch sources.
 
-Each symbol must correspond to a loaded backend.  The order determines
+Each symbol must correspond to a loaded backend. The order determines
 the order in which results are returned by `woerterbuch-fetch-all'."
   :type '(repeat (choice (const openthesaurus)
                          (const dwds)
@@ -34,7 +34,7 @@ NORMALIZE-LEMMA argument, that argument overrides this variable."
   :group 'woerterbuch)
 
 (defcustom woerterbuch-default-sections
-  '(:definitions :examples :synonyms :origin)
+  '(:definitions :examples :synonyms :origin :idioms)
   "Default sections to fetch from dictionary sources.
 
 Used by `woerterbuch-fetch-all' when :sections is not provided."
@@ -44,11 +44,12 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
      (const :tag "Definitions" :definitions)
      (const :tag "Examples" :examples)
      (const :tag "Synonyms" :synonyms)
-     (const :tag "Origin / Etymology" :origin)))
+     (const :tag "Origin / Etymology" :origin)
+     (const :tag "Idioms / Mehrwortausdrücke" :idioms)))
   :group 'woerterbuch)
 
 (defcustom woerterbuch-default-source-timeout 10
-  "Fallback timeout if source is not in `woerterbuch-source-timeouts`."
+  "Fallback timeout if source is not in `woerterbuch-source-timeouts'."
   :type 'number
   :group 'woerterbuch)
 
@@ -123,12 +124,12 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
    source word
    (format "Timeout after %ss" timeout)))
 
-(defun woerterbuch-core--call-fetcher-with-timeout
-    (source fetcher word lemma sections callback)
-  "Call FETCHER for SOURCE with timeout handling.
+(defun woerterbuch-core--with-timeout (source word thunk callback)
+  "Run THUNK with timeout handling for SOURCE and WORD.
 
-WORD is the original user input, LEMMA the normalized backend query,
-SECTIONS the requested sections.  CALLBACK is called exactly once."
+THUNK is called with one argument, a done callback. CALLBACK is then
+called exactly once, either with the normal result or with a timeout
+error result."
   (let* ((timeout (woerterbuch-core--source-timeout source))
          (finished nil)
          timer)
@@ -142,17 +143,13 @@ SECTIONS the requested sections.  CALLBACK is called exactly once."
                         (woerterbuch-core--make-timeout-error
                          source word timeout))))))
     (funcall
-     fetcher
-     lemma
-     sections
+     thunk
      (lambda (result)
        (unless finished
          (setq finished t)
          (when (timerp timer)
            (cancel-timer timer))
-         (funcall callback
-                  (woerterbuch-core--normalize-result
-                   source word lemma result)))))))
+         (funcall callback result))))))
 
 ;;; Lemma normalization
 
@@ -172,14 +169,18 @@ Success:
 
 Failure:
   (:ok nil :word WORD :lemma WORD :source dwds :error MESSAGE)"
-  (let ((url-request-extra-headers
-         '(("User-Agent" . "woerterbuch/0.1"))))
-    (url-retrieve
-     (woerterbuch-core--build-lemma-url word)
-     #'woerterbuch-core--normalize-lemma-callback
-     (list word callback)
-     t
-     t)))
+  (woerterbuch-core--with-timeout
+   'dwds word
+   (lambda (done)
+     (let ((url-request-extra-headers
+            '(("User-Agent" . "woerterbuch/0.1"))))
+       (url-retrieve
+        (woerterbuch-core--build-lemma-url word)
+        #'woerterbuch-core--normalize-lemma-callback
+        (list word done)
+        t
+        t)))
+   callback))
 
 (defun woerterbuch-core--normalize-lemma-callback (status word callback)
   "Handle DWDS lemma response STATUS for WORD and CALLBACK."
@@ -254,25 +255,24 @@ results in stable source order."
         (funcall final-callback nil)
       (dolist (source sources)
         (let ((fetcher (woerterbuch-core--source-fetcher source)))
-          (woerterbuch-core--call-fetcher-with-timeout
-           source
-           fetcher
-           word
-           lemma
-           sections
+          (woerterbuch-core--with-timeout
+           source word
+           (lambda (done)
+             (funcall fetcher lemma sections done))
            (lambda (result)
              (unless finished
-               (puthash source result results)
+               (puthash source
+                        (woerterbuch-core--normalize-result source word lemma result)
+                        results)
                (setq pending (1- pending))
                (when (zerop pending)
                  (setq finished t)
-                 (funcall
-                  final-callback
-                  (mapcar (lambda (s)
-                            (or (gethash s results)
-                                (woerterbuch-core-make-error
-                                 s word "No result returned")))
-                          sources)))))))))))
+                 (funcall final-callback
+                          (mapcar (lambda (s)
+                                    (or (gethash s results)
+                                        (woerterbuch-core-make-error
+                                         s word "No result returned")))
+                                  sources)))))))))))
 
 (cl-defun woerterbuch-fetch-all
     (word final-callback
