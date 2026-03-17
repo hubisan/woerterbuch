@@ -1,462 +1,726 @@
-;;; duden-scrape.el --- Scrape Duden entries with url-retrieve -*- lexical-binding: t; -*-
+;;; woerterbuch-duden.el --- Duden backend -*- lexical-binding: t; -*-
 
-(require 'url)
-(require 'dom)
-(require 'subr-x)
 (require 'cl-lib)
-(require 'json)
+(require 'dom)
+(require 'seq)
+(require 'subr-x)
+(require 'url)
+(require 'url-util)
+(require 'woerterbuch-core)
 
-(defgroup duden-scrape nil
-  "Extract structured dictionary data from Duden article pages."
-  :group 'applications)
+(defconst woerterbuch-duden-base-url
+  "https://www.duden.de/rechtschreibung/"
+  "Base URL for Duden dictionary pages.")
 
-(defcustom duden-scrape-base-url "https://www.duden.de/rechtschreibung/"
-  "Base URL for Duden headword pages."
-  :type 'string)
+(defconst woerterbuch-duden-search-url
+  "https://www.duden.de/suchen/dudenonline/"
+  "Base URL for Duden search pages.")
 
-(defcustom duden-scrape-user-agent
-  "Mozilla/5.0 (X11; Linux x86_64) Emacs duden-scrape/0.3"
-  "User-Agent header used for HTTP requests."
-  :type 'string)
+(defconst woerterbuch-duden-request-headers
+  '(("User-Agent" . "woerterbuch/0.1")
+    ("Accept-Language" . "de,en;q=0.8"))
+  "HTTP headers used for Duden requests.")
 
-(defcustom duden-scrape-prefer-amp t
-  "When non-nil, try the AMP page first and use the regular page as fallback."
-  :type 'boolean)
+(defun woerterbuch-duden--build-url (lemma)
+  "Build Duden AMP page URL for LEMMA."
+  (concat woerterbuch-duden-base-url
+          (url-hexify-string lemma)
+          "?amp"))
 
-(defcustom duden-scrape-timeout 30
-  "Timeout in seconds for synchronous HTTP requests."
-  :type 'integer)
+(defun woerterbuch-duden--build-search-url (lemma)
+  "Build Duden search URL for LEMMA."
+  (concat woerterbuch-duden-search-url
+          (url-hexify-string lemma)))
 
-(defun duden--normalize-space (string)
-  "Normalize whitespace in STRING and trim surrounding space."
+(defun woerterbuch-duden--clean-text (string)
+  "Normalize whitespace and punctuation spacing in STRING."
   (when string
-    (string-trim
-     (replace-regexp-in-string
-      "[ \t\n\r]+" " "
-      (replace-regexp-in-string "[[:space:]]+" " " string)))))
+    (let ((s (string-trim
+              (replace-regexp-in-string "[[:space:] ]+" " " string))))
+      (setq s (replace-regexp-in-string " +," "," s))
+      (setq s (replace-regexp-in-string " +\\." "." s))
+      (setq s (replace-regexp-in-string "( +" "(" s))
+      (setq s (replace-regexp-in-string " +)" ")" s))
+      s)))
 
-(defun duden--node-text (node)
-  "Return the recursively concatenated text content of NODE."
-  (cond
-   ((null node) "")
-   ((stringp node) node)
-   ((listp node)
-    (mapconcat #'duden--node-text (dom-children node) " "))
-   (t "")))
+(defun woerterbuch-duden--text (node)
+  "Return normalized text content for NODE."
+  (woerterbuch-duden--clean-text
+   (cond
+    ((null node) "")
+    ((stringp node) node)
+    ((listp node)
+     (mapconcat #'woerterbuch-duden--text (dom-children node) " "))
+    (t ""))))
 
-(defun duden--text (node)
-  "Return normalized text content of NODE."
-  (duden--normalize-space (duden--node-text node)))
+(defun woerterbuch-duden--class-list (node)
+  "Return CSS classes for NODE."
+  (split-string (or (dom-attr node 'class) "") "[[:space:]]+" t))
 
-(defun duden--element-p (node)
-  "Return non-nil if NODE is a DOM element node."
-  (and (listp node) (symbolp (car node))))
+(defun woerterbuch-duden--has-class-p (node class)
+  "Return non-nil when NODE has CSS CLASS."
+  (member class (woerterbuch-duden--class-list node)))
 
-(defun duden--attr (node attr)
-  "Return attribute ATTR from DOM NODE."
-  (dom-attr node attr))
+(defun woerterbuch-duden--element-children (node)
+  "Return element children of NODE."
+  (seq-filter #'listp (dom-children node)))
 
-(defun duden--class-list (node)
-  "Return the list of CSS classes assigned to NODE."
-  (split-string (or (duden--attr node 'class) "") "[[:space:]]+" t))
+(defun woerterbuch-duden--children-with-class (node class)
+  "Return direct child elements of NODE having CLASS."
+  (seq-filter (lambda (child)
+                (woerterbuch-duden--has-class-p child class))
+              (woerterbuch-duden--element-children node)))
 
-(defun duden--has-class-p (node class)
-  "Return non-nil if NODE has CSS CLASS."
-  (member class (duden--class-list node)))
+(defun woerterbuch-duden--first-child-with-class (node class)
+  "Return first direct child element of NODE having CLASS."
+  (car (woerterbuch-duden--children-with-class node class)))
 
-(defun duden--find-first (predicate node)
-  "Return the first descendant of NODE for which PREDICATE returns non-nil."
-  (cond
-   ((null node) nil)
-   ((and (duden--element-p node) (funcall predicate node)) node)
-   ((duden--element-p node)
-    (cl-loop for child in (dom-children node)
-             for hit = (duden--find-first predicate child)
-             when hit return hit))
-   (t nil)))
+(defun woerterbuch-duden--descendants-with-class (node class)
+  "Return all descendants of NODE having CLASS."
+  (when node (dom-by-class node class)))
 
-(defun duden--find-all (predicate node)
-  "Return all descendants of NODE for which PREDICATE returns non-nil."
-  (let (result)
-    (cl-labels ((walk (current)
-                  (when (duden--element-p current)
-                    (when (funcall predicate current)
-                      (push current result))
-                    (dolist (child (dom-children current))
-                      (walk child)))))
-      (walk node))
-    (nreverse result)))
+(defun woerterbuch-duden--find-first (node predicate)
+  "Return first descendant of NODE matching PREDICATE."
+  (catch 'found
+    (dolist (child (woerterbuch-duden--element-children node))
+      (when (funcall predicate child)
+        (throw 'found child))
+      (let ((match (woerterbuch-duden--find-first child predicate)))
+        (when match
+          (throw 'found match))))
+    nil))
 
-(defun duden--by-id (dom id)
-  "Return the first element in DOM whose id attribute equals ID."
-  (duden--find-first
-   (lambda (node) (equal (duden--attr node 'id) id))
-   dom))
+(defun woerterbuch-duden--canonical-url (dom fallback)
+  "Return canonical page URL from DOM or FALLBACK."
+  (let ((link (woerterbuch-duden--find-first
+               dom
+               (lambda (node)
+                 (and (eq (dom-tag node) 'link)
+                      (equal (dom-attr node 'rel) "canonical"))))))
+    (or (and link (dom-attr link 'href)) fallback)))
 
-(defun duden--direct-children (node tag class)
-  "Return direct children of NODE matching TAG and optional CLASS.
+(defun woerterbuch-duden--normalize-key (string)
+  "Normalize tuple or note title STRING."
+  (let ((s (woerterbuch-duden--clean-text string)))
+    (when s
+      (setq s (replace-regexp-in-string " *ⓘ" "" s))
+      (setq s (replace-regexp-in-string ":\\'" "" s))
+      (string-trim s))))
 
-If CLASS is nil, only TAG is checked."
-  (cl-remove-if-not
-   (lambda (child)
-     (and (duden--element-p child)
-          (eq (dom-tag child) tag)
-          (or (null class) (duden--has-class-p child class))))
-   (dom-children node)))
-
-(defun duden--first-direct-child (node tag class)
-  "Return the first direct child of NODE matching TAG and optional CLASS."
-  (car (duden--direct-children node tag class)))
-
-(defun duden--tuple-alist (node)
-  "Extract direct tuple fields from NODE as an alist.
-
-The result has the form:
-
-  ((\"Usage\" . \"colloquial\") (\"Grammar\" . \"without plural\"))
-
-using the original visible labels from the page."
-  (let ((pairs nil))
-    (dolist (dl (duden--direct-children node 'dl "tuple"))
-      (let* ((dt (duden--first-direct-child dl 'dt nil))
-             (dd (duden--first-direct-child dl 'dd nil))
-             (key (duden--text dt))
-             (value (duden--text dd)))
-        (when (and (not (string-empty-p key))
-                   (not (string-empty-p value)))
-          (push (cons key value) pairs))))
+(defun woerterbuch-duden--tuple-pairs (node)
+  "Return direct tuple pairs below NODE."
+  (let (pairs)
+    (dolist (dl (woerterbuch-duden--children-with-class node "tuple"))
+      (when (eq (dom-tag dl) 'dl)
+        (let* ((dt (woerterbuch-duden--find-first
+                    dl
+                    (lambda (child) (eq (dom-tag child) 'dt))))
+               (dd (woerterbuch-duden--find-first
+                    dl
+                    (lambda (child) (eq (dom-tag child) 'dd))))
+               (key (woerterbuch-duden--normalize-key
+                     (woerterbuch-duden--text dt)))
+               (val (woerterbuch-duden--text dd)))
+          (when (and key (not (string-empty-p key))
+                     val (not (string-empty-p val)))
+            (push (cons key val) pairs)))))
     (nreverse pairs)))
 
-(defun duden--notes-alist (node)
-  "Extract direct note blocks from NODE as an alist.
+(defun woerterbuch-duden--notes (node)
+  "Return direct note blocks below NODE."
+  (let (notes)
+    (dolist (dl (woerterbuch-duden--children-with-class node "note"))
+      (when (eq (dom-tag dl) 'dl)
+        (let* ((dt (woerterbuch-duden--find-first
+                    dl
+                    (lambda (child) (eq (dom-tag child) 'dt))))
+               (key (woerterbuch-duden--normalize-key
+                     (woerterbuch-duden--text dt)))
+               (items
+                (delq nil
+                      (mapcar
+                       (lambda (li)
+                         (let ((text (woerterbuch-duden--text li)))
+                           (unless (string-empty-p text) text)))
+                       (woerterbuch-duden--find-all-li dl)))))
+          (when (and key items)
+            (push (cons key items) notes)))))
+    (nreverse notes)))
 
-The result has the form:
+(defun woerterbuch-duden--find-all-li (node)
+  "Return all `li' descendants below NODE."
+  (let (acc)
+    (dolist (child (woerterbuch-duden--element-children node))
+      (when (eq (dom-tag child) 'li)
+        (push child acc))
+      (setq acc (nconc (nreverse (woerterbuch-duden--find-all-li child)) acc)))
+    (nreverse acc)))
 
-  ((\"Examples\" . (\"...\"))
-   (\"Idioms, phrases, proverbs\" . (\"...\" \"...\")))
+(defun woerterbuch-duden--direct-child-by-tag-and-class (node tag class)
+  "Return first direct child of NODE matching TAG and CLASS."
+  (seq-find (lambda (child)
+              (and (eq (dom-tag child) tag)
+                   (or (null class)
+                       (woerterbuch-duden--has-class-p child class))))
+            (woerterbuch-duden--element-children node)))
 
-using the original visible labels from the page."
-  (let ((pairs nil))
-    (dolist (dl (duden--direct-children node 'dl "note"))
-      (let* ((dt (duden--first-direct-child dl 'dt nil))
-             (dd (duden--first-direct-child dl 'dd nil))
-             (key (duden--text dt))
-             (items (duden--find-all (lambda (n) (eq (dom-tag n) 'li)) dd))
-             (values (delq nil
-                           (mapcar
-                            (lambda (li)
-                              (let ((text (duden--text li)))
-                                (unless (string-empty-p text) text)))
-                            items))))
-        (when (and (not (string-empty-p key)) values)
-          (push (cons key values) pairs))))
-    (nreverse pairs)))
+(defun woerterbuch-duden--direct-children-by-tag-and-class (node tag class)
+  "Return direct children of NODE matching TAG and CLASS."
+  (seq-filter (lambda (child)
+                (and (eq (dom-tag child) tag)
+                     (or (null class)
+                         (woerterbuch-duden--has-class-p child class))))
+              (woerterbuch-duden--element-children node)))
 
-(defun duden--parse-id (raw-id)
-  "Parse RAW-ID such as \"Bedeutung-2a\" into a plist.
+(defun woerterbuch-duden--definition-label (node fallback)
+  "Return human-visible label for meaning NODE, or FALLBACK."
+  (let ((raw-id (dom-attr node 'id)))
+    (cond
+     ((and raw-id
+           (string-match "\\`Bedeutung-\\([0-9]+[a-z]?\\)\\'" raw-id))
+      (match-string 1 raw-id))
+     (t fallback))))
 
-The returned plist has keys :id and :parent.
+(defun woerterbuch-duden--extract-image-url (node)
+  "Return image URL from direct depiction below NODE."
+  (let* ((figure (woerterbuch-duden--direct-child-by-tag-and-class
+                  node 'figure "depiction"))
+         (link (and figure
+                    (woerterbuch-duden--find-first
+                     figure
+                     (lambda (child) (eq (dom-tag child) 'a)))))
+         (href (and link (dom-attr link 'href))))
+    (unless (or (null href) (string-empty-p href))
+      href)))
 
-Examples:
+(defun woerterbuch-duden--extract-qualifiers (node)
+  "Return qualifiers for meaning NODE."
+  (mapcar (lambda (pair)
+            (format "%s: %s" (car pair) (cdr pair)))
+          (woerterbuch-duden--tuple-pairs node)))
 
-  \"Bedeutung-3\"  => (:id \"3\" :parent nil)
-  \"Bedeutung-2a\" => (:id \"a\" :parent \"2\")"
-  (cond
-   ((null raw-id)
-    (list :id nil :parent nil))
-   ((string-match "\\`Bedeutung-\\([0-9]+\\)\\([a-z]\\)?\\'" raw-id)
-    (let ((number (match-string 1 raw-id))
-          (sub-id (match-string 2 raw-id)))
-      (if sub-id
-          (list :id sub-id :parent number)
-        (list :id number :parent nil))))
-   (t
-    (list :id raw-id :parent nil))))
+(defun woerterbuch-duden--note-values (notes title)
+  "Return note values from NOTES for TITLE."
+  (cdr (assoc title notes)))
 
-(defun duden--extract-sense-from-node (node)
-  "Extract a single sense object from NODE.
+(defun woerterbuch-duden--extract-definition-node (node index sections label)
+  "Parse one Duden meaning NODE as definition INDEX according to SECTIONS.
 
-Only a direct child `div.enumeration__text' counts as the actual sense text.
-This avoids accidentally pulling text from nested sub-senses.
+LABEL is the human-visible numbering label."
+  (let* ((text-node (woerterbuch-duden--direct-child-by-tag-and-class
+                     node 'div "enumeration__text"))
+         (notes (woerterbuch-duden--notes node))
+         (sub-ol (woerterbuch-duden--direct-child-by-tag-and-class
+                  node 'ol "enumeration__sub"))
+         (sub-items (and sub-ol
+                         (woerterbuch-duden--direct-children-by-tag-and-class
+                          sub-ol 'li "enumeration__sub-item")))
+         (want-examples
+          (woerterbuch-core-section-requested-p :examples sections))
+         (want-idioms
+          (woerterbuch-core-section-requested-p :idioms sections))
+         (definition
+          (let ((txt (woerterbuch-duden--text text-node)))
+            (unless (string-empty-p txt) txt)))
+         (qualifiers (woerterbuch-duden--extract-qualifiers node))
+         (image (woerterbuch-duden--extract-image-url node))
+         (children
+          (cl-loop for child in sub-items
+                   for idx from 1
+                   collect
+                   (woerterbuch-duden--extract-definition-node
+                    child idx sections
+                    (woerterbuch-duden--definition-label
+                     child
+                     (format "%s%c" label (+ ?a (1- idx))))))))
+    (list :id index
+          :duden-id (dom-attr node 'id)
+          :label label
+          :definition definition
+          :qualifiers qualifiers
+          :examples (and want-examples
+                         (or (woerterbuch-duden--note-values notes "Beispiele")
+                             (woerterbuch-duden--note-values notes "Beispiel")))
+          :idioms (and want-idioms
+                       (woerterbuch-duden--note-values
+                        notes
+                        "Wendungen, Redensarten, Sprichwörter"))
+          :image image
+          :definitions children)))
 
-The returned plist uses English keys:
-
-  :id
-  :parent
-  :text
-  :usage
-  :grammar
-  :examples
-  :idioms
-  :raw-tuples
-  :raw-notes"
-  (let* ((text-node (duden--first-direct-child node 'div "enumeration__text"))
-         (sense-text (duden--text text-node))
-         (tuples (duden--tuple-alist node))
-         (notes (duden--notes-alist node))
-         (id-info (duden--parse-id (duden--attr node 'id))))
-    (when (and sense-text (not (string-empty-p sense-text)))
+(defun woerterbuch-duden--parse-single-definition-section (section sections)
+  "Parse flat singular meaning SECTION according to SECTIONS."
+  (let* ((notes (woerterbuch-duden--notes section))
+         (want-examples
+          (woerterbuch-core-section-requested-p :examples sections))
+         (want-idioms
+          (woerterbuch-core-section-requested-p :idioms sections))
+         (definition
+          (or
+           (let ((p (seq-find (lambda (child) (eq (dom-tag child) 'p))
+                              (woerterbuch-duden--element-children section))))
+             (let ((txt (woerterbuch-duden--text p)))
+               (unless (string-empty-p txt) txt)))
+           (let ((text-node (woerterbuch-duden--direct-child-by-tag-and-class
+                             section 'div "enumeration__text")))
+             (let ((txt (woerterbuch-duden--text text-node)))
+               (unless (string-empty-p txt) txt))))))
+    (when definition
       (list
-       :id (plist-get id-info :id)
-       :parent (plist-get id-info :parent)
-       :text sense-text
-       :usage (cdr (assoc "Gebrauch" tuples))
-       :grammar (cdr (assoc "Grammatik" tuples))
-       :examples (or (cdr (assoc "Beispiele" notes))
-                     (cdr (assoc "Beispiel" notes)))
-       :idioms (cdr (assoc "Wendungen, Redensarten, Sprichwörter" notes))
-       :raw-tuples tuples
-       :raw-notes notes))))
+       (list :id 1
+             :duden-id nil
+             :label "1"
+             :definition definition
+             :qualifiers (woerterbuch-duden--extract-qualifiers section)
+             :examples (and want-examples
+                            (or (woerterbuch-duden--note-values notes "Beispiele")
+                                (woerterbuch-duden--note-values notes "Beispiel")))
+             :idioms (and want-idioms
+                          (woerterbuch-duden--note-values
+                           notes
+                           "Wendungen, Redensarten, Sprichwörter"))
+             :image (woerterbuch-duden--extract-image-url section)
+             :definitions nil)))))
 
-(defun duden--extract-subs (item parent-id)
-  "Extract direct sub-senses from ITEM and attach PARENT-ID to each one."
-  (let ((sub-ol (duden--first-direct-child item 'ol "enumeration__sub"))
-        result)
-    (when sub-ol
-      (dolist (sub (duden--direct-children sub-ol 'li "enumeration__sub-item"))
-        (let ((sense (duden--extract-sense-from-node sub)))
-          (when sense
-            (setq sense (plist-put sense :parent parent-id))
-            (push sense result)))))
-    (nreverse result)))
-
-(defun duden--extract-senses (dom)
-  "Extract the complete sense hierarchy from DOM.
-
-Top-level senses receive numeric string ids such as \"1\" or \"2\".
-Pure containers with only sub-senses are represented as wrapper nodes:
-
-  (:id \"2\" :parent nil :text nil :children (...))
-
-Sub-senses receive ids such as \"a\" or \"b\" and their :parent points
-to the numeric top-level sense id."
-  (let ((section (duden--by-id dom "bedeutungen"))
-        results
-        (counter 0))
-    (when section
-      (let ((ol (duden--find-first
-                 (lambda (node)
-                   (and (eq (dom-tag node) 'ol)
-                        (duden--has-class-p node "enumeration")))
-                 section)))
-        (when ol
-          (dolist (item (duden--direct-children ol 'li "enumeration__item"))
-            (setq counter (1+ counter))
-            (let* ((top-id (number-to-string counter))
-                   (own-sense (duden--extract-sense-from-node item))
-                   (children (duden--extract-subs item top-id)))
-              (cond
-               ((and own-sense (null children))
-                (setq own-sense (plist-put own-sense :id top-id))
-                (setq own-sense (plist-put own-sense :parent nil))
-                (push own-sense results))
-               ((and own-sense children)
-                (setq own-sense (plist-put own-sense :id top-id))
-                (setq own-sense (plist-put own-sense :parent nil))
-                (setq own-sense (plist-put own-sense :children children))
-                (push own-sense results))
-               (children
-                (push (list :id top-id
-                            :parent nil
-                            :text nil
-                            :children children)
-                      results))))))))
-    (nreverse results)))
-
-(defun duden--extract-synonyms (dom)
-  "Extract the visible synonym list from DOM.
-
-Only the first direct `ul' inside `#synonyme' is used. This avoids
-capturing the help icon and the \"overview\" navigation link."
-  (let* ((section (duden--by-id dom "synonyme"))
-         (ul (and section
-                  (duden--first-direct-child section 'ul nil))))
-    (when ul
-      (delete-dups
-       (delq nil
-             (mapcar
-              (lambda (anchor)
-                (let ((text (duden--text anchor)))
-                  (unless (string-empty-p text) text)))
-              (duden--find-all
-               (lambda (node) (eq (dom-tag node) 'a))
-               ul)))))))
-
-(defun duden--extract-origin (dom)
-  "Extract the origin text from DOM."
-  (let* ((section (duden--by-id dom "herkunft"))
-         (paragraph (and section
-                         (duden--find-first
-                          (lambda (node) (eq (dom-tag node) 'p))
-                          section))))
-    (when paragraph
-      (duden--text paragraph))))
-
-(defun duden--extract-grammar-summary (dom)
-  "Extract the short grammar summary from DOM."
-  (let* ((section (duden--by-id dom "grammatik"))
-         (paragraph (and section
-                         (duden--first-direct-child section 'p nil))))
-    (when paragraph
-      (duden--text paragraph))))
-
-(defun duden--extract-lemma (dom)
-  "Extract the lemma heading from DOM."
-  (or
-   (let* ((heading (duden--find-first (lambda (node) (eq (dom-tag node) 'h1)) dom))
-          (text (duden--text heading)))
-     (unless (string-empty-p text) text))
-   ""))
-
-(defun duden--extract-json-ld (dom)
-  "Extract the first JSON-LD block from DOM and parse it.
-
-Return a plist or nil if parsing fails."
-  (let* ((scripts (duden--find-all
+(defun woerterbuch-duden--parse-definitions (dom sections)
+  "Parse Duden definitions from DOM according to SECTIONS."
+  (let* ((section (woerterbuch-duden--find-first
+                   dom
                    (lambda (node)
-                     (and (eq (dom-tag node) 'script)
-                          (equal (duden--attr node 'type) "application/ld+json")))
-                   dom))
-         (raw-json (and scripts (duden--text (car scripts)))))
-    (when (and raw-json (not (string-empty-p raw-json)))
-      (condition-case nil
-          (json-parse-string raw-json :object-type 'plist :array-type 'list)
-        (error nil)))))
+                     (member (dom-attr node 'id)
+                             '("bedeutungen" "bedeutung")))))
+         (ol (and section
+                  (woerterbuch-duden--find-first
+                   section
+                   (lambda (node)
+                     (and (eq (dom-tag node) 'ol)
+                          (woerterbuch-duden--has-class-p node "enumeration"))))))
+         (items (and ol
+                     (woerterbuch-duden--direct-children-by-tag-and-class
+                      ol 'li "enumeration__item"))))
+    (if items
+        (cl-loop for item in items
+                 for idx from 1
+                 collect
+                 (woerterbuch-duden--extract-definition-node
+                  item idx sections (number-to-string idx)))
+      (woerterbuch-duden--parse-single-definition-section section sections))))
 
-(defun duden--parse-html-buffer ()
-  "Parse the current HTTP response buffer into an HTML DOM tree."
+(defun woerterbuch-duden--extract-title-node (dom)
+  "Return Duden title node from DOM."
+  (woerterbuch-duden--find-first
+   dom
+   (lambda (node)
+     (and (eq (dom-tag node) 'h1)
+          (woerterbuch-duden--has-class-p node "lemma__title")))))
+
+(defun woerterbuch-duden--extract-lemma (title-node fallback)
+  "Extract lemma from TITLE-NODE or use FALLBACK."
+  (let* ((main (and title-node
+                    (woerterbuch-duden--find-first
+                     title-node
+                     (lambda (node)
+                       (woerterbuch-duden--has-class-p node "lemma__main")))))
+         (txt (woerterbuch-duden--text main)))
+    (if (and txt (not (string-empty-p txt))) txt fallback)))
+
+(defun woerterbuch-duden--extract-title (title-node fallback)
+  "Extract visible title from TITLE-NODE or use FALLBACK."
+  (let ((txt (woerterbuch-duden--text title-node)))
+    (if (and txt (not (string-empty-p txt))) txt fallback)))
+
+(defun woerterbuch-duden--field-value (dom label)
+  "Extract page-level tuple value for LABEL from DOM."
+  (cl-loop
+   for dl in (woerterbuch-duden--descendants-with-class dom "tuple")
+   when (eq (dom-tag dl) 'dl)
+   for dt = (woerterbuch-duden--find-first
+             dl
+             (lambda (child) (eq (dom-tag child) 'dt)))
+   for dd = (woerterbuch-duden--find-first
+             dl
+             (lambda (child) (eq (dom-tag child) 'dd)))
+   for key = (woerterbuch-duden--normalize-key
+              (woerterbuch-duden--text dt))
+   when (string-equal key label)
+   return (woerterbuch-duden--text dd)))
+
+(defun woerterbuch-duden--wortart-from-grammar (grammar)
+  "Extract coarse word class from GRAMMAR."
+  (when (and grammar (not (string-empty-p grammar)))
+    (string-trim (car (split-string grammar "," t)))))
+
+(defun woerterbuch-duden--extract-origin (dom)
+  "Extract origin text from DOM."
+  (let ((section (woerterbuch-duden--find-first
+                  dom
+                  (lambda (node)
+                    (equal (dom-attr node 'id) "herkunft")))))
+    (when section
+      (let ((parts
+             (delq nil
+                   (mapcar
+                    (lambda (child)
+                      (unless (memq (dom-tag child) '(header small nav))
+                        (let ((txt (woerterbuch-duden--text child)))
+                          (unless (string-empty-p txt) txt))))
+                    (woerterbuch-duden--element-children section)))))
+        (unless (null parts)
+          (string-join parts " "))))))
+
+(defun woerterbuch-duden--split-synonym-text (string)
+  "Split comma-separated synonym STRING conservatively."
+  (delq nil
+        (mapcar (lambda (part)
+                  (let ((txt (woerterbuch-duden--clean-text part)))
+                    (unless (string-empty-p txt) txt)))
+                (split-string (or string "") "," t))))
+
+(defun woerterbuch-duden--extract-synonyms (dom)
+  "Extract synonyms from DOM."
+  (let* ((section (woerterbuch-duden--find-first
+                   dom
+                   (lambda (node)
+                     (equal (dom-attr node 'id) "synonyme"))))
+         (ul (and section
+                  (seq-find (lambda (child) (eq (dom-tag child) 'ul))
+                            (woerterbuch-duden--element-children section)))))
+    (when ul
+      (let ((seen (make-hash-table :test #'equal))
+            out)
+        (dolist (li (woerterbuch-duden--direct-children-by-tag-and-class ul 'li nil))
+          (dolist (syn (woerterbuch-duden--split-synonym-text
+                        (woerterbuch-duden--text li)))
+            (unless (gethash syn seen)
+              (puthash syn t seen)
+              (push syn out))))
+        (nreverse out)))))
+
+(defun woerterbuch-duden--find-search-segment (dom)
+  "Return the Wörterbuch segment from search DOM."
+  (seq-find
+   (lambda (segment)
+     (let ((title (woerterbuch-duden--find-first
+                   segment
+                   (lambda (node)
+                     (woerterbuch-duden--has-class-p node "segment__title")))))
+       (string-equal (woerterbuch-duden--text title) "Wörterbuch")))
+   (woerterbuch-duden--descendants-with-class dom "segment")))
+
+(defun woerterbuch-duden--search-result-lemma (label-node)
+  "Return visible lemma text from search LABEL-NODE."
+  (let* ((strong (and label-node
+                      (woerterbuch-duden--find-first
+                       label-node
+                       (lambda (node) (eq (dom-tag node) 'strong)))))
+         (txt (woerterbuch-duden--text strong)))
+    (if (and txt (not (string-empty-p txt)))
+        txt
+      (woerterbuch-duden--text label-node))))
+
+(defun woerterbuch-duden--parse-search-results (dom lemma)
+  "Return exact-match entry URLs from search DOM for LEMMA."
+  (let ((segment (woerterbuch-duden--find-search-segment dom))
+        urls)
+    (when segment
+      (dolist (section (woerterbuch-duden--direct-children-by-tag-and-class
+                        segment 'section "vignette"))
+        (let* ((label (woerterbuch-duden--find-first
+                       section
+                       (lambda (node)
+                         (woerterbuch-duden--has-class-p node "vignette__label"))))
+               (visible (woerterbuch-duden--search-result-lemma label))
+               (href (and label (dom-attr label 'href))))
+          (when (and href
+                     (string-prefix-p "/rechtschreibung/" href)
+                     (string-equal (woerterbuch-duden--clean-text visible)
+                                   (woerterbuch-duden--clean-text lemma)))
+            (push (concat "https://www.duden.de" href "?amp") urls)))))
+    (nreverse urls)))
+
+(defun woerterbuch-duden--parse-dom (dom input sections url homograph-id)
+  "Parse Duden entry DOM for INPUT and return one homograph plist.
+
+SECTIONS controls which data is extracted. URL is the entry URL.
+HOMOGRAPH-ID is the 1-based index assigned by the caller."
+  (let* ((title-node (woerterbuch-duden--extract-title-node dom))
+         (lemma (woerterbuch-duden--extract-lemma title-node input))
+         (title (woerterbuch-duden--extract-title title-node lemma))
+         (grammar (woerterbuch-duden--field-value dom "Wortart"))
+         (resolved-url (or url
+                           (woerterbuch-duden--canonical-url dom nil)))
+         (want-definitions
+          (or (woerterbuch-core-section-requested-p :definitions sections)
+              (woerterbuch-core-section-requested-p :examples sections)
+              (woerterbuch-core-section-requested-p :idioms sections)))
+         (want-origin (woerterbuch-core-section-requested-p :origin sections))
+         (want-synonyms (woerterbuch-core-section-requested-p :synonyms sections)))
+    (list :id homograph-id
+          :lemma lemma
+          :title title
+          :wortart (woerterbuch-duden--wortart-from-grammar grammar)
+          :grammar grammar
+          :origin (and want-origin (woerterbuch-duden--extract-origin dom))
+          :idioms nil
+          :synonyms (and want-synonyms
+                         (woerterbuch-duden--extract-synonyms dom))
+          :url resolved-url
+          :definitions (and want-definitions
+                            (woerterbuch-duden--parse-definitions
+                             dom sections)))))
+
+(defun woerterbuch-duden--parse-buffer-dom ()
+  "Parse the current HTTP response buffer into an HTML DOM."
   (goto-char (point-min))
-  (re-search-forward "\r?\n\r?\n" nil t)
+  (if (and (boundp 'url-http-end-of-headers)
+           (integerp url-http-end-of-headers))
+      (goto-char url-http-end-of-headers)
+    (re-search-forward "\r?\n\r?\n" nil t))
+  (skip-chars-forward "\r\n")
   (libxml-parse-html-region (point) (point-max)))
 
-(defun duden--build-url (word &optional amp)
-  "Build a Duden URL for WORD.
+(defun woerterbuch-duden--result-from-homographs (input homographs)
+  "Build normalized Duden result for INPUT from HOMOGRAPHS."
+  (let ((result (woerterbuch-core-make-result 'duden input))
+        (urls (delq nil (mapcar (lambda (entry) (plist-get entry :url))
+                                homographs))))
+    (setq result
+          (plist-put result :lemma
+                     (or (plist-get (car homographs) :lemma) input)))
+    (setq result (plist-put result :url urls))
+    (setq result (plist-put result :homographs homographs))
+    result))
 
-When AMP is non-nil, append `?amp' to the URL."
-  (concat duden-scrape-base-url
-          (url-hexify-string word)
-          (when amp "?amp")))
+(defun woerterbuch-duden--no-match-result (input)
+  "Build successful no-match result for INPUT."
+  (let ((result (woerterbuch-core-make-result 'duden input)))
+    (setq result (plist-put result :url nil))
+    (setq result (plist-put result :homographs nil))
+    result))
 
-(defun duden--parse-current-response (word url &optional source-variant)
-  "Parse the current HTTP response buffer into a structured entry plist.
+(defun woerterbuch-duden--request-needed-p (sections)
+  "Return non-nil when Duden can contribute anything for SECTIONS."
+  (or (woerterbuch-core-section-requested-p :definitions sections)
+      (woerterbuch-core-section-requested-p :examples sections)
+      (woerterbuch-core-section-requested-p :origin sections)
+      (woerterbuch-core-section-requested-p :idioms sections)
+      (woerterbuch-core-section-requested-p :synonyms sections)))
 
-WORD is the original query word.
-URL is the effective page URL.
-SOURCE-VARIANT is a symbol such as `amp' or `default'."
-  (let* ((dom (duden--parse-html-buffer))
-         (lemma (duden--extract-lemma dom))
-         (senses (duden--extract-senses dom))
-         (synonyms (duden--extract-synonyms dom))
-         (origin (duden--extract-origin dom))
-         (grammar-summary (duden--extract-grammar-summary dom))
-         (json-ld (duden--extract-json-ld dom)))
-    (list
-     :query-word word
-     :url url
-     :source-variant source-variant
-     :lemma lemma
-     :senses senses
-     :synonyms synonyms
-     :origin origin
-     :grammar-summary grammar-summary
-     :json-ld json-ld)))
+(defun woerterbuch-duden--with-headers (thunk)
+  "Call THUNK with Duden request headers configured."
+  (let ((url-request-extra-headers woerterbuch-duden-request-headers))
+    (funcall thunk)))
 
-(defun duden--fetch-and-parse-url (word url source-variant)
-  "Fetch URL synchronously and parse it as a Duden entry for WORD.
+(defun woerterbuch-duden--status-http-code (status)
+  "Return HTTP code inferred from STATUS or current buffer context."
+  (or (and (boundp 'url-http-response-status)
+           (numberp url-http-response-status)
+           url-http-response-status)
+      (let ((err (plist-get status :error)))
+        (when (and (listp err)
+                   (eq (car err) 'error)
+                   (eq (cadr err) 'http)
+                   (numberp (caddr err)))
+          (caddr err)))))
 
-SOURCE-VARIANT is stored in the returned plist."
-  (let ((buffer (url-retrieve-synchronously url t t duden-scrape-timeout)))
-    (unless buffer
-      (error "No response for %s" url))
-    (with-current-buffer buffer
-      (unwind-protect
-          (duden--parse-current-response word url source-variant)
-        (kill-buffer buffer)))))
+(defun woerterbuch-duden--status-network-error-p (status)
+  "Return non-nil when STATUS represents a non-HTTP network error."
+  (let ((err (plist-get status :error)))
+    (and err
+         (not (woerterbuch-duden--status-http-code status)))))
 
-(defun duden-fetch-entry-sync (word)
-  "Fetch the Duden entry for WORD synchronously.
+(defun woerterbuch-duden--fetch-search (input sections callback)
+  "Fetch Duden search results for INPUT and continue with CALLBACK."
+  (woerterbuch-duden--with-headers
+   (lambda ()
+     (url-retrieve
+      (woerterbuch-duden--build-search-url input)
+      #'woerterbuch-duden--search-callback
+      (list input sections callback)
+      t
+      t))))
 
-If `duden-scrape-prefer-amp' is non-nil, the AMP version is tried first.
-If it does not contain senses, the regular page is used as fallback."
-  (let* ((url-request-extra-headers
-          `(("User-Agent" . ,duden-scrape-user-agent)
-            ("Accept-Language" . "de-DE,de;q=0.9,en;q=0.5")))
-         (amp-url (duden--build-url word t))
-         (default-url (duden--build-url word nil))
-         entry)
-    (if duden-scrape-prefer-amp
-        (progn
-          (setq entry (duden--fetch-and-parse-url word amp-url 'amp))
-          (if (plist-get entry :senses)
-              entry
-            (duden--fetch-and-parse-url word default-url 'default)))
-      (duden--fetch-and-parse-url word default-url 'default))))
+(defun woerterbuch-duden--search-callback (status input sections callback)
+  "Handle Duden search response STATUS for INPUT, SECTIONS and CALLBACK."
+  (let ((http-code (woerterbuch-duden--status-http-code status))
+        result)
+    (unwind-protect
+        (setq result
+              (condition-case err
+                  (cond
+                   ((woerterbuch-duden--status-network-error-p status)
+                    (woerterbuch-core-make-error
+                     'duden input
+                     (format "Network error: %S" (plist-get status :error))))
+                   ((and http-code
+                         (>= http-code 400)
+                         (/= http-code 404))
+                    (woerterbuch-core-make-error
+                     'duden input
+                     (format "HTTP error: %s" http-code)))
+                   (t
+                    (let* ((dom (woerterbuch-duden--parse-buffer-dom))
+                           (urls (woerterbuch-duden--parse-search-results
+                                  dom input)))
+                      (if (null urls)
+                          (woerterbuch-duden--no-match-result input)
+                        (woerterbuch-duden--fetch-entry-urls
+                         input sections urls callback)
+                        :async))))
+                (error
+                 (woerterbuch-core-make-error
+                  'duden input
+                  (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (unless (eq result :async)
+      (funcall callback result))))
 
-(defun duden-fetch-entry (word callback)
-  "Fetch the Duden entry for WORD asynchronously.
-
-CALLBACK is called with the final entry plist."
-  (let* ((url-request-extra-headers
-          `(("User-Agent" . ,duden-scrape-user-agent)
-            ("Accept-Language" . "de-DE,de;q=0.9,en;q=0.5")))
-         (amp-url (duden--build-url word t))
-         (default-url (duden--build-url word nil))
-         (first-url (if duden-scrape-prefer-amp amp-url default-url))
-         (first-variant (if duden-scrape-prefer-amp 'amp 'default)))
-    (url-retrieve
-     first-url
-     (lambda (status)
-       (unwind-protect
-           (if (plist-get status :error)
+(defun woerterbuch-duden--fetch-entry-urls (input sections urls callback)
+  "Fetch each Duden entry in URLS and invoke CALLBACK once."
+  (let ((remaining urls)
+        (homographs nil)
+        (failed nil))
+    (cl-labels
+        ((step ()
+           (cond
+            (failed
+             (funcall callback failed))
+            ((null remaining)
                (funcall callback
-                        (list :query-word word
-                              :url first-url
-                              :source-variant first-variant
-                              :error status))
-             (let ((entry (duden--parse-current-response word first-url first-variant)))
-               (if (or (plist-get entry :senses)
-                       (not duden-scrape-prefer-amp))
-                   (funcall callback entry)
-                 (let ((url-request-extra-headers
-                        `(("User-Agent" . ,duden-scrape-user-agent)
-                          ("Accept-Language" . "de-DE,de;q=0.9,en;q=0.5"))))
-                   (url-retrieve
-                    default-url
-                    (lambda (status2)
-                      (unwind-protect
-                          (if (plist-get status2 :error)
-                              (funcall callback entry)
-                            (funcall callback
-                                     (duden--parse-current-response
-                                      word default-url 'default)))
-                        (kill-buffer (current-buffer)))))))))
-         (kill-buffer (current-buffer)))))))
+                        (woerterbuch-duden--result-from-homographs
+                         input (nreverse homographs))))
+            (t
+             (let* ((url (car remaining))
+                    (index (1+ (length homographs))))
+               (setq remaining (cdr remaining))
+               (woerterbuch-duden--with-headers
+                (lambda ()
+                  (url-retrieve
+                   url
+                   #'woerterbuch-duden--entry-callback
+                   (list input sections url index #'step
+                         (lambda (entry)
+                           (push entry homographs))
+                         (lambda (error-result)
+                           (setq failed error-result)))
+                   t
+                   t))))))))
+      (step))))
 
-(defun duden-flatten-senses (senses)
-  "Flatten hierarchical SENSES into a single list.
+(defun woerterbuch-duden--entry-callback
+    (status input sections url index continue push-entry fail)
+  "Handle one fetched Duden entry.
 
-Wrapper nodes that only contain :children are kept in the result as well.
-Children are emitted immediately after their parent wrapper."
-  (let (result)
-    (cl-labels ((walk (items)
-                  (dolist (item items)
-                    (push item result)
-                    (let ((children (plist-get item :children)))
-                      (when children
-                        (walk children))))))
-      (walk senses))
-    (nreverse result)))
+STATUS is the URL callback status. INPUT, SECTIONS, URL and INDEX
+describe the requested entry. CONTINUE continues the sequence.
+PUSH-ENTRY stores the parsed homograph. FAIL stores an error result."
+  (let ((http-code (woerterbuch-duden--status-http-code status))
+        result)
+    (unwind-protect
+        (setq result
+              (condition-case err
+                  (cond
+                   ((woerterbuch-duden--status-network-error-p status)
+                    (woerterbuch-core-make-error
+                     'duden input
+                     (format "Network error: %S" (plist-get status :error))))
+                   ((and http-code
+                         (>= http-code 400))
+                    (woerterbuch-core-make-error
+                     'duden input
+                     (format "HTTP error: %s" http-code)))
+                   (t
+                    (funcall
+                     push-entry
+                     (woerterbuch-duden--parse-dom
+                      (woerterbuch-duden--parse-buffer-dom)
+                      input sections url index))
+                    :continue))
+                (error
+                 (woerterbuch-core-make-error
+                  'duden input
+                  (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (unless (eq result :continue)
+      (funcall fail result))
+    (funcall continue)))
 
-(defun duden-demo-print (word)
-  "Fetch WORD synchronously and pretty-print the resulting plist."
-  (interactive "sDuden word: ")
-  (let ((entry (duden-fetch-entry-sync word)))
-    (with-current-buffer (get-buffer-create "*Duden Demo*")
-      (erase-buffer)
-      (pp entry (current-buffer))
-      (goto-char (point-min))
-      (display-buffer (current-buffer)))))
+(defun woerterbuch-duden--initial-callback (status input sections callback)
+  "Handle initial Duden entry lookup STATUS."
+  (let ((http-code (woerterbuch-duden--status-http-code status))
+        result)
+    (unwind-protect
+        (setq result
+              (condition-case err
+                  (cond
+                   ((woerterbuch-duden--status-network-error-p status)
+                    (woerterbuch-core-make-error
+                     'duden input
+                     (format "Network error: %S" (plist-get status :error))))
+                   ((eq http-code 404)
+                    (woerterbuch-duden--fetch-search input sections callback)
+                    :async)
+                   ((and http-code
+                         (>= http-code 400))
+                    (woerterbuch-core-make-error
+                     'duden input
+                     (format "HTTP error: %s" http-code)))
+                   (t
+                    (woerterbuch-duden--result-from-homographs
+                     input
+                     (list
+                      (woerterbuch-duden--parse-dom
+                       (woerterbuch-duden--parse-buffer-dom)
+                       input sections
+                       (woerterbuch-duden--build-url input)
+                       1)))))
+                (error
+                 (woerterbuch-core-make-error
+                  'duden input
+                  (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (unless (eq result :async)
+      (funcall callback result))))
 
-(provide 'duden-scrape)
+(defun woerterbuch-duden-fetch (input sections callback)
+  "Fetch INPUT from Duden asynchronously and invoke CALLBACK once."
+  (if (not (woerterbuch-duden--request-needed-p sections))
+      (funcall callback (woerterbuch-core-make-result 'duden input))
+    (woerterbuch-duden--with-headers
+     (lambda ()
+       (url-retrieve
+        (woerterbuch-duden--build-url input)
+        #'woerterbuch-duden--initial-callback
+        (list input sections callback)
+        t
+        t)))))
 
-;;; duden-scrape.el ends here
+(defun woerterbuch-duden--parse-html-string
+    (html input sections &optional url homograph-id)
+  "Parse HTML fixture string HTML as Duden entry for INPUT.
+
+SECTIONS controls extraction. URL and HOMOGRAPH-ID override defaults."
+  (with-temp-buffer
+    (insert html)
+    (goto-char (point-min))
+    (woerterbuch-duden--parse-dom
+     (libxml-parse-html-region (point-min) (point-max))
+     input sections url (or homograph-id 1))))
+
+(defun woerterbuch-duden--parse-html-file
+    (file input sections &optional url homograph-id)
+  "Parse local Duden HTML FILE as entry for INPUT.
+
+This helper is meant for offline tests."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (woerterbuch-duden--parse-dom
+     (libxml-parse-html-region (point-min) (point-max))
+     input sections url (or homograph-id 1))))
+
+(provide 'woerterbuch-duden)
+
+;;; woerterbuch-duden.el ends here

@@ -593,11 +593,11 @@ Gute Tests:
 - Zaun - viele Redewendungen
 - das Gras ist grüner auf der anderen Seite - MWA
 
-**** Bau
+**** Bank
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
-   "Bau"
+   "Bank"
    :sections  '(:definitions :examples :origin :synonyms :idioms)
    :timeout 10)
 #+END_SRC

@@ -14,7 +14,7 @@
   :link '(url-link "https://github.com/hubisan/woerterbuch"))
 
 (defcustom woerterbuch-sources
-  '(openthesaurus dwds)
+  '(openthesaurus dwds duden)
   "Ordered list of enabled woerterbuch sources.
 
 Each symbol must correspond to a loaded backend. The order determines
@@ -55,6 +55,7 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
 
 (defcustom woerterbuch-source-timeouts
   '((dwds . 10)
+    (duden . 20)
     (openthesaurus . 5))
   "Per-source timeout in seconds."
   :type '(alist :key-type symbol :value-type number)
@@ -112,6 +113,7 @@ lemma, for example if the source redirects or normalizes differently."
   "Return fetch function symbol for SOURCE."
   (pcase source
     ('openthesaurus #'woerterbuch-openthesaurus-fetch)
+    ('duden         #'woerterbuch-duden-fetch)
     ('dwds          #'woerterbuch-dwds-fetch)
     (_ (error "Unknown woerterbuch source: %S" source))))
 
