@@ -27,7 +27,7 @@ the order in which results are returned by `woerterbuch-fetch-all'."
   :group 'woerterbuch)
 
 (defcustom woerterbuch-normalize-lemma t
-  "Whether `woerterbuch-fetch-all' normalizes words to their lemma by default.
+  "Whether `woerterbuch-fetch-all' normalizes input to its lemma by default.
 If `woerterbuch-fetch-all' is called with a non-nil or nil optional
 NORMALIZE-LEMMA argument, that argument overrides this variable."
   :type 'boolean
@@ -73,22 +73,32 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
 
 ;;; Result constructors
 
-(defun woerterbuch-core-make-result (source word)
-  "Create normalized success result for SOURCE and WORD."
-  (list :source source
-        :word word
-        :lemma word
-        :ok t
-        :definitions nil
-        :synonyms nil
-        :origin nil
-        :idioms nil))
+(defun woerterbuch-core-make-wrapper (input &optional lemma)
+  "Create normalized wrapper result for INPUT.
 
-(defun woerterbuch-core-make-error (source word message)
-  "Create normalized error result for SOURCE, WORD, and MESSAGE."
+INPUT is the original user input. Some sources may support not only
+single words, but also multi-word expressions or idioms (for example
+DWDS).
+
+LEMMA is the normalized lemma for INPUT. If INPUT is not normalized,
+LEMMA should be equal to INPUT."
+  (list :input input
+        :lemma (or lemma input)
+        :sources nil))
+
+(defun woerterbuch-core-make-result (source lemma)
+  "Create normalized success result for SOURCE and LEMMA.
+
+LEMMA is the source-specific lemma. It may differ from the wrapper
+lemma, for example if the source redirects or normalizes differently."
   (list :source source
-        :word word
-        :lemma word
+        :lemma lemma
+        :ok t))
+
+(defun woerterbuch-core-make-error (source lemma message)
+  "Create normalized error result for SOURCE, LEMMA, and MESSAGE."
+  (list :source source
+        :lemma lemma
         :ok nil
         :error message))
 
@@ -110,22 +120,22 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
   (or (cdr (assq source woerterbuch-source-timeouts))
       woerterbuch-default-source-timeout))
 
-(defun woerterbuch-core--normalize-result (source word lemma result)
-  "Normalize RESULT for SOURCE, original WORD, and query LEMMA."
-  (let ((result (or result (woerterbuch-core-make-result source word))))
+(defun woerterbuch-core--normalize-result (source lemma result)
+  "Normalize RESULT for SOURCE and wrapper LEMMA."
+  (let ((result (or result (woerterbuch-core-make-result source lemma))))
     (setq result (plist-put result :source source))
-    (setq result (plist-put result :word word))
-    (setq result (plist-put result :lemma lemma))
+    (unless (plist-member result :lemma)
+      (setq result (plist-put result :lemma lemma)))
     result))
 
-(defun woerterbuch-core--make-timeout-error (source word timeout)
-  "Create timeout error result for SOURCE, WORD, and TIMEOUT."
+(defun woerterbuch-core--make-timeout-error (source lemma timeout)
+  "Create timeout error result for SOURCE, LEMMA, and TIMEOUT."
   (woerterbuch-core-make-error
-   source word
+   source lemma
    (format "Timeout after %ss" timeout)))
 
-(defun woerterbuch-core--with-timeout (source word thunk callback)
-  "Run THUNK with timeout handling for SOURCE and WORD.
+(defun woerterbuch-core--with-timeout (source lemma thunk callback)
+  "Run THUNK with timeout handling for SOURCE and LEMMA.
 
 THUNK is called with one argument, a done callback. CALLBACK is then
 called exactly once, either with the normal result or with a timeout
@@ -141,7 +151,7 @@ error result."
                (setq finished t)
                (funcall callback
                         (woerterbuch-core--make-timeout-error
-                         source word timeout))))))
+                         source lemma timeout))))))
     (funcall
      thunk
      (lambda (result)
@@ -153,37 +163,41 @@ error result."
 
 ;;; Lemma normalization
 
-(defun woerterbuch-core--build-lemma-url (word)
-  "Build DWDS lemma lookup URL for WORD."
+(defun woerterbuch-core--build-lemma-url (input)
+  "Build DWDS lemma lookup URL for INPUT."
   (concat woerterbuch-core-lemma-url
           "?q="
-          (url-hexify-string word)))
+          (url-hexify-string input)))
 
-(defun woerterbuch-core-normalize-lemma (word callback)
-  "Normalize WORD to a lemma via DWDS and call CALLBACK once.
+(defun woerterbuch-core-normalize-lemma (input callback)
+  "Normalize INPUT to a lemma via DWDS and call CALLBACK once.
+
+INPUT is the original user input. Some sources may support not only
+single words, but also multi-word expressions or idioms (for example
+DWDS).
 
 CALLBACK receives a plist:
 
 Success:
-  (:ok t :word WORD :lemma LEMMA :source dwds)
+  (:ok t :input INPUT :lemma LEMMA :source dwds)
 
 Failure:
-  (:ok nil :word WORD :lemma WORD :source dwds :error MESSAGE)"
+  (:ok nil :input INPUT :lemma INPUT :source dwds :error MESSAGE)"
   (woerterbuch-core--with-timeout
-   'dwds word
+   'dwds input
    (lambda (done)
      (let ((url-request-extra-headers
             '(("User-Agent" . "woerterbuch/0.1"))))
        (url-retrieve
-        (woerterbuch-core--build-lemma-url word)
+        (woerterbuch-core--build-lemma-url input)
         #'woerterbuch-core--normalize-lemma-callback
-        (list word done)
+        (list input done)
         t
         t)))
    callback))
 
-(defun woerterbuch-core--normalize-lemma-callback (status word callback)
-  "Handle DWDS lemma response STATUS for WORD and CALLBACK."
+(defun woerterbuch-core--normalize-lemma-callback (status input callback)
+  "Handle DWDS lemma response STATUS for INPUT and CALLBACK."
   (let ((result nil))
     (unwind-protect
         (setq result
@@ -191,8 +205,8 @@ Failure:
                   (cond
                    ((plist-get status :error)
                     (list :ok nil
-                          :word word
-                          :lemma word
+                          :input input
+                          :lemma input
                           :source 'dwds
                           :error (format "Network error: %S"
                                          (plist-get status :error))))
@@ -201,26 +215,26 @@ Failure:
                          (numberp url-http-response-status)
                          (>= url-http-response-status 400))
                     (list :ok nil
-                          :word word
-                          :lemma word
+                          :input input
+                          :lemma input
                           :source 'dwds
                           :error (format "HTTP error: %s"
                                          url-http-response-status)))
 
                    (t
-                    (woerterbuch-core--parse-lemma-response word)))
+                    (woerterbuch-core--parse-lemma-response input)))
                 (error
                  (list :ok nil
-                       :word word
-                       :lemma word
+                       :input input
+                       :lemma input
                        :source 'dwds
                        :error (error-message-string err)))))
       (when (buffer-live-p (current-buffer))
         (kill-buffer (current-buffer))))
     (funcall callback result)))
 
-(defun woerterbuch-core--parse-lemma-response (word)
-  "Parse current DWDS lemma response buffer for WORD."
+(defun woerterbuch-core--parse-lemma-response (input)
+  "Parse current DWDS lemma response buffer for INPUT."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
            (integerp url-http-end-of-headers))
@@ -233,85 +247,106 @@ Failure:
          (data (json-read))
          (lemma (alist-get 'lemma data)))
     (list :ok t
-          :word word
+          :input input
           :lemma (if (and (stringp lemma)
                           (not (string-empty-p lemma)))
                      lemma
-                   word)
+                   input)
           :source 'dwds)))
 
 ;;; Fetching
 
-(defun woerterbuch-core--fetch-all-with-query (word lemma sections final-callback)
-  "Fetch SECTIONS for WORD using LEMMA as backend query.
+(defun woerterbuch-core--build-wrapper (input lemma source-results)
+  "Create wrapper result for INPUT, LEMMA, and SOURCE-RESULTS."
+  (let ((wrapper (woerterbuch-core-make-wrapper input lemma)))
+    (plist-put wrapper :sources source-results)))
 
-FINAL-CALLBACK is called exactly once with a list of normalized
-results in stable source order."
+(defun woerterbuch-core--fetch-all-with-lemma (input lemma sections final-callback)
+  "Fetch SECTIONS for INPUT using LEMMA as backend query.
+
+FINAL-CALLBACK is called exactly once with a wrapper plist of the form:
+
+  (:input INPUT :lemma LEMMA :sources SOURCES)
+
+where SOURCES is a list of normalized source results in stable source
+order."
   (let* ((sources woerterbuch-sources)
          (pending (length sources))
          (results (make-hash-table :test #'eq))
          (finished nil))
     (if (zerop pending)
-        (funcall final-callback nil)
+        (funcall final-callback
+                 (woerterbuch-core--build-wrapper input lemma nil))
       (dolist (source sources)
         (let ((fetcher (woerterbuch-core--source-fetcher source)))
           (woerterbuch-core--with-timeout
-           source word
+           source lemma
            (lambda (done)
              (funcall fetcher lemma sections done))
            (lambda (result)
              (unless finished
                (puthash source
-                        (woerterbuch-core--normalize-result source word lemma result)
+                        (woerterbuch-core--normalize-result source lemma result)
                         results)
                (setq pending (1- pending))
                (when (zerop pending)
                  (setq finished t)
-                 (funcall final-callback
-                          (mapcar (lambda (s)
-                                    (or (gethash s results)
-                                        (woerterbuch-core-make-error
-                                         s word "No result returned")))
-                                  sources)))))))))))
+                 (funcall
+                  final-callback
+                  (woerterbuch-core--build-wrapper
+                   input
+                   lemma
+                   (mapcar
+                    (lambda (s)
+                      (or (gethash s results)
+                          (woerterbuch-core-make-error
+                           s lemma "No result returned")))
+                    sources))))))))))))
 
 (cl-defun woerterbuch-fetch-all
-    (word final-callback
-          &key
-          (sections woerterbuch-default-sections)
-          (normalize-lemma woerterbuch-normalize-lemma))
-  "Fetch WORD from all configured sources.
+    (input final-callback
+           &key
+           (sections woerterbuch-default-sections)
+           (normalize-lemma woerterbuch-normalize-lemma))
+  "Fetch INPUT from all configured sources.
 
-FINAL-CALLBACK is called once with a list of result plists, one per
-source in `woerterbuch-sources'.
+INPUT is the original user input. Some sources may support not only
+single words, but also multi-word expressions or idioms (for example
+DWDS).
+
+FINAL-CALLBACK is called once with a wrapper plist of the form:
+
+  (:input INPUT :lemma LEMMA :sources SOURCES)
 
 SECTIONS is a list of keywords such as `:synonyms' or `:definitions'.
 When omitted, `woerterbuch-default-sections' is used.
 
-When NORMALIZE-LEMMA is non-nil, WORD is first normalized to its base
-form via DWDS before querying backends."
+When NORMALIZE-LEMMA is non-nil, INPUT is first normalized to its base
+form via DWDS before querying backends. If INPUT is not normalized,
+then the wrapper lemma is equal to INPUT."
   (if normalize-lemma
       (woerterbuch-core-normalize-lemma
-       word
+       input
        (lambda (lemma-result)
-         (woerterbuch-core--fetch-all-with-query
-          word
-          (or (plist-get lemma-result :lemma) word)
+         (woerterbuch-core--fetch-all-with-lemma
+          input
+          (or (plist-get lemma-result :lemma) input)
           sections
           final-callback)))
-    (woerterbuch-core--fetch-all-with-query
-     word
-     word
+    (woerterbuch-core--fetch-all-with-lemma
+     input
+     input
      sections
      final-callback)))
 
 (cl-defun woerterbuch-fetch-all-sync
-    (word &key
-          (sections woerterbuch-default-sections)
-          (normalize-lemma woerterbuch-normalize-lemma)
-          timeout)
-  "Synchronously fetch WORD from all configured sources.
+    (input &key
+           (sections woerterbuch-default-sections)
+           (normalize-lemma woerterbuch-normalize-lemma)
+           timeout)
+  "Synchronously fetch INPUT from all configured sources.
 
-Returns the final result list that `woerterbuch-fetch-all' would pass to
+Returns the wrapper result that `woerterbuch-fetch-all' would pass to
 its callback.
 
 TIMEOUT limits the total wait time in seconds for the whole operation.
@@ -324,7 +359,7 @@ When nil, use the maximum configured source timeout plus 1 second."
                                  (mapcar #'cdr woerterbuch-source-timeouts)))))
          (deadline (+ (float-time) timeout)))
     (woerterbuch-fetch-all
-     word
+     input
      (lambda (res)
        (setq result res)
        (setq done t))

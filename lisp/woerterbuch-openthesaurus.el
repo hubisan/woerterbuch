@@ -9,29 +9,40 @@
   "https://www.openthesaurus.de/synonyme/search"
   "Base URL for OpenThesaurus requests.")
 
-(defun woerterbuch-openthesaurus--build-url (word)
-  "Build OpenThesaurus API URL for WORD."
+(defconst woerterbuch-openthesaurus-web-url
+  "https://www.openthesaurus.de/synonyme/"
+  "Base web URL for OpenThesaurus entries.")
+
+(defun woerterbuch-openthesaurus--build-url (input)
+  "Build OpenThesaurus API URL for INPUT."
   (concat woerterbuch-openthesaurus-base-url
           "?format=application/json"
-          "&q=" (url-hexify-string word)))
+          "&q=" (url-hexify-string input)))
 
-(defun woerterbuch-openthesaurus-fetch (word sections callback)
-  "Fetch WORD asynchronously from OpenThesaurus."
+(defun woerterbuch-openthesaurus--build-web-url (lemma)
+  "Build OpenThesaurus web URL for LEMMA."
+  (concat woerterbuch-openthesaurus-web-url
+          (url-hexify-string lemma)))
+
+(defun woerterbuch-openthesaurus-fetch (input sections callback)
+  "Fetch INPUT asynchronously from OpenThesaurus."
   (if (not (woerterbuch-core-section-requested-p :synonyms sections))
-      (let ((result (woerterbuch-core-make-result 'openthesaurus word)))
-        ;; (plist-put result :synonyms nil)
+      (let ((result (woerterbuch-core-make-result 'openthesaurus input)))
+        (setq result
+              (plist-put result :url
+                         (woerterbuch-openthesaurus--build-web-url input)))
         (funcall callback result))
     (let ((url-request-extra-headers
            '(("User-Agent" . "woerterbuch/0.1"))))
       (url-retrieve
-       (woerterbuch-openthesaurus--build-url word)
+       (woerterbuch-openthesaurus--build-url input)
        #'woerterbuch-openthesaurus--request-callback
-       (list word sections callback)
+       (list input sections callback)
        'silent
        'inhibit-cookies))))
 
-(defun woerterbuch-openthesaurus--request-callback (status word sections callback)
-  "Handle async response STATUS for WORD, SECTIONS, and CALLBACK."
+(defun woerterbuch-openthesaurus--request-callback (status input sections callback)
+  "Handle async response STATUS for INPUT, SECTIONS, and CALLBACK."
   (let (result)
     (unwind-protect
         (setq result
@@ -40,7 +51,7 @@
                    ((plist-get status :error)
                     (woerterbuch-core-make-error
                      'openthesaurus
-                     word
+                     input
                      (format "Network error: %S" (plist-get status :error))))
 
                    ((and (boundp 'url-http-response-status)
@@ -48,22 +59,22 @@
                          (>= url-http-response-status 400))
                     (woerterbuch-core-make-error
                      'openthesaurus
-                     word
+                     input
                      (format "HTTP error: %s" url-http-response-status)))
 
                    (t
-                    (woerterbuch-openthesaurus--parse-response word sections)))
+                    (woerterbuch-openthesaurus--parse-response input sections)))
                 (error
                  (woerterbuch-core-make-error
                   'openthesaurus
-                  word
+                  input
                   (error-message-string err)))))
       (when (buffer-live-p (current-buffer))
         (kill-buffer (current-buffer))))
     (funcall callback result)))
 
-(defun woerterbuch-openthesaurus--parse-response (word _sections)
-  "Parse current response buffer for WORD."
+(defun woerterbuch-openthesaurus--parse-response (input _sections)
+  "Parse current response buffer for INPUT."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
            (integerp url-http-end-of-headers))
@@ -74,25 +85,58 @@
          (json-array-type 'list)
          (json-key-type 'symbol)
          (data (json-read))
-         (result (woerterbuch-core-make-result 'openthesaurus word)))
-    (plist-put result :synonyms
-               (woerterbuch-openthesaurus--extract-synonyms data word))))
+         (result (woerterbuch-core-make-result 'openthesaurus input)))
+    (setq result
+          (plist-put result :url
+                     (woerterbuch-openthesaurus--build-web-url input)))
+    (plist-put result :homographs
+               (woerterbuch-openthesaurus--extract-homographs data input))))
 
-(defun woerterbuch-openthesaurus--extract-synonyms (data word)
-  "Extract synonym list from OpenThesaurus DATA for WORD."
-  (let ((sets (alist-get 'synsets data))
+(defun woerterbuch-openthesaurus--extract-homographs (data lemma)
+  "Extract homograph structure from OpenThesaurus DATA for LEMMA."
+  (list
+   (list :id 1
+         :lemma lemma
+         :definitions
+         (woerterbuch-openthesaurus--extract-definition-groups data lemma))))
+
+(defun woerterbuch-openthesaurus--extract-definition-groups (data lemma)
+  "Extract synonym groups as definitions from OpenThesaurus DATA for LEMMA."
+  (let ((synsets (alist-get 'synsets data))
+        (index 0)
+        groups)
+    (dolist (synset synsets)
+      (setq index (1+ index))
+      (push
+       (list :id index
+             :lemma lemma
+             :categories
+             (woerterbuch-openthesaurus--normalize-categories
+              (alist-get 'categories synset))
+             :synonyms
+             (woerterbuch-openthesaurus--extract-synonyms-from-synset synset lemma))
+       groups))
+    (nreverse groups)))
+
+(defun woerterbuch-openthesaurus--normalize-categories (categories)
+  "Normalize OpenThesaurus CATEGORIES."
+  (when categories
+    (seq-filter #'stringp categories)))
+
+(defun woerterbuch-openthesaurus--extract-synonyms-from-synset (synset lemma)
+  "Extract synonyms from SYNSET, excluding LEMMA itself."
+  (let ((terms (alist-get 'terms synset))
         (seen (make-hash-table :test #'equal))
         synonyms)
-    (dolist (synset sets)
-      (dolist (term (alist-get 'terms synset))
-        (let ((candidate (alist-get 'term term)))
-          (when (and (stringp candidate)
-                     (not (string-empty-p candidate))
-                     (not (string-equal (downcase candidate)
-                                        (downcase word)))
-                     (not (gethash candidate seen)))
-            (puthash candidate t seen)
-            (push candidate synonyms)))))
+    (dolist (term terms)
+      (let ((candidate (alist-get 'term term)))
+        (when (and (stringp candidate)
+                   (not (string-empty-p candidate))
+                   (not (string-equal (downcase candidate)
+                                      (downcase lemma)))
+                   (not (gethash candidate seen)))
+          (puthash candidate t seen)
+          (push candidate synonyms))))
     (nreverse synonyms)))
 
 (provide 'woerterbuch-openthesaurus)

@@ -384,7 +384,6 @@ stamps are ignored automatically."
           (and want-idioms
                article
                (woerterbuch-dwds--parse-idioms article))
-          :synonyms nil
           :definitions
           (and lesarten-root
                (funcall parse-definitions

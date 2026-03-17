@@ -1,160 +1,11 @@
 #+TITLE: Wörterbuch - TODOs
 #+STARTUP: showall
 
-* Allgemeines
-
-** Ziel
-
-Für mehrere Dictionary-Sources (z. B. Duden, DWDS, OpenThesaurus, Wiktionary) sollen Requests *asynchron gleichzeitig gestartet* werden.
-
-Jede Source implementiert dieselbe öffentliche API und liefert das Resultat in einem gemeinsamen plist-Format zurück.
-
-Die Argumente und internen Bezeichner bleiben auf Englisch, auch wenn das Package sonst deutsch ist.
-
-** Korrigierte Architektur
-
-Der Aggregator sollte direkt in =woerterbuch-core.el= liegen.
-
-Begründung:
-
-- dort liegen bereits die gemeinsamen Datenstrukturen und Hilfsfunktionen
-- der Aggregator ist keine UI-Schicht, sondern gemeinsame Infrastruktur
-- =woerterbuch.el= kann dadurch bewusst dünn bleiben
-- so verhindert man, dass Logik versehentlich zwischen =core= und =woerterbuch.el= auseinanderläuft
-
-*** Dateien
-
-- =woerterbuch-core.el=
-- =woerterbuch.el=
-- =woerterbuch-duden.el=
-- =woerterbuch-dwds.el=
-- =woerterbuch-openthesaurus.el=
-- =woerterbuch-wiktionary.el=
-
-*** Verantwortlichkeiten
-
-**** =woerterbuch-core.el=
-Gemeinsame Infrastruktur:
-- section handling
-- common result helpers
-- error/result constructors
-- buffer/header helpers
-- gemeinsame Request-Helfer
-- *Aggregator für alle Sources*
-- ggf. zentrale Source-Reihenfolge oder Source-Registry
-
-**** =woerterbuch-<source>.el=
-Jeweils source-spezifisch:
-- URL building
-- HTTP request via =url-retrieve=
-- parsing of HTML or JSON
-- extraction of requested sections
-- returning a normalized plist result
-
-**** =woerterbuch.el=
-Nur öffentliche Hülle:
-- =require= von =woerterbuch-core.el=
-- =require= der einzelnen Sources
-- ggf. sehr kleine öffentliche Einstiegspunkte
-- keine eigentliche Aggregator- oder Parsing-Logik
-
 * TODOS
 
 ** Fehler
 
 ** Notwendige Anpassungen
-
-*** TODO Openthesaurus anpassen
-
-Struktur an DWDS anpassen und hat wohl auch :homographs.
-
-Ist so unterteilt:
-
-#+BEGIN_SRC js-json
-  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 20:59:14 UTC 2026"},"synsets":[{"id":789,"categories":[],"terms":[{"term":"Aush\u00f6hlung"},{"term":"Bau"},{"term":"H\u00f6hle"},{"term":"Hohlraum"},{"term":"H\u00f6hlung"}]},{"id":1714,"categories":["Architektur"],"terms":[{"term":"Bau"},{"term":"Bauwerk"},{"term":"Geb\u00e4ude"},{"term":"Gem\u00e4uer"},{"term":"Geb\u00e4udlichkeit","level":"gehoben"}]},{"id":6419,"categories":[],"terms":[{"term":"Bau"},{"term":"Errichtung"},{"term":"Konstruktion"}]},{"id":6182,"categories":[],"terms":[{"term":"Gef\u00e4ngnis"},{"term":"Haftanstalt"},{"term":"Hafthaus"},{"term":"Justizanstalt"},{"term":"Justizvollzugsanstalt"},{"term":"JVA"},{"term":"Kerker"},{"term":"schwedische Gardinen"},{"term":"Strafanstalt"},{"term":"Strafvollzugsanstalt"},{"term":"Vollzugsanstalt"},{"term":"Haftort","level":"fachsprachlich"},{"term":"Bau","level":"umgangssprachlich"},{"term":"Bunker","level":"umgangssprachlich"},{"term":"H\u00e4fen","level":"umgangssprachlich"},{"term":"Kahn","level":"umgangssprachlich"},{"term":"Kiste","level":"umgangssprachlich"},{"term":"Kittchen","level":"umgangssprachlich"},{"term":"Knast","level":"umgangssprachlich"},{"term":"Zuchthaus","level":"umgangssprachlich"},{"term":"Loch","level":"derb"}]}]}
-#+END_SRC
-
-Sollte neu so aussehen, dann passt es auch zu DWDS
-
-#+BEGIN_SRC emacs-lisp
-  (:source openthesaurus
-           :word "Bau"
-           :lemma "Bau"
-           :ok t
-           :definitions nil
-           :synonyms nil
-           :origin nil
-           :idioms nil
-           :url "https://www.openthesaurus.de/synonyme/Bau"
-           :homographs ((:id 1
-                             :lemma "Bau"
-                             :origin nil
-                             :idioms nil
-                             :synonyms-categories nil
-                             :synonyms ("Aushöhlung"
-                                        "Höhle"
-                                        "Hohlraum"
-                                        "Höhlung")
-                             :definitions nil)
-                        (:id 2
-                             :lemma "Bau"
-                             :origin nil
-                             :idioms nil
-                             :synonyms-category ("Architektur")
-                             :synonyms ("Bauwerk"
-                                        "Gebäude"
-                                        "Gemäuer"
-                                        "Gebäudlichkeit")
-                             :definitions nil)
-                        (:id 3
-                             :lemma "Bau"
-                             :origin nil
-                             :idioms nil
-                             :synonyms-category nil
-                             :synonyms ("Errichtung"
-                                        "Konstruktion")
-                             :definitions nil)
-                        (:id 4
-                             :lemma "Bau"
-                             :origin nil
-                             :idioms nil
-                             :synonyms-category nil
-                             :synonyms ("Gefängnis"
-                                        "Haftanstalt"
-                                        "Hafthaus"
-                                        "Justizanstalt"
-                                        "Justizvollzugsanstalt"
-                                        "JVA"
-                                        "Kerker"
-                                        "schwedische Gardinen"
-                                        "Strafanstalt"
-                                        "Strafvollzugsanstalt"
-                                        "Vollzugsanstalt"
-                                        "Haftort"
-                                        "Bunker"
-                                        "Häfen"
-                                        "Kahn"
-                                        "Kiste"
-                                        "Kittchen"
-                                        "Knast"
-                                        "Zuchthaus"
-                                        "Loch")
-                             :definitions nil)))
-#+END_SRC
-
-Weitere Beispiele:
-
-#+BEGIN_SRC js-json
-  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:57:17 UTC 2026"},"synsets":[{"id":12288,"categories":["Gastronomie/Kulinarik"],"terms":[{"term":"Wurst"}]},{"id":1231,"categories":["Zoologie"],"terms":[{"term":"Ausscheidung(en)"},{"term":"F\u00e4kalien"},{"term":"Kot"},{"term":"Losung"},{"term":"Stuhl"},{"term":"Exkrement(e)","level":"fachsprachlich"},{"term":"F\u00e4zes","level":"fachsprachlich"},{"term":"(ein) Haufen","level":"umgangssprachlich"},{"term":"Schiete","level":"umgangssprachlich"},{"term":"(eine) Wurst","level":"umgangssprachlich"},{"term":"Kacke","level":"derb"},{"term":"Schei\u00dfe","level":"derb"}]},{"id":15523,"categories":[],"terms":[{"term":"Witzfigur","level":"umgangssprachlich"},{"term":"dummer August"},{"term":"Hanswurst"},{"term":"Lachplatte"},{"term":"(armer) Wicht"},{"term":"Witzblattfigur"},{"term":"Fuzzi","level":"umgangssprachlich"},{"term":"Komiker","level":"umgangssprachlich"},{"term":"Pflaumenaugust","level":"umgangssprachlich"},{"term":"Schie\u00dfbudenfigur","level":"umgangssprachlich"},{"term":"T\u00fcnnes","level":"umgangssprachlich"},{"term":"Wurst","level":"umgangssprachlich"}]},{"id":47566,"categories":[],"terms":[{"term":"Versager"},{"term":"Nichtsk\u00f6nner"},{"term":"Verlierer(typ)"},{"term":"armer Wicht","level":"umgangssprachlich"},{"term":"Blindg\u00e4nger","level":"umgangssprachlich"},{"term":"Dulli","level":"umgangssprachlich"},{"term":"Flasche","level":"umgangssprachlich"},{"term":"Graupe","level":"umgangssprachlich"},{"term":"Heini","level":"umgangssprachlich"},{"term":"Kr\u00fccke","level":"umgangssprachlich"},{"term":"Lellek","level":"umgangssprachlich"},{"term":"Lohle","level":"umgangssprachlich"},{"term":"Loser","level":"umgangssprachlich"},{"term":"Lulli","level":"umgangssprachlich"},{"term":"Lusche","level":"umgangssprachlich"},{"term":"Luschi","level":"umgangssprachlich"},{"term":"Niete","level":"umgangssprachlich"},{"term":"Null","level":"umgangssprachlich"},{"term":"Nulpe","level":"umgangssprachlich"},{"term":"Opfer","level":"umgangssprachlich"},{"term":"Pfeife","level":"umgangssprachlich"},{"term":"Pfeifenheini","level":"umgangssprachlich"},{"term":"Schwachmat","level":"umgangssprachlich"},{"term":"Waserl","level":"umgangssprachlich"},{"term":"Wurst","level":"umgangssprachlich"},{"term":"(armes) W\u00fcrstchen","level":"umgangssprachlich"}]}]}
-
-
-  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:57:47 UTC 2026"},"synsets":[{"id":4280,"categories":["Schifffahrt"],"terms":[{"term":"Boot"},{"term":"Kutter"},{"term":"Schiff"},{"term":"Kahn","level":"umgangssprachlich"},{"term":"Pott","level":"umgangssprachlich"},{"term":"Schaluppe","level":"umgangssprachlich"}]},{"id":38912,"categories":[],"terms":[{"term":"gro\u00dfes Auto"},{"term":"Stra\u00dfenkreuzer"},{"term":"dicker Brummer","level":"umgangssprachlich"},{"term":"Dickschiff","level":"umgangssprachlich"},{"term":"Schiff","level":"umgangssprachlich"},{"term":"schwerer Wagen","level":"umgangssprachlich"}]}]}
-
-  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:58:07 UTC 2026"},"synsets":[{"id":4408,"categories":[],"terms":[{"term":"Geld"},{"term":"klingende M\u00fcnze"},{"term":"Mammon","level":"gehoben"},{"term":"Asche","level":"umgangssprachlich"},{"term":"Bimbes","level":"umgangssprachlich"},{"term":"Chl\u00fcbis","level":"umgangssprachlich"},{"term":"Devisen","level":"umgangssprachlich"},{"term":"Diridari","level":"umgangssprachlich"},{"term":"Eier","level":"umgangssprachlich"},{"term":"Euronen","level":"umgangssprachlich"},{"term":"Fl\u00f6he","level":"umgangssprachlich"},{"term":"Forinthen","level":"umgangssprachlich"},{"term":"Heu","level":"umgangssprachlich"},{"term":"Kies","level":"umgangssprachlich"},{"term":"Klicker","level":"umgangssprachlich"},{"term":"Kl\u00f6pse","level":"umgangssprachlich"},{"term":"Knack","level":"umgangssprachlich"},{"term":"Knete","level":"umgangssprachlich"},{"term":"Kohle","level":"umgangssprachlich"},{"term":"Koks","level":"umgangssprachlich"},{"term":"Kr\u00f6nchen","level":"umgangssprachlich"},{"term":"Kr\u00f6ten","level":"umgangssprachlich"},{"term":"Lehm","level":"umgangssprachlich"},{"term":"Marie","level":"umgangssprachlich"},{"term":"M\u00e4use","level":"umgangssprachlich"},{"term":"Moneten","level":"umgangssprachlich"},{"term":"Moos","level":"umgangssprachlich"},{"term":"M\u00f6pse","level":"umgangssprachlich"},{"term":"Murmeln","level":"umgangssprachlich"},{"term":"Ocken","level":"umgangssprachlich"},{"term":"\u00d6cken","level":"umgangssprachlich"},{"term":"Patte","level":"umgangssprachlich"},{"term":"Penunse","level":"umgangssprachlich"},{"term":"Penunze","level":"umgangssprachlich"},{"term":"Piepen","level":"umgangssprachlich"},{"term":"Pinke","level":"umgangssprachlich"},{"term":"Pulver","level":"umgangssprachlich"},{"term":"Radatten","level":"umgangssprachlich"},{"term":"R\u00e4ppli","level":"umgangssprachlich"},{"term":"Rubel","level":"umgangssprachlich"},{"term":"Rubelchen","level":"umgangssprachlich"},{"term":"Scheinchen","level":"umgangssprachlich"},{"term":"Scheine","level":"umgangssprachlich"},{"term":"Schleifen (f\u00fcr Geldbetr\u00e4ge)","level":"umgangssprachlich"},{"term":"Schlotten","level":"umgangssprachlich"},{"term":"Schotter","level":"umgangssprachlich"},{"term":"Steine","level":"umgangssprachlich"},{"term":"Zaster","level":"umgangssprachlich"}]},{"id":5243,"categories":[],"terms":[{"term":"Geld..."},{"term":"W\u00e4hrungs..."}]},{"id":7654,"categories":[],"terms":[{"term":"W\u00e4hrung"},{"term":"Devisen"},{"term":"finanzielle Mittel"},{"term":"Geld"},{"term":"Kapital"},{"term":"Zahlungsmittel"},{"term":"Valuta","level":"fachsprachlich"}]},{"id":22194,"categories":[],"terms":[{"term":"Barschaft"},{"term":"Besitz"},{"term":"Geld"},{"term":"Verm\u00f6gen"}]},{"id":44768,"categories":[],"terms":[{"term":"(ein bisschen) Geld"},{"term":"kleiner Betrag"},{"term":"aus der Portokasse (bezahlen)","level":"umgangssprachlich"},{"term":"(nur) Centbetr\u00e4ge","level":"umgangssprachlich"},{"term":"Kleckerbetrag","level":"umgangssprachlich"},{"term":"(nur) Kleingeld","level":"umgangssprachlich"},{"term":"(ein bisschen) Klimpergeld","level":"umgangssprachlich"},{"term":"Peanuts","level":"umgangssprachlich"}]},{"id":41853,"categories":[],"terms":[{"term":"Zahlung"},{"term":"Geldleistung","level":"fachsprachlich"},{"term":"Leistung","level":"fachsprachlich"},{"term":"Geld (f\u00fcr)","level":"umgangssprachlich"}]}]}
-
-  {"metaData":{"apiVersion":"0.2","warning":"ACHTUNG: Bitte vor ernsthafter Nutzung feedback@openthesaurus.de kontaktieren, um bei API-\u00c4nderungen informiert zu werden","copyright":"Copyright (C) 2025 Daniel Naber (www.danielnaber.de)","license":"Creative Commons Attribution-ShareAlike 4.0 or GNU LESSER GENERAL PUBLIC LICENSE Version 2.1","source":"https://www.openthesaurus.de","date":"Mon Mar 16 22:58:29 UTC 2026"},"synsets":[{"id":305,"categories":[],"terms":[{"term":"Bank"},{"term":"Parkbank"},{"term":"Sitzbank"}]},{"id":10147,"categories":["\u00d6konomie"],"terms":[{"term":"Bank"},{"term":"Bankhaus"},{"term":"Finanzinstitut"},{"term":"Finanzinstitution"},{"term":"Geldhaus"},{"term":"Geldinstitut"},{"term":"Gesch\u00e4ftsbank"},{"term":"Kreditanstalt"},{"term":"Kreditinstitut"},{"term":"Sparkasse"}]}]}
-
-#+END_SRC
 
 ** Manuelle Tests
 
@@ -181,9 +32,38 @@ Gute Tests:
 - Zaun - viele Redewendungen
 - das Gras ist grüner auf der anderen Seite - MWA
 
+**** Bau
+
  #+BEGIN_SRC emacs-lisp :results value code replace
    (woerterbuch-fetch-all-sync
     "Bau"
+    :sections  '(:definitions :examples :origin :synonyms :idioms)
+    :timeout 10)
+ #+END_SRC
+
+**** Haus
+
+ #+BEGIN_SRC emacs-lisp :results value code replace
+   (woerterbuch-fetch-all-sync
+    "Haus"
+    :sections  '(:definitions :examples :origin :synonyms :idioms)
+    :timeout 10)
+ #+END_SRC
+
+**** Zaun
+
+ #+BEGIN_SRC emacs-lisp :results value code replace
+   (woerterbuch-fetch-all-sync
+    "Zaun"
+    :sections  '(:definitions :examples :origin :synonyms :idioms)
+    :timeout 10)
+ #+END_SRC
+
+**** das Gras ist grüner auf der anderen Seite
+
+ #+BEGIN_SRC emacs-lisp :results value code replace
+   (woerterbuch-fetch-all-sync
+    "das Gras ist grüner auf der anderen Seite"
     :sections  '(:definitions :examples :origin :synonyms :idioms)
     :timeout 10)
  #+END_SRC
@@ -249,4 +129,61 @@ Defcustom dafür und am Schluss erst beim Output machen.
 
   ,* Herkunft
 #+END_SRC
+
+* Allgemeines
+
+** Ziel
+
+Für mehrere Dictionary-Sources (z. B. Duden, DWDS, OpenThesaurus, Wiktionary) sollen Requests *asynchron gleichzeitig gestartet* werden.
+
+Jede Source implementiert dieselbe öffentliche API und liefert das Resultat in einem gemeinsamen plist-Format zurück.
+
+Die Argumente und internen Bezeichner bleiben auf Englisch, auch wenn das Package sonst deutsch ist.
+
+** Korrigierte Architektur
+
+Der Aggregator sollte direkt in =woerterbuch-core.el= liegen.
+
+Begründung:
+
+- dort liegen bereits die gemeinsamen Datenstrukturen und Hilfsfunktionen
+- der Aggregator ist keine UI-Schicht, sondern gemeinsame Infrastruktur
+- =woerterbuch.el= kann dadurch bewusst dünn bleiben
+- so verhindert man, dass Logik versehentlich zwischen =core= und =woerterbuch.el= auseinanderläuft
+
+*** Dateien
+
+- =woerterbuch-core.el=
+- =woerterbuch.el=
+- =woerterbuch-duden.el=
+- =woerterbuch-dwds.el=
+- =woerterbuch-openthesaurus.el=
+- =woerterbuch-wiktionary.el=
+
+*** Verantwortlichkeiten
+
+**** =woerterbuch-core.el=
+Gemeinsame Infrastruktur:
+- section handling
+- common result helpers
+- error/result constructors
+- buffer/header helpers
+- gemeinsame Request-Helfer
+- *Aggregator für alle Sources*
+- ggf. zentrale Source-Reihenfolge oder Source-Registry
+
+**** =woerterbuch-<source>.el=
+Jeweils source-spezifisch:
+- URL building
+- HTTP request via =url-retrieve=
+- parsing of HTML or JSON
+- extraction of requested sections
+- returning a normalized plist result
+
+**** =woerterbuch.el=
+Nur öffentliche Hülle:
+- =require= von =woerterbuch-core.el=
+- =require= der einzelnen Sources
+- ggf. sehr kleine öffentliche Einstiegspunkte
+- keine eigentliche Aggregator- oder Parsing-Logik
 
