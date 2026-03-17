@@ -101,6 +101,7 @@ lemma, for example if the source redirects or normalizes differently."
   (list :source source
         :lemma lemma
         :ok nil
+        :homographs nil
         :error message))
 
 ;;; Helpers

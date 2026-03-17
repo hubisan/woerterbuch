@@ -10,7 +10,7 @@
 (defun test-woerterbuch-dwds--fixture (name)
   "Return absolute DWDS fixture path for NAME."
   (expand-file-name name
-                    (expand-file-name "tests/files"
+                    (expand-file-name "tests/files/dwds"
                                       default-directory)))
 
 (defun test-woerterbuch-dwds--read-expected (name)
@@ -65,6 +65,7 @@
       (expect captured
               :to-equal
               '(:source dwds :lemma "Bank" :ok nil
+                        :homographs nil
                         :error "HTTP error: 404"))))
 
   (it "treats a DWDS search page without article as no match"
@@ -83,4 +84,5 @@
       (expect captured
               :to-equal
               '(:source dwds :lemma "Nixtdaexistiert" :ok nil
+                        :homographs nil
                         :error "No matches found")))))

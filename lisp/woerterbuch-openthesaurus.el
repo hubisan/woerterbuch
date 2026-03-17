@@ -85,20 +85,22 @@
          (json-array-type 'list)
          (json-key-type 'symbol)
          (data (json-read))
-         (result (woerterbuch-core-make-result 'openthesaurus input)))
-    (setq result
+         (groups (woerterbuch-openthesaurus--extract-definition-groups
+                  data input)))
+    (if (null groups)
+        (let ((result (woerterbuch-core-make-error
+                       'openthesaurus input "No matches found")))
           (plist-put result :url
                      (woerterbuch-openthesaurus--build-web-url input)))
-    (plist-put result :homographs
-               (woerterbuch-openthesaurus--extract-homographs data input))))
-
-(defun woerterbuch-openthesaurus--extract-homographs (data lemma)
-  "Extract homograph structure from OpenThesaurus DATA for LEMMA."
-  (list
-   (list :id 1
-         :lemma lemma
-         :definitions
-         (woerterbuch-openthesaurus--extract-definition-groups data lemma))))
+      (let ((result (woerterbuch-core-make-result 'openthesaurus input)))
+        (setq result
+              (plist-put result :url
+                         (woerterbuch-openthesaurus--build-web-url input)))
+        (plist-put result :homographs
+                   (list
+                    (list :id 1
+                          :lemma input
+                          :definitions groups)))))))
 
 (defun woerterbuch-openthesaurus--extract-definition-groups (data lemma)
   "Extract synonym groups as definitions from OpenThesaurus DATA for LEMMA."

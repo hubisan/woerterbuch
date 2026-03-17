@@ -492,11 +492,10 @@ HOMOGRAPH-ID is the 1-based index assigned by the caller."
     result))
 
 (defun woerterbuch-duden--no-match-result (input)
-  "Build successful no-match result for INPUT."
-  (let ((result (woerterbuch-core-make-result 'duden input)))
-    (setq result (plist-put result :url nil))
-    (setq result (plist-put result :homographs nil))
-    result))
+  "Build no-match error result for INPUT."
+  (let ((result (woerterbuch-core-make-error
+                 'duden input "No matches found")))
+    (plist-put result :url nil)))
 
 (defun woerterbuch-duden--request-needed-p (sections)
   "Return non-nil when Duden can contribute anything for SECTIONS."
