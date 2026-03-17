@@ -1,1 +1,668 @@
 #+TITLE: Specification of Source DUDEN
+
+* Goal
+
+This document specifies how the Duden source should be queried and
+parsed so it can become a backend for =woerterbuch= alongside DWDS and
+OpenThesaurus.
+
+The focus is on:
+
+- robust lookup flow for canonical entries and homographs
+- mapping of Duden HTML to the internal normalized plist format
+- output expectations for definitions, examples, idioms, origin and
+  synonyms
+- explicit handling of not-found cases
+
+This is a source specification, not yet an implementation plan for
+every helper function.
+
+* Local Example Files
+
+The following saved Duden HTML files serve as concrete reference
+material for parser development and tests:
+
+- [[file:./sources-examples/Bank ▶ Rechtschreibung, Bedeutung, Definition, Herkunft ▶ Duden.htm][Bank example HTML]]
+- [[file:./sources-examples/Haus ▶ Rechtschreibung, Bedeutung, Definition, Herkunft _ Duden.htm][Haus example HTML]]
+- [[file:./sources-examples/Zaun ▶ Rechtschreibung, Bedeutung, Definition, Herkunft _ Duden.htm][Zaun example HTML]]
+
+They should be used to validate selectors, nested meaning structures
+and optional sections.
+
+* Context
+
+The current refactoring introduces source-specific backends that return
+normalized plist results. The existing DWDS backend is the reference
+for structure and naming.
+
+Relevant existing conventions:
+
+- each backend returns one result plist via callback
+- top-level result shape follows =woerterbuch-core-make-result=
+- homographs are represented as a list under =:homographs=
+- sections are fetched conditionally based on requested content
+- HTTP errors should be surfaced as source errors unless they are part
+  of an intentional lookup fallback
+
+* Base URLs
+
+** Canonical dictionary entry
+
+Use the Duden AMP page because the HTML appears simpler and more stable
+for scraping.
+
+#+BEGIN_SRC text
+https://www.duden.de/rechtschreibung/<LEMMA>?amp
+#+END_SRC
+
+Example:
+
+#+BEGIN_SRC text
+https://www.duden.de/rechtschreibung/Test?amp
+#+END_SRC
+
+** Search endpoint for fallback lookup
+
+If the canonical dictionary entry returns HTTP 404, query the Duden
+search result page:
+
+#+BEGIN_SRC text
+https://www.duden.de/suchen/dudenonline/<LEMMA>
+#+END_SRC
+
+Example:
+
+#+BEGIN_SRC text
+https://www.duden.de/suchen/dudenonline/Bank
+#+END_SRC
+
+* High-Level Fetch Flow
+
+** Primary lookup
+
+1. Build the canonical dictionary URL for the input lemma.
+2. Fetch the page with normal request headers.
+3. If the response status is < 400, parse the page as a single Duden
+   entry.
+4. If the response status is 404, do not immediately return an error.
+   Instead continue with the homograph fallback described below.
+5. If the response status is another 4xx/5xx status, return an error
+   result.
+
+** 404 fallback for homographs
+
+Some Duden entries are not available under a single canonical page for
+the bare lemma. Instead, Duden exposes multiple distinct pages, for
+example:
+
+- =Bank_Sitzgelegenheit=
+- =Bank_Geldinstitut=
+
+Flow:
+
+1. Fetch the search page at =/suchen/dudenonline/<LEMMA>=.
+2. Restrict parsing to the =Wörterbuch= segment.
+3. Collect all result links whose visible lemma exactly matches the
+   requested lemma.
+4. Ignore partial matches such as compounds, suffixes or expressions
+   that merely contain the lemma.
+5. If no exact-match entries are found, return a successful result with
+   no homographs instead of an HTTP error.
+6. If one or more exact-match entries are found, fetch each matching
+   dictionary page and parse each as one homograph.
+
+Example for input =Bank=:
+
+- accept =/rechtschreibung/Bank_Sitzgelegenheit=
+- accept =/rechtschreibung/Bank_Geldinstitut=
+- ignore =/rechtschreibung/Merchant_Bank=
+- ignore =/rechtschreibung/Bad_Bank=
+- ignore =/rechtschreibung/_bank=
+
+** Why 404 is special
+
+For Duden, HTTP 404 on =/rechtschreibung/<LEMMA>?amp= does not always
+mean "lemma absent". It may mean "lemma exists only as split
+homographs". Therefore 404 must be treated as a controlled branch in
+the lookup flow, not as a terminal error.
+
+* Request Headers and Error Handling
+
+** Request headers
+
+Use explicit request headers, similar to the DWDS backend. At minimum:
+
+- =User-Agent: woerterbuch/<version or fixed identifier>=
+- =Accept-Language: de,en;q=0.8=
+
+Open point for implementation:
+
+- confirm whether the current HTTP abstraction already exposes response
+  status reliably through =url-http-response-status= in all source
+  backends
+
+** Error behavior
+
+- network failures return an error plist
+- HTTP 404 on canonical dictionary lookup triggers fallback search
+- HTTP 404 on fallback search behaves like "no exact matches found"
+- other HTTP >= 400 statuses return an error plist
+- parse failures return an error plist with source =duden=
+
+* Matching Rules for Search Results
+
+Search results must be filtered conservatively to avoid false
+positives.
+
+** Scope
+
+Only consider entries inside the =Wörterbuch= result segment.
+
+Ignore:
+
+- ads
+- teaser tiles outside the relevant segment
+- links to help pages or overview pages
+
+** Exact lemma match
+
+The visible headword must normalize to exactly the queried lemma.
+
+Suggested normalization for matching only:
+
+- trim whitespace
+- collapse internal whitespace
+- compare plain text, not raw HTML
+
+Do not match by substring in the URL alone.
+
+Examples for query =Bank=:
+
+- =Bank= -> match
+- =Mer­chant Bank= -> no match
+- =Bad Bank= -> no match
+- =Banks­ter= -> no match
+- =-bank= -> no match
+
+Open point:
+
+- clarify later whether case-insensitive matching is desirable or
+  whether the incoming lemma is already normalized sufficiently
+
+* Canonical Parsed Output
+
+The Duden backend should return the same normalized top-level structure
+used by other backends.
+
+#+BEGIN_SRC emacs-lisp
+(:source duden
+ :lemma  <page lemma or input lemma>
+ :ok     t
+ :url    (<entry url> ...)
+ :homographs (<homograph> ...))
+#+END_SRC
+
+Each homograph should follow the existing DWDS shape as closely as
+possible:
+
+#+BEGIN_SRC emacs-lisp
+(:id           <1-based index>
+ :lemma        <lemma>
+ :title        <display title>
+ :wortart      <word class>
+ :grammar      <full grammar text, if available>
+ :origin       <origin text or nil>
+ :idioms       (<idiom> ...)
+ :synonyms     (<synonym> ...)
+ :url          <entry url>
+ :definitions  (<definition> ...))
+#+END_SRC
+
+Each definition node:
+
+#+BEGIN_SRC emacs-lisp
+(:id           <local 1-based index within siblings>
+ :duden-id     <DOM id like "Bedeutung-1a" or nil>
+ :label        <optional numbering label such as "1a">
+ :definition   <definition text>
+ :qualifiers   (<qualifier> ...)
+ :examples     (<example> ...)
+ :idioms       (<idiom> ...)
+ :image        <image url or nil>
+ :definitions  (<nested definition> ...))
+#+END_SRC
+
+Notes:
+
+- Duden meanings are nested. The output should preserve hierarchy via
+  recursive =:definitions=.
+- =:definition= holds the primary text for the node itself.
+- =:idioms= at definition level are idioms tied specifically to that
+  meaning.
+- =:idioms= at homograph level are idioms collected globally if Duden
+  exposes them outside individual meanings.
+
+* Parsing Rules
+
+** Entry title
+
+Source:
+
+#+BEGIN_SRC html
+<h1 class="lemma__title lemma__title--shorter"><span class="lemma__main">Bank</span>, <span class="lemma__determiner">die</span></h1>
+#+END_SRC
+
+Mapping:
+
+- =:lemma= should be the text of =.lemma__main=
+- =:title= should be the normalized full text of the heading, for
+  example =Bank, die=
+
+** Wortart / grammar
+
+Source:
+
+#+BEGIN_SRC html
+<dl class="tuple">
+  <dt class="tuple__key">Wortart: <a class="tuple__icon" href="/hilfe/wortart" target="_blank">ⓘ</a></dt>
+  <dd class="tuple__val">Substantiv, feminin</dd>
+</dl>
+#+END_SRC
+
+Mapping:
+
+- =:grammar= should store the full value, for example
+  =Substantiv, feminin=
+- =:wortart= should hold the coarse class, for example =Substantiv=
+
+Rule:
+
+- parse all =dl.tuple= blocks and map selected labels by their key text
+- for =Wortart=, split the full text into coarse class and full grammar
+
+** Definitions
+
+Definitions live under:
+
+#+BEGIN_SRC html
+<div class="division " id="bedeutungen">...</div>
+#+END_SRC
+
+The hierarchy is meaningful and should be preserved.
+
+*** Hierarchy model
+
+HTML example:
+
+#+BEGIN_SRC html
+<ol class="enumeration" type="1">
+  <li class="enumeration__item">
+    <ol class="enumeration__sub" type="a">
+      <li class="enumeration__sub-item" id="Bedeutung-1a">...</li>
+      <li class="enumeration__sub-item" id="Bedeutung-1b">...</li>
+    </ol>
+  </li>
+</ol>
+#+END_SRC
+
+Interpretation:
+
+- =li.enumeration__item= represents a parent meaning group, typically
+  label =1=, =2=, ...
+- =li.enumeration__sub-item= represents nested meanings, typically
+  label =1a=, =1b=, ...
+
+Recommended output shape:
+
+- create one definition node for each top-level
+  =li.enumeration__item=
+- if that node has no own textual gloss, set =:definition= to nil and
+  place submeanings in =:definitions=
+- create nested definition nodes for each
+  =li.enumeration__sub-item=
+
+Alternative allowed if implementation is simpler:
+
+- flatten only when a top-level node has no semantic content of its own
+  and preserve the human-visible label in =:label=
+
+The important part is that the final output must not lose the grouping
+between =1a= and =1b= etc.
+
+*** Definition text
+
+Primary source:
+
+#+BEGIN_SRC html
+<div class="enumeration__text">Sitzgelegenheit aus Holz, Stein o.&nbsp;Ä., die mehreren Personen nebeneinander Platz bietet</div>
+#+END_SRC
+
+Link-only definition:
+
+#+BEGIN_SRC html
+<div class="enumeration__text">
+  <a href="/rechtschreibung/Auswechselbank" data-duden-ref-type="lexeme" data-duden-target-id="10143237">Auswechselbank</a>
+</div>
+#+END_SRC
+
+Rules:
+
+- extract normalized text content of =.enumeration__text=
+- keep link text, ignore the link target for the definition string
+- normalize whitespace and punctuation spacing
+- preserve inline parenthetical text
+
+** Images
+
+Source:
+
+#+BEGIN_SRC html
+<figure class="depiction">
+  <a href="https://cdn.duden.de/_media_/full/B/Bank-201100043436.jpg" data-duden-ref-type="image" data-duden-img-src="Bank-201100043436.jpg">
+    <img src="https://cdn.duden.de/_media_/small/B/Bank-201100043436.jpg" title="Bank" alt="Bank">
+  </a>
+  <figcaption class="depiction__caption">© MEV Verlag, Augsburg</figcaption>
+</figure>
+#+END_SRC
+
+Rules:
+
+- store the full-size image URL from the enclosing link =href=
+- ignore the small preview URL for normalized data output
+- ignore the caption for now
+
+** Examples
+
+Source:
+
+#+BEGIN_SRC html
+<dl class="note">
+  <dt class="note__title">Beispiele</dt>
+  <dd>
+    <ul class="note__list">
+      <li>sich auf eine Bank setzen</li>
+      <li>in der Schule in einer Bank <i>(Schulbank) </i>sitzen</li>
+    </ul>
+  </dd>
+</dl>
+#+END_SRC
+
+Rules:
+
+- identify =dl.note= blocks whose title is exactly =Beispiele=
+- extract each =li= as one example string
+- preserve inline text such as italic parentheticals as plain text
+- attach examples to the current definition node
+
+** Idioms / Redewendungen
+
+Source:
+
+#+BEGIN_SRC html
+<dl class="note">
+  <dt class="note__title">Wendungen, Redensarten, Sprichwörter</dt>
+  <dd>
+    <ul class="note__list">
+      <li>etwas auf die lange Bank schieben (...)</li>
+      <li>durch die Bank (...)</li>
+    </ul>
+  </dd>
+</dl>
+#+END_SRC
+
+Rules:
+
+- identify =dl.note= blocks whose title is
+  =Wendungen, Redensarten, Sprichwörter=
+- extract each =li= as one idiom string
+- attach them to the current definition node
+
+** Qualifiers
+
+Source:
+
+#+BEGIN_SRC html
+<dl class="tuple">
+  <dt class="tuple__key">Gebrauch</dt>
+  <dd class="tuple__val">Sport</dd>
+</dl>
+#+END_SRC
+
+Other observed values:
+
+- =umgangssprachlich=
+- =gehoben=
+
+Rules:
+
+- within a definition node, collect local =dl.tuple= metadata blocks
+- format qualifiers as =<key>: <value>=, for example =Gebrauch: Sport=
+- store them in =:qualifiers= preserving DOM order
+
+Potential future extension:
+
+- selected qualifier keys may later be normalized into shorter labels,
+  but the first implementation should keep Duden wording
+
+** Origin / etymology
+
+Source:
+
+#+BEGIN_SRC html
+<div class="division " id="herkunft">
+  <header class="division__header">
+    <h2 class="division__title">Herkunft</h2>
+  </header>
+  <p>mittelhochdeutsch, althochdeutsch banc = Bank, Tisch, ursprünglich = Erhöhung</p>
+</div>
+#+END_SRC
+
+Rules:
+
+- parse =#herkunft=
+- extract normalized text content from paragraph-like descendants
+- store as homograph-level =:origin=
+
+** Synonyms
+
+Source:
+
+#+BEGIN_SRC html
+<div class="division " id="synonyme">
+  <header class="division__header">
+    <h2 class="division__title">Synonyme zu <em>Test</em></h2>
+  </header>
+  <ul>
+    <li><a href="/rechtschreibung/Durchsicht">Durchsicht</a>, <a href="/rechtschreibung/Faktencheck">Faktencheck</a>, <a href="/rechtschreibung/Kontrolle">Kontrolle</a>, <a href="/rechtschreibung/Pruefung">Prüfung</a></li>
+  </ul>
+</div>
+#+END_SRC
+
+Rules:
+
+- parse =#synonyme= only if the =:synonyms= section is requested
+- extract individual synonym strings from the list item
+- ignore the navigation link to the overview page
+- store synonyms at homograph level in =:synonyms=
+- if synonyms are represented by a mix of links and plain text, use the
+  rendered list item content to recover individual synonym strings
+- comma splitting is allowed for remaining plain-text segments after
+  normalization, but link text should always be preserved as its own
+  synonym
+
+* Text Normalization
+
+Apply the same spirit as in the DWDS backend:
+
+- collapse repeated whitespace
+- convert non-breaking spaces to normal spaces
+- trim leading and trailing whitespace
+- remove awkward spacing before punctuation
+- preserve lexical content such as parentheses and abbreviations
+
+For matching and extracted text, the parser should operate on rendered
+text content, not raw HTML fragments.
+
+* Section-Gated Fetching
+
+The backend should only parse data relevant to requested sections.
+
+Suggested mapping:
+
+- =:definitions= -> parse meanings
+- =:examples= -> parse examples alongside meanings
+- =:idioms= -> parse idioms alongside meanings
+- =:origin= -> parse etymology
+- =:synonyms= -> parse synonym block
+
+Even if only =:examples= or =:idioms= are requested, definitions must
+still be traversed because those sections are attached to definition
+nodes.
+
+* URL Semantics
+
+Top-level =:url= semantics:
+
+- direct-hit case: a one-element list containing the canonical AMP page
+  URL
+- homograph fallback case: a list containing the resolved homograph
+  entry URLs
+
+Recommendation:
+
+- always represent top-level =:url= as a list of URLs
+- add =:url= to each homograph as well
+- preserve URL order in the same order as returned homographs
+
+* No-Match Semantics
+
+When no exact Duden entry exists for the requested lemma:
+
+- return =(:source duden :lemma <lemma> :ok t :url nil :homographs nil)=
+- do not return an error
+
+Reason:
+
+- absence of a dictionary entry is a normal lookup outcome and should be
+  handled like "no matches", not like transport failure
+
+* Implementation Notes
+
+** Suggested helper responsibilities
+
+- build canonical entry URL
+- build fallback search URL
+- normalize text
+- detect and handle HTTP status
+- parse exact-match search results from Wörterbuch segment
+- parse one entry page into one homograph plist
+- parse recursive definition hierarchy
+- parse local notes such as examples and idioms
+- parse optional sections like origin and synonyms
+
+** Similarities to DWDS backend
+
+- use =url-retrieve=
+- inspect =url-http-response-status=
+- build normalized plist result via =woerterbuch-core-make-result=
+- use libxml DOM parsing
+- gate parsing by requested sections
+
+** Important differences from DWDS backend
+
+- Duden may require more than one HTTP request for one lemma
+- 404 is not terminal by default
+- homographs may live on distinct URLs instead of one shared page
+- some meaning content is nested in numbered/lettered HTML lists rather
+  than a uniform article structure
+
+* Decisions Captured
+
+The following design decisions are fixed for the first implementation:
+
+- top-level =:url= is always a list of resolved entry URLs
+- image captions and copyright text are not stored; the image URL is
+  sufficient
+- qualifiers are stored generically as =key: value=
+- no source-specific maximum for examples is enforced in the Duden
+  backend; any later limiting should happen in core or presentation
+  logic
+- synonym extraction may use comma splitting for plain text, but must
+  preserve linked synonym texts as individual items
+
+* Concrete Parsing Walkthrough
+
+Example input lemma:
+
+#+BEGIN_SRC text
+Bank
+#+END_SRC
+
+Scenario:
+
+1. Fetch =https://www.duden.de/rechtschreibung/Bank?amp=
+2. Response is HTTP 404
+3. Fetch =https://www.duden.de/suchen/dudenonline/Bank=
+4. Filter Wörterbuch results to exact visible lemma =Bank=
+5. Fetch:
+   - =https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit?amp=
+   - =https://www.duden.de/rechtschreibung/Bank_Geldinstitut?amp=
+6. Parse both pages as two homographs
+7. Return them in stable DOM/search-result order
+
+* Minimal Example Output
+
+This is illustrative and omits fields that are not requested.
+
+#+BEGIN_SRC emacs-lisp
+(:source duden
+ :lemma "Bank"
+ :ok t
+ :url ("https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit?amp"
+       "https://www.duden.de/rechtschreibung/Bank_Geldinstitut?amp")
+ :homographs
+ ((:id 1
+   :lemma "Bank"
+   :title "Bank, die"
+   :wortart "Substantiv"
+   :grammar "Substantiv, feminin"
+   :url "https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit?amp"
+   :origin "mittelhochdeutsch, althochdeutsch banc = Bank, Tisch, ursprünglich = Erhöhung"
+   :definitions
+   ((:id 1
+     :label "1"
+     :definition nil
+     :definitions
+     ((:id 1
+       :label "1a"
+       :duden-id "Bedeutung-1a"
+       :definition "Sitzgelegenheit aus Holz, Stein o. Ä., die mehreren Personen nebeneinander Platz bietet"
+       :examples ("sich auf eine Bank setzen"
+                  "in der Schule in einer Bank (Schulbank) sitzen")
+       :idioms ("etwas auf die lange Bank schieben (...)"
+                "durch die Bank (...)")
+       :image "https://cdn.duden.de/_media_/full/B/Bank-201100043436.jpg")
+      (:id 2
+       :label "1b"
+       :duden-id "Bedeutung-1b"
+       :definition "Auswechselbank"
+       :qualifiers ("Gebrauch: Sport")))))))
+  (:id 2
+   :lemma "Bank"
+   :title "Bank, die"
+   :wortart "Substantiv"
+   :grammar "Substantiv, feminin"
+   :url "https://www.duden.de/rechtschreibung/Bank_Geldinstitut?amp"
+   :definitions (...))))
+#+END_SRC
+
+* Summary
+
+The Duden backend should:
+
+- try direct entry lookup first
+- treat HTTP 404 as a homograph-discovery branch
+- parse only exact-match Wörterbuch search results
+- fetch and parse each resolved homograph page separately
+- map Duden HTML into the same normalized result shape already used by
+  the refactored backends
