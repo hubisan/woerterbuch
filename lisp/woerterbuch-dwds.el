@@ -32,7 +32,10 @@
   "Normalize whitespace and simple punctuation spacing in STRING."
   (when string
     (let ((s (string-trim
-              (replace-regexp-in-string "[[:space:] ]+" " " string))))
+              (replace-regexp-in-string
+               "[[:space:]\n\r\t ]+"
+               " "
+               (replace-regexp-in-string "[\n\r\t]+" " " string)))))
       (setq s (replace-regexp-in-string " +," "," s))
       (setq s (replace-regexp-in-string " +\\." "." s))
       (setq s (replace-regexp-in-string "( +" "(" s))
@@ -276,6 +279,14 @@ stamps are ignored automatically."
                             "tab-pane"))))
     (if panes panes (list dom))))
 
+(defun woerterbuch-dwds--entry-page-p (dom)
+  "Return non-nil when DOM contains a real DWDS article page."
+  (and (woerterbuch-dwds--find-first
+        dom
+        (lambda (node)
+          (woerterbuch-dwds--has-class-p node "dwdswb-artikel")))
+       t))
+
 (defun woerterbuch-dwds--make-definition-parser (sections)
   "Return recursive parser closure for definitions according to SECTIONS."
   (let ((include-examples
@@ -417,34 +428,59 @@ stamps are ignored automatically."
     (re-search-forward "\r?\n\r?\n" nil t))
   (skip-chars-forward "\r\n")
   (let* ((dom (libxml-parse-html-region (point) (point-max)))
-         (entry (woerterbuch-dwds--parse-dom dom lemma sections))
-         (result (woerterbuch-core-make-result 'dwds lemma)))
-    (setq result (plist-put result :lemma (or (plist-get entry :lemma) lemma)))
-    (setq result (plist-put result :url (plist-get entry :url)))
-    (setq result (plist-put result :homographs (plist-get entry :homographs)))
-    result))
+         (entry-page-p (woerterbuch-dwds--entry-page-p dom)))
+    (when entry-page-p
+      (let* ((entry (woerterbuch-dwds--parse-dom dom lemma sections))
+             (result (woerterbuch-core-make-result 'dwds lemma)))
+        (setq result (plist-put result :lemma (or (plist-get entry :lemma)
+                                                  lemma)))
+        (setq result (plist-put result :url (plist-get entry :url)))
+        (setq result (plist-put result :homographs (plist-get entry :homographs)))
+        result))))
+
+(defun woerterbuch-dwds--status-http-code (status)
+  "Return HTTP status code from callback STATUS when available."
+  (or (and (boundp 'url-http-response-status)
+           (numberp url-http-response-status)
+           url-http-response-status)
+      (let ((err (plist-get status :error)))
+        (and (consp err)
+             (eq (car err) 'error)
+             (eq (cadr err) 'http)
+             (numberp (caddr err))
+             (caddr err)))))
+
+(defun woerterbuch-dwds--status-network-error-p (status)
+  "Return non-nil when STATUS represents a non-HTTP network error."
+  (let ((err (plist-get status :error)))
+    (and err
+         (not (woerterbuch-dwds--status-http-code status)))))
 
 (defun woerterbuch-dwds--fetch-callback (status lemma sections callback)
   "Handle DWDS response STATUS for LEMMA and invoke CALLBACK."
-  (let ((result nil))
+  (let ((result nil)
+        (http-code (woerterbuch-dwds--status-http-code status)))
     (unwind-protect
         (setq result
               (condition-case err
                   (cond
-                   ((plist-get status :error)
+                   ((woerterbuch-dwds--status-network-error-p status)
                     (woerterbuch-core-make-error
                      'dwds
                      lemma
                      (format "Network error: %S" (plist-get status :error))))
-                   ((and (boundp 'url-http-response-status)
-                         (numberp url-http-response-status)
-                         (>= url-http-response-status 400))
+                   ((and http-code
+                         (>= http-code 400))
                     (woerterbuch-core-make-error
                      'dwds
                      lemma
-                     (format "HTTP error: %s" url-http-response-status)))
+                     (format "HTTP error: %s" http-code)))
                    (t
-                    (woerterbuch-dwds--parse-current-buffer lemma sections)))
+                    (or (woerterbuch-dwds--parse-current-buffer lemma sections)
+                        (woerterbuch-core-make-error
+                         'dwds
+                         lemma
+                         "No matches found"))))
                 (error
                  (woerterbuch-core-make-error
                   'dwds
