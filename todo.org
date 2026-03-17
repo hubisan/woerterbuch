@@ -629,6 +629,15 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
+**** Nixdaexistiert
+
+#+BEGIN_SRC emacs-lisp :results value code replace
+  (woerterbuch-fetch-all-sync
+   "nixtdaexistiert"
+   :sections  '(:definitions :examples :origin :synonyms :idioms)
+   :timeout 10)
+#+END_SRC
+
 *** Output
 
 Am Schluss will ich das Ganze als Org ausgeben.
