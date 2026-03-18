@@ -7,15 +7,15 @@
 
 ** Notwendige Anpassungen
 
-*** TODO Implementation von Duden [0/3]
+*** DONE Implementation von Duden [3/3]
 
-**** TODO Status 404 bei den bisherigen Quellen_
+**** DONE Status 404 bei den bisherigen Quellen_
 
 Sollte im GET Header sein. Wird damit bisher was gemacht? der Error gesetzt?
 
-**** TODO Bisherige Source DWDS als Input (woerterbuch-dwds.el)
+**** DONE Bisherige Source DWDS als Input (woerterbuch-dwds.el)
 
-**** TODO Specifikation schreiben
+**** DONE Spezifikation schreiben
 
 Möchte daraus eine Spezifikation schreiben
 
@@ -580,7 +580,7 @@ Struktur des Outputs:
 
 **** DONE DWDS
 
-**** TODO Duden
+**** DONE Duden
 
 **** TODO Wiktionary (DE)
 
@@ -756,4 +756,3 @@ Nur öffentliche Hülle:
 - =require= der einzelnen Sources
 - ggf. sehr kleine öffentliche Einstiegspunkte
 - keine eigentliche Aggregator- oder Parsing-Logik
-

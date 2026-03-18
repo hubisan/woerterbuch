@@ -135,11 +135,11 @@ Use explicit request headers, similar to the DWDS backend. At minimum:
 - =User-Agent: woerterbuch/<version or fixed identifier>=
 - =Accept-Language: de,en;q=0.8=
 
-Open point for implementation:
+Implementation note:
 
-- confirm whether the current HTTP abstraction already exposes response
-  status reliably through =url-http-response-status= in all source
-  backends
+- the current backend resolves HTTP status primarily through
+  =url-http-response-status= and falls back to the callback =status=
+  plist when needed
 
 ** Error behavior
 
@@ -184,10 +184,11 @@ Examples for query =Bank=:
 - =Banks­ter= -> no match
 - =-bank= -> no match
 
-Open point:
+Implementation note:
 
-- clarify later whether case-insensitive matching is desirable or
-  whether the incoming lemma is already normalized sufficiently
+- the current matcher compares normalized visible text exactly after
+  whitespace cleanup; matching is therefore conservative and currently
+  case-sensitive
 
 * Canonical Parsed Output
 

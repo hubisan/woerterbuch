@@ -14,7 +14,7 @@
   :link '(url-link "https://github.com/hubisan/woerterbuch"))
 
 (defcustom woerterbuch-sources
-  '(openthesaurus dwds duden)
+  '(openthesaurus dwds duden wiktionary)
   "Ordered list of enabled woerterbuch sources.
 
 Each symbol must correspond to a loaded backend. The order determines
@@ -56,7 +56,8 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
 (defcustom woerterbuch-source-timeouts
   '((dwds . 10)
     (duden . 20)
-    (openthesaurus . 5))
+    (openthesaurus . 5)
+    (wiktionary . 10))
   "Per-source timeout in seconds."
   :type '(alist :key-type symbol :value-type number)
   :group 'woerterbuch)
@@ -116,6 +117,7 @@ lemma, for example if the source redirects or normalizes differently."
     ('openthesaurus #'woerterbuch-openthesaurus-fetch)
     ('duden         #'woerterbuch-duden-fetch)
     ('dwds          #'woerterbuch-dwds-fetch)
+    ('wiktionary    #'woerterbuch-wiktionary-fetch)
     (_ (error "Unknown woerterbuch source: %S" source))))
 
 (defun woerterbuch-core--source-timeout (source)
@@ -145,6 +147,7 @@ called exactly once, either with the normal result or with a timeout
 error result."
   (let* ((timeout (woerterbuch-core--source-timeout source))
          (finished nil)
+         (resource nil)
          timer)
     (setq timer
           (run-at-time
@@ -152,17 +155,26 @@ error result."
            (lambda ()
              (unless finished
                (setq finished t)
+               (cond
+                ((processp resource)
+                 (delete-process resource))
+                ((buffer-live-p resource)
+                 (let ((proc (get-buffer-process resource)))
+                   (when (processp proc)
+                     (delete-process proc)))
+                 (kill-buffer resource)))
                (funcall callback
                         (woerterbuch-core--make-timeout-error
                          source lemma timeout))))))
-    (funcall
-     thunk
-     (lambda (result)
-       (unless finished
-         (setq finished t)
-         (when (timerp timer)
-           (cancel-timer timer))
-         (funcall callback result))))))
+    (setq resource
+          (funcall
+           thunk
+           (lambda (result)
+             (unless finished
+               (setq finished t)
+               (when (timerp timer)
+                 (cancel-timer timer))
+               (funcall callback result)))))))
 
 ;;; Lemma normalization
 

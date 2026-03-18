@@ -1,0 +1,426 @@
+#+TITLE: Specification of Source WIKTIONARY
+
+* Goal
+
+This document specifies how the German Wiktionary source should be
+queried and parsed so it can become a backend for =woerterbuch=
+alongside DWDS, Duden and OpenThesaurus.
+
+The focus is on:
+
+- fetching raw wikitext through the MediaWiki API
+- identifying the German lemma entry inside the returned page content
+- splitting multiple lemma sections into separate homographs
+- mapping Wiktionary blocks to the normalized plist format already used
+  by the other backends
+- handling not-found and non-lemma sections conservatively
+
+This is a source specification. It intentionally stays a bit above the
+helper-function level.
+
+* Local Example Files
+
+The following saved API responses and extracted raw wikitext files
+serve as reference material for parser development and tests:
+
+- [[file:../tests/files/wiktionary/wiktionary-api-bank.json][Bank API JSON]]
+- [[file:../tests/files/wiktionary/wiktionary-bank.wiki][Bank raw wikitext]]
+- [[file:../tests/files/wiktionary/wiktionary-api-haus.json][Haus API JSON]]
+- [[file:../tests/files/wiktionary/wiktionary-haus.wiki][Haus raw wikitext]]
+- [[file:../tests/files/wiktionary/wiktionary-api-zaun.json][Zaun API JSON]]
+- [[file:../tests/files/wiktionary/wiktionary-zaun.wiki][Zaun raw wikitext]]
+- [[file:../tests/files/wiktionary/wiktionary-api-existiertnicht.json][Existiertnicht API JSON]]
+- [[file:../tests/files/wiktionary/wiktionary-existiertnicht.wiki][Existiertnicht raw wikitext]]
+
+Observed from these fixtures:
+
+- =Bank= contains two separate German =Substantiv= sections and should
+  therefore produce two homographs.
+- =Haus= contains one German =Substantiv= entry followed later by a
+  German =Deklinierte Form= section. The declension-only section must
+  not become a homograph for the lemma lookup.
+- =Zaun= contains one regular German =Substantiv= entry.
+- =Existiertnicht= returns a MediaWiki page object with =missing:
+  true= and no revisions.
+
+* Base URLs
+
+** MediaWiki API request
+
+Use the Wiktionary API and request the raw page content from the
+=main= slot.
+
+#+BEGIN_SRC text
+https://de.wiktionary.org/w/api.php?action=query&titles=<LEMMA>&prop=revisions&rvslots=main&rvprop=content&formatversion=2&format=json
+#+END_SRC
+
+Example:
+
+#+BEGIN_SRC text
+https://de.wiktionary.org/w/api.php?action=query&titles=Bank&prop=revisions&rvslots=main&rvprop=content&formatversion=2&format=json
+#+END_SRC
+
+** Human-facing entry URL
+
+For the normalized result object, expose the human-facing page URL:
+
+#+BEGIN_SRC text
+https://de.wiktionary.org/wiki/<LEMMA>
+#+END_SRC
+
+This matches the spirit of the other backends, which expose the normal
+entry URL instead of an internal API endpoint.
+
+* High-Level Fetch Flow
+
+1. Build the MediaWiki API URL for the requested lemma.
+2. Fetch JSON with normal request headers.
+3. If the response status is >= 400, return an error plist.
+4. Parse the JSON page object.
+5. If the page is marked =missing: true=, return a normalized
+   no-match result.
+6. Extract =query.pages[0].revisions[0].slots.main.content= as raw
+   wikitext.
+7. Restrict parsing to the German language section for the requested
+   lemma.
+8. Split matching lemma sections into separate homographs.
+9. Parse requested content blocks from each homograph and map them to
+   the normalized plist format.
+
+* Request Headers and Error Handling
+
+Use explicit request headers, similar to the other dictionary
+backends. At minimum:
+
+- =User-Agent: woerterbuch/<version or fixed identifier>=
+- =Accept-Language: de,en;q=0.8=
+
+Error behavior:
+
+- network failures return an error plist with source =wiktionary=
+- HTTP >= 400 returns an error plist
+- MediaWiki =missing: true= returns =(:ok nil ... :error "No matches found")=
+- malformed or unexpected JSON returns an error plist
+- missing German lemma section returns =No matches found=
+
+* Relevant Wikitext Structure
+
+** Language heading
+
+German sections are introduced by a level-2 heading such as:
+
+#+BEGIN_SRC text
+== Bank ({{Sprache|Deutsch}}) ==
+#+END_SRC
+
+Only the German section for the requested page title is relevant.
+Ignore other languages entirely.
+
+** Entry / homograph heading
+
+Lemma sections inside the German block are introduced by level-3
+headings, for example:
+
+#+BEGIN_SRC text
+=== {{Wortart|Substantiv|Deutsch}}, {{f}}, ''Bänke'' ===
+=== {{Wortart|Substantiv|Deutsch}}, {{f}}, ''Banken'' ===
+#+END_SRC
+
+For =Bank= these two headings represent two different homographs and
+must be returned separately.
+
+* Matching and Filtering Rules
+
+Matching must be conservative.
+
+Accept only level-3 sections that satisfy all of the following:
+
+- they live inside the German language section
+- they describe the requested lemma, not a different spelling
+- they are lexical entries, not merely form references
+
+Target scope of the backend:
+
+- it should eventually support lexical entries such as
+  =Substantiv=, =Verb=, =Adjektiv= and =Adverb=
+
+For the initial implementation, include only sections whose heading
+contains:
+
+- ={{Wortart|Substantiv|Deutsch}}=
+
+Explicitly ignore sections such as:
+
+- ={{Wortart|Deklinierte Form|Deutsch}}=
+- ={{Wortart|Konjugierte Form|Deutsch}}=
+- pronunciation-only or reference-only material outside a lexical
+  entry heading
+
+Rationale:
+
+- =Haus= shows why filtering is needed: the later =Deklinierte Form=
+  section is not a second homograph of the lemma =Haus=.
+
+* Canonical Parsed Output
+
+The top-level normalized result should follow the existing source
+shape:
+
+#+BEGIN_SRC emacs-lisp
+(:source wiktionary
+ :lemma  <page lemma or input lemma>
+ :ok     t
+ :url    "https://de.wiktionary.org/wiki/<LEMMA>"
+ :homographs (<homograph> ...))
+#+END_SRC
+
+If no match exists:
+
+#+BEGIN_SRC emacs-lisp
+(:source wiktionary
+ :lemma  <input lemma>
+ :ok     nil
+ :homographs nil
+ :error  "No matches found"
+ :url    "https://de.wiktionary.org/wiki/<LEMMA>")
+#+END_SRC
+
+Each homograph should follow the same broad conventions already used
+by DWDS and Duden:
+
+#+BEGIN_SRC emacs-lisp
+(:id           <1-based index>
+ :lemma        <lemma>
+ :title        <display title>
+ :wortart      <word class>
+ :grammar      <normalized heading or inflection summary>
+ :origin       <origin text or nil>
+ :idioms       (<idiom> ...)
+ :synonyms     (<synonym-group> ...)
+ :url          "https://de.wiktionary.org/wiki/<LEMMA>"
+ :definitions  (<definition> ...))
+#+END_SRC
+
+Each definition node:
+
+#+BEGIN_SRC emacs-lisp
+(:id           <1-based sense index>
+ :label        <sense label such as "1" or "12">
+ :definition   <clean definition text>
+ :qualifiers   (<qualifier> ...)
+ :examples     (<example> ...)
+ :definitions  nil)
+#+END_SRC
+
+Notes:
+
+- unlike Duden, Wiktionary senses in the observed fixtures are flat;
+  nested =:definitions= are therefore not required initially
+- homographs carry the split between =Bank/Bänke= and =Bank/Banken=
+- the human-facing Wiktionary page URL can be repeated for all
+  homographs because they come from the same source page
+
+* Parsing Rules
+
+** Lemma
+
+Use the page title as the default lemma. If the German heading clearly
+spells the lemma differently, prefer the heading text.
+
+For the example fixtures, =:lemma= should remain:
+
+- =Bank=
+- =Haus=
+- =Zaun=
+
+** Word class
+
+Extract the lexical class from the homograph heading.
+
+** Title
+
+Build a compact display title from lemma plus salient grammar info
+when available. Examples:
+
+- =Bank, Substantiv, f, Bänke=
+- =Bank, Substantiv, f, Banken=
+- =Haus, Substantiv, n=
+
+The exact rendering can be refined later; the important part is that
+two homographs on the same page remain distinguishable.
+
+** Grammar
+
+Keep =:grammar= intentionally compact. It is sufficient to preserve
+only the lexical class, for example:
+
+- =Substantiv=
+- =Verb=
+- =Adjektiv=
+- =Adverb=
+
+Additional inflection detail from overview templates should not be
+required for the normalized output.
+
+* Block-to-Field Mapping
+
+Sections should only be parsed when requested via =SECTIONS=, just as
+with the other backends.
+
+** Bedeutungen -> =:definitions=
+
+Source block:
+
+#+BEGIN_SRC text
+{{Bedeutungen}}
+:[1] ...
+:[2] ...
+#+END_SRC
+
+Rules:
+
+- each =:[N] ...= line becomes one definition node
+- the numeric label becomes =:label=
+- the cleaned sense text becomes =:definition=
+- inline templates at the start of a sense, for example
+  ={{K|Sport|kurz für}}= or ={{K|ugs.}}=, should be normalized into
+  =:qualifiers=
+- for the first iteration, template payload may be split mechanically
+  on the pipe separator and stored as a flat string list
+- the leading template name, for example =K=, should be discarded
+
+Example:
+
+#+BEGIN_SRC text
+{{K|Sport|kurz für}}
+#+END_SRC
+
+becomes:
+
+#+BEGIN_SRC emacs-lisp
+("Sport" "kurz für")
+#+END_SRC
+
+This deliberately favors a simple testable rule over perfect template
+semantics.
+
+** Beispiele -> =definition :examples=
+
+Source block:
+
+#+BEGIN_SRC text
+{{Beispiele}}
+:[1] ...
+:[2] ...
+#+END_SRC
+
+Rules:
+
+- attach examples to the matching sense label
+- allow multiple examples per sense
+- strip refs and most markup, but keep readable quotations
+
+** Herkunft -> =:origin=
+
+Source block:
+
+#+BEGIN_SRC text
+{{Herkunft}}
+:+ ...
+#+END_SRC
+
+Rules:
+
+- capture the whole cleaned block as one string
+- remove footnotes and template noise as far as practical
+
+** Redewendungen -> =:idioms=
+
+Source block:
+
+#+BEGIN_SRC text
+{{Redewendungen}}
+:[1] ...
+#+END_SRC
+
+Rules:
+
+- collect idiom lines as plain cleaned strings
+- if a sense label is present, it is acceptable in the first
+  implementation to keep idioms only at homograph level rather than
+  distribute them onto definition nodes
+
+** Synonyme und Sinnverwandte Wörter -> =:synonyms=
+
+Source block:
+
+#+BEGIN_SRC text
+{{Synonyme}}
+:[1] ...
+:[2] ...
+#+END_SRC
+
+Rules:
+
+- collect synonym lines grouped by sense
+- treat =Sinnverwandte Wörter= the same way as =Synonyme=
+- if both blocks exist for the same sense, merge their items into the
+  same sense-group list while preserving order as far as practical
+- recommended normalized shape:
+
+#+BEGIN_SRC emacs-lisp
+((:sense "1" :items ("..." "..."))
+ (:sense "2" :items ("..." "...")))
+#+END_SRC
+
+This keeps the data aligned with the sense structure without forcing
+the OpenThesaurus format onto Wiktionary.
+
+* Text Cleanup Rules
+
+The wikitext should be cleaned conservatively:
+
+- remove =<ref>...</ref>= blocks and self-closing refs
+- replace wikilinks with their visible label
+- strip emphasis markup like =''...''=
+- simplify templates where possible
+- collapse whitespace
+
+Do not attempt full template expansion in the first iteration.
+
+A practical rule is:
+
+- prefer readable plain text
+- avoid over-normalizing if it risks deleting content
+
+* Fixture-Specific Expectations
+
+** Bank
+
+The backend should return two homographs:
+
+1. noun with plural =Bänke=, covering senses like seat, geological
+   layer, deposit, sales counter, substitute bench
+2. noun with plural =Banken=, covering senses like financial
+   institution and gambling bank
+
+** Haus
+
+The backend should return one lemma homograph from the main
+=Substantiv= section and ignore the later =Deklinierte Form= section.
+
+** Zaun
+
+The backend should return one homograph with one primary meaning and
+its examples, origin, idioms and synonyms.
+
+** Existiertnicht
+
+The backend should return a normalized no-match result. There is no
+=revisions= array and no page content to parse.
+
+* Open Points
+
+- broaden lexical-class support from the initial noun implementation to
+  =Verb=, =Adjektiv=, =Adverb= and similar lexical entries once the
+  noun path is stable

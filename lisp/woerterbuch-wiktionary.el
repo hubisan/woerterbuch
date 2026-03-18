@@ -1,243 +1,523 @@
-;;; wiktionary-data.el --- Fast German Wiktionary data extraction -*- lexical-binding: t; -*-
-
-;; Author: Your Name
-;; Version: 0.1
-;; Package-Requires: ((emacs "27.1"))
-;; Keywords: dictionary, wiktionary, linguistics
-;; URL: https://example.com/wiktionary-data
-
-;; This file is not part of GNU Emacs.
-
-;;; Commentary:
-
-;; This package provides fast structured extraction of linguistic
-;; data from German Wiktionary using the MediaWiki API.
-;;
-;; Extracted fields include:
-;;
-;;  - meanings
-;;  - origin (etymology)
-;;  - examples
-;;  - idioms (Redewendungen)
-;;  - synonyms
-;;  - related words (Sinnverwandte Wörter)
-;;
-;; The implementation fetches raw Wiktionary wikitext and parses
-;; semantic blocks directly. This avoids slow HTML parsing and
-;; keeps requests minimal (one API call per word).
-;;
-;; A simple in-memory cache is provided for repeated lookups.
-
-;;; Code:
+;;; woerterbuch-wiktionary.el --- Wiktionary backend -*- lexical-binding: t; -*-
 
 (require 'cl-lib)
+(require 'dom)
 (require 'json)
+(require 'seq)
 (require 'subr-x)
 (require 'url)
+(require 'url-util)
+(require 'woerterbuch-core)
 
-(defgroup wiktionary-data nil
-  "Structured extraction of data from German Wiktionary."
-  :group 'applications)
-
-(defcustom wiktionary-data-api-url
+(defconst woerterbuch-wiktionary-api-url
   "https://de.wiktionary.org/w/api.php"
-  "Base URL of the German Wiktionary API."
-  :type 'string
-  :group 'wiktionary-data)
+  "Legacy API URL kept for compatibility.")
 
-(defcustom wiktionary-data-request-timeout
-  10
-  "Timeout in seconds for Wiktionary HTTP requests."
-  :type 'integer
-  :group 'wiktionary-data)
+(defconst woerterbuch-wiktionary-web-url
+  "https://de.wiktionary.org/wiki/"
+  "Base URL for German Wiktionary article pages.")
 
-(defvar wiktionary-data--cache
-  (make-hash-table :test #'equal)
-  "In-memory cache for Wiktionary entries.")
+(defconst woerterbuch-wiktionary-request-headers
+  '(("User-Agent" . "woerterbuch/0.1")
+    ("Accept-Language" . "de,en;q=0.8"))
+  "HTTP headers used for Wiktionary requests.")
 
-;;;; HTTP
+(defconst woerterbuch-wiktionary--initial-word-classes
+  '("Substantiv")
+  "Word classes supported in the first Wiktionary implementation.")
 
-(defun wiktionary-data--fetch-json (url)
-  "Fetch URL synchronously and return parsed JSON."
-  (let ((buffer (url-retrieve-synchronously url t t wiktionary-data-request-timeout)))
-    (unless buffer
-      (error "Failed to retrieve URL: %s" url))
+(defconst woerterbuch-wiktionary--label-map
+  '(("Bedeutungen" . :definitions)
+    ("Beispiele" . :examples)
+    ("Synonyme" . :synonyms)
+    ("Sinnverwandte Wörter" . :related-synonyms)
+    ("Redewendungen" . :idioms)
+    ("Herkunft" . :origin))
+  "Rendered Wiktionary block labels mapped to internal keys.")
+
+(defun woerterbuch-wiktionary--build-web-url (lemma)
+  "Build human-facing Wiktionary URL for LEMMA."
+  (concat woerterbuch-wiktionary-web-url
+          (url-hexify-string lemma)))
+
+(defun woerterbuch-wiktionary--clean-text (string)
+  "Normalize whitespace and punctuation spacing in STRING."
+  (when string
+    (let ((s (string-trim
+              (replace-regexp-in-string "[[:space:] ]+" " " string))))
+      (setq s (replace-regexp-in-string " +," "," s))
+      (setq s (replace-regexp-in-string " +\\." "." s))
+      (setq s (replace-regexp-in-string "( +" "(" s))
+      (setq s (replace-regexp-in-string " +)" ")" s))
+      (setq s (replace-regexp-in-string " ;" ";" s))
+      (setq s (replace-regexp-in-string " :" ":" s))
+      s)))
+
+(defun woerterbuch-wiktionary--text (node)
+  "Return normalized text content for NODE."
+  (woerterbuch-wiktionary--clean-text
+   (cond
+    ((null node) "")
+    ((stringp node) node)
+    ((listp node)
+     (mapconcat #'woerterbuch-wiktionary--text (dom-children node) " "))
+    (t ""))))
+
+(defun woerterbuch-wiktionary--class-list (node)
+  "Return CSS classes for NODE."
+  (split-string (or (dom-attr node 'class) "") "[[:space:]]+" t))
+
+(defun woerterbuch-wiktionary--has-class-p (node class)
+  "Return non-nil when NODE has CSS CLASS."
+  (member class (woerterbuch-wiktionary--class-list node)))
+
+(defun woerterbuch-wiktionary--element-children (node)
+  "Return element children of NODE."
+  (seq-filter #'listp (dom-children node)))
+
+(defun woerterbuch-wiktionary--find-first (node predicate)
+  "Return first descendant of NODE matching PREDICATE."
+  (catch 'found
+    (dolist (child (woerterbuch-wiktionary--element-children node))
+      (when (funcall predicate child)
+        (throw 'found child))
+      (let ((match (woerterbuch-wiktionary--find-first child predicate)))
+        (when match
+          (throw 'found match))))
+    nil))
+
+(defun woerterbuch-wiktionary--descendants-by-tag (node tag)
+  "Return all descendants of NODE with TAG."
+  (let (acc)
+    (dolist (child (woerterbuch-wiktionary--element-children node))
+      (when (eq (dom-tag child) tag)
+        (push child acc))
+      (setq acc
+            (nconc (nreverse
+                    (woerterbuch-wiktionary--descendants-by-tag child tag))
+                   acc)))
+    (nreverse acc)))
+
+(defun woerterbuch-wiktionary--heading-node-level-and-text (section)
+  "Return `(LEVEL . TEXT)' for SECTION, or nil."
+  (catch 'found
+    (dolist (child (woerterbuch-wiktionary--element-children section))
+      (when (or (eq (dom-tag child) 'div)
+                (memq (dom-tag child) '(h1 h2 h3 h4 h5 h6)))
+        (let ((heading
+               (or (and (memq (dom-tag child) '(h1 h2 h3 h4 h5 h6))
+                        child)
+                   (woerterbuch-wiktionary--find-first
+                    child
+                    (lambda (node)
+                      (memq (dom-tag node) '(h1 h2 h3 h4 h5 h6)))))))
+          (when heading
+            (throw 'found
+                   (cons (string-to-number
+                          (substring (symbol-name (dom-tag heading)) 1))
+                         (woerterbuch-wiktionary--text heading)))))))
+    nil))
+
+(defun woerterbuch-wiktionary--collect-sections (node predicate)
+  "Return descendant section nodes below NODE matching PREDICATE."
+  (let (acc)
+    (dolist (child (woerterbuch-wiktionary--element-children node))
+      (when (eq (dom-tag child) 'section)
+        (when (funcall predicate child)
+          (push child acc))
+        (setq acc
+              (nconc (nreverse
+                      (woerterbuch-wiktionary--collect-sections child predicate))
+                     acc)))
+      (unless (eq (dom-tag child) 'section)
+        (setq acc
+              (nconc (nreverse
+                      (woerterbuch-wiktionary--collect-sections child predicate))
+                     acc))))
+    (nreverse acc)))
+
+(defun woerterbuch-wiktionary--word-class-from-heading (heading)
+  "Extract lexical class from rendered HEADING."
+  (car (split-string heading ", " t)))
+
+(defun woerterbuch-wiktionary--supported-heading-p (heading)
+  "Return non-nil when rendered HEADING is currently supported."
+  (member (woerterbuch-wiktionary--word-class-from-heading heading)
+          woerterbuch-wiktionary--initial-word-classes))
+
+(defun woerterbuch-wiktionary--normalize-block-label (text)
+  "Return normalized Wiktionary block label for TEXT, or nil."
+  (let ((clean (woerterbuch-wiktionary--clean-text text)))
+    (when clean
+      (setq clean (replace-regexp-in-string ":\\'" "" clean))
+      (car (rassoc (assoc-default clean woerterbuch-wiktionary--label-map)
+                   woerterbuch-wiktionary--label-map)))))
+
+(defun woerterbuch-wiktionary--label-key (text)
+  "Return internal block key for rendered label TEXT."
+  (cdr (assoc (woerterbuch-wiktionary--normalize-block-label text)
+              woerterbuch-wiktionary--label-map)))
+
+(defun woerterbuch-wiktionary--collect-labeled-blocks (section)
+  "Return alist of labeled direct content blocks inside SECTION."
+  (let ((children (woerterbuch-wiktionary--element-children section))
+        current-key
+        current-nodes
+        blocks)
+    (dolist (child children)
+      (cond
+       ((eq (dom-tag child) 'section)
+        (when current-key
+          (push (cons current-key (nreverse current-nodes)) blocks)
+          (setq current-key nil
+                current-nodes nil)))
+       (t
+        (let ((label-key (woerterbuch-wiktionary--label-key
+                          (woerterbuch-wiktionary--text child))))
+          (if label-key
+              (progn
+                (when current-key
+                  (push (cons current-key (nreverse current-nodes)) blocks))
+                (setq current-key label-key
+                      current-nodes nil))
+            (when current-key
+              (push child current-nodes)))))))
+    (when current-key
+      (push (cons current-key (nreverse current-nodes)) blocks))
+    (nreverse blocks)))
+
+(defun woerterbuch-wiktionary--block-nodes (blocks key)
+  "Return concatenated block nodes from BLOCKS for KEY."
+  (let (out)
+    (dolist (entry blocks)
+      (when (eq (car entry) key)
+        (setq out (nconc out (copy-sequence (cdr entry))))))
+    out))
+
+(defun woerterbuch-wiktionary--dd-texts (nodes)
+  "Return readable texts from all `dd' descendants in NODES."
+  (let (out)
+    (dolist (node nodes)
+      (dolist (dd (woerterbuch-wiktionary--descendants-by-tag node 'dd))
+        (let ((text (woerterbuch-wiktionary--text dd)))
+          (unless (string-empty-p text)
+            (push text out)))))
+    (nreverse out)))
+
+(defun woerterbuch-wiktionary--plain-texts (nodes)
+  "Return readable texts for NODES."
+  (let (out)
+    (dolist (node nodes)
+      (let ((text (woerterbuch-wiktionary--text node)))
+        (unless (string-empty-p text)
+          (push text out))))
+    (nreverse out)))
+
+(defun woerterbuch-wiktionary--parse-sense-text (text)
+  "Parse Wiktionary sense TEXT into `(LABEL . REST)'."
+  (when (and text
+             (string-match "^\\[\\([^]]+\\)\\][[:space:]]*\\(.*\\)$" text))
+    (cons (match-string 1 text)
+          (woerterbuch-wiktionary--clean-text (match-string 2 text)))))
+
+(defun woerterbuch-wiktionary--split-list-items (text)
+  "Split comma-separated TEXT into readable items."
+  (delq nil
+        (mapcar
+         (lambda (item)
+           (let ((clean (woerterbuch-wiktionary--clean-text item)))
+             (unless (string-empty-p clean)
+               clean)))
+         (split-string (or text "") "[[:space:]]*,[[:space:]]*" t))))
+
+(defun woerterbuch-wiktionary--group-sense-items (sense-pairs &optional splitter)
+  "Group SENSE-PAIRS into `:sense' / `:items' plists.
+
+When SPLITTER is non-nil it is called with the sense text and should
+return a list of item strings."
+  (let ((table (make-hash-table :test #'equal))
+        order)
+    (dolist (pair sense-pairs)
+      (let* ((sense (car pair))
+             (text (cdr pair))
+             (bucket (gethash sense table))
+             (items (if splitter
+                        (funcall splitter text)
+                      (and text (list text)))))
+        (unless (member sense order)
+          (push sense order))
+        (when items
+          (puthash sense (nconc bucket (copy-sequence items)) table))))
+    (cl-loop for sense in (nreverse order)
+             for items = (gethash sense table)
+             when items
+             collect (list :sense sense :items items))))
+
+(defun woerterbuch-wiktionary--definition-list (blocks sections)
+  "Parse definition objects from BLOCKS according to SECTIONS."
+  (let* ((definition-pairs
+          (delq nil
+                (mapcar #'woerterbuch-wiktionary--parse-sense-text
+                        (woerterbuch-wiktionary--dd-texts
+                         (woerterbuch-wiktionary--block-nodes
+                          blocks :definitions)))))
+         (example-pairs
+          (and (woerterbuch-core-section-requested-p :examples sections)
+               (delq nil
+                     (mapcar #'woerterbuch-wiktionary--parse-sense-text
+                             (woerterbuch-wiktionary--dd-texts
+                              (woerterbuch-wiktionary--block-nodes
+                               blocks :examples))))))
+         (example-table (make-hash-table :test #'equal)))
+    (dolist (pair example-pairs)
+      (puthash (car pair)
+               (nconc (gethash (car pair) example-table)
+                      (list (cdr pair)))
+               example-table))
+    (cl-loop for pair in definition-pairs
+             for idx from 1
+             collect
+             (list :id idx
+                   :label (car pair)
+                   :definition (cdr pair)
+                   :qualifiers nil
+                   :examples (gethash (car pair) example-table)
+                   :definitions nil))))
+
+(defun woerterbuch-wiktionary--origin-text (blocks)
+  "Return origin text parsed from BLOCKS."
+  (let* ((nodes (woerterbuch-wiktionary--block-nodes blocks :origin))
+         (texts (or (woerterbuch-wiktionary--dd-texts nodes)
+                    (woerterbuch-wiktionary--plain-texts nodes))))
+    (when texts
+      (string-join texts " "))))
+
+(defun woerterbuch-wiktionary--idioms (blocks)
+  "Return idiom texts parsed from BLOCKS."
+  (let ((pairs (delq nil
+                     (mapcar #'woerterbuch-wiktionary--parse-sense-text
+                             (woerterbuch-wiktionary--dd-texts
+                              (woerterbuch-wiktionary--block-nodes
+                               blocks :idioms))))))
+    (mapcar #'cdr pairs)))
+
+(defun woerterbuch-wiktionary--synonyms (blocks)
+  "Return synonym groups parsed from BLOCKS."
+  (woerterbuch-wiktionary--group-sense-items
+   (append
+    (delq nil
+          (mapcar #'woerterbuch-wiktionary--parse-sense-text
+                  (woerterbuch-wiktionary--dd-texts
+                   (woerterbuch-wiktionary--block-nodes blocks :synonyms))))
+    (delq nil
+          (mapcar #'woerterbuch-wiktionary--parse-sense-text
+                  (woerterbuch-wiktionary--dd-texts
+                   (woerterbuch-wiktionary--block-nodes
+                    blocks :related-synonyms)))))
+   #'woerterbuch-wiktionary--split-list-items))
+
+(defun woerterbuch-wiktionary--homograph-title (lemma heading)
+  "Create a readable homograph title from LEMMA and rendered HEADING."
+  (string-join (delq nil (list lemma heading)) ", "))
+
+(defun woerterbuch-wiktionary--parse-entry-section (lemma section id sections url)
+  "Parse one rendered Wiktionary SECTION into a homograph plist."
+  (let* ((heading-info (woerterbuch-wiktionary--heading-node-level-and-text section))
+         (heading (cdr heading-info))
+         (word-class (woerterbuch-wiktionary--word-class-from-heading heading))
+         (blocks (woerterbuch-wiktionary--collect-labeled-blocks section))
+         (origin (and (woerterbuch-core-section-requested-p :origin sections)
+                      (woerterbuch-wiktionary--origin-text blocks)))
+         (idioms (and (woerterbuch-core-section-requested-p :idioms sections)
+                      (woerterbuch-wiktionary--idioms blocks)))
+         (synonyms (and (woerterbuch-core-section-requested-p :synonyms sections)
+                        (woerterbuch-wiktionary--synonyms blocks))))
+    (list :id id
+          :lemma lemma
+          :title (woerterbuch-wiktionary--homograph-title lemma heading)
+          :wortart word-class
+          :grammar word-class
+          :origin origin
+          :idioms idioms
+          :synonyms synonyms
+          :url url
+          :definitions (woerterbuch-wiktionary--definition-list blocks sections))))
+
+(defun woerterbuch-wiktionary--canonical-url (dom fallback)
+  "Return canonical page URL from DOM or FALLBACK."
+  (let ((link (woerterbuch-wiktionary--find-first
+               dom
+               (lambda (node)
+                 (and (eq (dom-tag node) 'link)
+                      (equal (dom-attr node 'rel) "canonical"))))))
+    (or (and link (dom-attr link 'href)) fallback)))
+
+(defun woerterbuch-wiktionary--page-title (dom fallback)
+  "Return visible page title from DOM or FALLBACK."
+  (let ((node
+         (woerterbuch-wiktionary--find-first
+          dom
+          (lambda (candidate)
+            (and (eq (dom-tag candidate) 'span)
+                 (woerterbuch-wiktionary--has-class-p
+                  candidate
+                  "mw-page-title-main"))))))
+    (or (and node (woerterbuch-wiktionary--text node)) fallback)))
+
+(defun woerterbuch-wiktionary--parse-html-dom (dom input sections)
+  "Parse rendered Wiktionary DOM DOM for INPUT according to SECTIONS."
+  (let* ((root (woerterbuch-wiktionary--find-first
+                dom
+                (lambda (node)
+                  (woerterbuch-wiktionary--has-class-p
+                   node
+                   "mw-parser-output"))))
+         (lemma (woerterbuch-wiktionary--page-title dom input))
+         (url (woerterbuch-wiktionary--canonical-url
+               dom
+               (woerterbuch-wiktionary--build-web-url lemma)))
+         (language-sections
+          (and root
+               (woerterbuch-wiktionary--collect-sections
+                root
+                (lambda (section)
+                  (let ((info
+                         (woerterbuch-wiktionary--heading-node-level-and-text
+                          section)))
+                    (and info
+                         (= (car info) 2)
+                         (string-match-p "Deutsch" (cdr info))))))))
+         (homograph-sections
+          (apply #'nconc
+                 (mapcar
+                  (lambda (section)
+                    (woerterbuch-wiktionary--collect-sections
+                     section
+                     (lambda (candidate)
+                       (let ((info
+                              (woerterbuch-wiktionary--heading-node-level-and-text
+                               candidate)))
+                         (and info
+                              (= (car info) 3)
+                              (woerterbuch-wiktionary--supported-heading-p
+                               (cdr info)))))))
+                  language-sections))))
+    (if (null homograph-sections)
+        (let ((result (woerterbuch-core-make-error
+                       'wiktionary
+                       (or lemma input)
+                       "No matches found")))
+          (plist-put result :url
+                     (or url
+                         (woerterbuch-wiktionary--build-web-url
+                          (or lemma input)))))
+      (let ((result (woerterbuch-core-make-result 'wiktionary (or lemma input))))
+        (setq result (plist-put result :url url))
+        (plist-put
+         result
+         :homographs
+         (cl-loop for section in homograph-sections
+                  for idx from 1
+                  collect
+                  (woerterbuch-wiktionary--parse-entry-section
+                   (or lemma input)
+                   section
+                   idx
+                   sections
+                   url)))))))
+
+(defun woerterbuch-wiktionary--parse-current-buffer (input sections)
+  "Parse current HTTP buffer as rendered Wiktionary page for INPUT."
+  (goto-char (point-min))
+  (if (and (boundp 'url-http-end-of-headers)
+           (integerp url-http-end-of-headers))
+      (goto-char url-http-end-of-headers)
+    (re-search-forward "\r?\n\r?\n" nil t))
+  (skip-chars-forward "\r\n")
+  (condition-case nil
+      (woerterbuch-wiktionary--parse-html-dom
+       (libxml-parse-html-region (point) (point-max))
+       input
+       sections)
+    (error
+     (let ((result (woerterbuch-core-make-error
+                    'wiktionary input "Failed to parse Wiktionary HTML")))
+       (plist-put result :url (woerterbuch-wiktionary--build-web-url input))))))
+
+(defun woerterbuch-wiktionary--status-http-code (status)
+  "Return HTTP code inferred from STATUS or current buffer context."
+  (or (and (boundp 'url-http-response-status)
+           (numberp url-http-response-status)
+           url-http-response-status)
+      (let ((err (plist-get status :error)))
+        (when (and (listp err)
+                   (eq (car err) 'error)
+                   (eq (cadr err) 'http)
+                   (numberp (caddr err)))
+          (caddr err)))))
+
+(defun woerterbuch-wiktionary--status-network-error-p (status)
+  "Return non-nil when STATUS represents a non-HTTP network error."
+  (let ((err (plist-get status :error)))
+    (and err
+         (not (woerterbuch-wiktionary--status-http-code status)))))
+
+(defun woerterbuch-wiktionary--request-needed-p (sections)
+  "Return non-nil when Wiktionary can contribute anything for SECTIONS."
+  (or (woerterbuch-core-section-requested-p :definitions sections)
+      (woerterbuch-core-section-requested-p :examples sections)
+      (woerterbuch-core-section-requested-p :origin sections)
+      (woerterbuch-core-section-requested-p :idioms sections)
+      (woerterbuch-core-section-requested-p :synonyms sections)))
+
+(defun woerterbuch-wiktionary--request-callback (status input sections callback)
+  "Handle Wiktionary page response STATUS for INPUT and invoke CALLBACK."
+  (let (result)
     (unwind-protect
-        (with-current-buffer buffer
-          (goto-char (point-min))
-          (search-forward "\n\n")
-          (json-parse-string
-           (buffer-substring-no-properties (point) (point-max))
-           :object-type 'hash-table
-           :array-type 'list
-           :null-object nil
-           :false-object :false))
-      (kill-buffer buffer))))
+        (setq result
+              (condition-case err
+                  (cond
+                   ((woerterbuch-wiktionary--status-network-error-p status)
+                    (woerterbuch-core-make-error
+                     'wiktionary
+                     input
+                     (format "Network error: %S" (plist-get status :error))))
+                   ((let ((http-code
+                           (woerterbuch-wiktionary--status-http-code status)))
+                      (and http-code
+                           (>= http-code 400)))
+                    (woerterbuch-core-make-error
+                     'wiktionary
+                     input
+                     (format "HTTP error: %s"
+                             (woerterbuch-wiktionary--status-http-code status))))
+                   (t
+                    (woerterbuch-wiktionary--parse-current-buffer input sections)))
+                (error
+                 (woerterbuch-core-make-error
+                  'wiktionary
+                  input
+                  (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (funcall callback result)))
 
-(defun wiktionary-data--build-query-url (word)
-  "Build API URL to fetch raw Wiktionary wikitext for WORD."
-  (format
-   "%s?action=query&prop=revisions&titles=%s&rvslots=*&rvprop=content&format=json&formatversion=2"
-   wiktionary-data-api-url
-   (url-hexify-string word)))
+(defun woerterbuch-wiktionary-fetch (input sections callback)
+  "Fetch INPUT from German Wiktionary and invoke CALLBACK once."
+  (if (not (woerterbuch-wiktionary--request-needed-p sections))
+      (let ((result (woerterbuch-core-make-result 'wiktionary input)))
+        (setq result
+              (plist-put result :url
+                         (woerterbuch-wiktionary--build-web-url input)))
+        (funcall callback result))
+    (let ((url-request-extra-headers woerterbuch-wiktionary-request-headers))
+      (url-retrieve
+       (woerterbuch-wiktionary--build-web-url input)
+       #'woerterbuch-wiktionary--request-callback
+       (list input sections callback)
+       t
+       t))))
 
-(defun wiktionary-data--extract-content (json)
-  "Extract page content from MediaWiki JSON response."
-  (let* ((query (gethash "query" json))
-         (pages (gethash "pages" query))
-         (page (car pages))
-         (revisions (gethash "revisions" page))
-         (revision (car revisions))
-         (slots (gethash "slots" revision))
-         (main (gethash "main" slots)))
-    (gethash "content" main)))
+(provide 'woerterbuch-wiktionary)
 
-;;;; Section extraction
-
-(defun wiktionary-data--extract-section (text regexp)
-  "Extract section from TEXT whose heading matches REGEXP."
-  (when (string-match regexp text)
-    (let* ((start (match-beginning 0))
-           (end (or (and (string-match "^==[^=]" text (match-end 0))
-                         (match-beginning 0))
-                    (length text))))
-      (substring text start end))))
-
-(defun wiktionary-data--extract-language-section (text)
-  "Extract the German language section from TEXT."
-  (wiktionary-data--extract-section
-   text
-   "^== .*({{Sprache|Deutsch}}).*=="))
-
-(defun wiktionary-data--extract-wordclass-section (text word-class)
-  "Extract WORD-CLASS subsection from TEXT."
-  (wiktionary-data--extract-section
-   text
-   (format "^=== .*{{Wortart|%s|Deutsch}}.*===" (regexp-quote word-class))))
-
-(defun wiktionary-data--extract-block (text block)
-  "Extract Wiktionary block named BLOCK from TEXT."
-  (when (string-match (format "^{{%s}}" block) text)
-    (let ((start (match-end 0)))
-      (substring
-       text
-       start
-       (or (and (string-match "^{{[A-Za-z]" text start)
-                (match-beginning 0))
-           (length text))))))
-
-;;;; Text cleanup
-
-(defun wiktionary-data--remove-refs (text)
-  "Remove <ref> tags from TEXT."
-  (replace-regexp-in-string "<ref[^>]*>.*?</ref>" "" text t t))
-
-(defun wiktionary-data--replace-wikilinks (text)
-  "Replace wikilinks in TEXT with visible labels."
-  (setq text
-        (replace-regexp-in-string
-         "\\[\\[[^]|]+|\\([^]]+\\)\\]\\]" "\\1" text))
-  (replace-regexp-in-string
-   "\\[\\[\\([^]]+\\)\\]\\]" "\\1" text))
-
-(defun wiktionary-data--cleanup-text (text)
-  "Perform lightweight cleanup of Wiktionary markup in TEXT."
-  (let ((result text))
-    (setq result (wiktionary-data--remove-refs result))
-    (setq result (wiktionary-data--replace-wikilinks result))
-    (setq result (replace-regexp-in-string "{{[^{}\n]+}}" "" result))
-    (setq result (replace-regexp-in-string "''+" "" result))
-    (string-trim
-     (replace-regexp-in-string "[ \t\n\r]+" " " result))))
-
-;;;; Block parsers
-
-(defun wiktionary-data--parse-numbered-lines (text)
-  "Parse numbered lines like :[1] ... from TEXT."
-  (let ((lines (split-string text "\n" t))
-        results)
-    (dolist (line lines (nreverse results))
-      (when (string-match "^:\\[\\([0-9]+\\)\\] \\(.*\\)$" line)
-        (push
-         (list
-          :index (string-to-number (match-string 1 line))
-          :text (wiktionary-data--cleanup-text
-                 (match-string 2 line)))
-         results)))))
-
-(defun wiktionary-data--parse-sense-lines (text)
-  "Parse lines like :[1] text from TEXT."
-  (let ((lines (split-string text "\n" t))
-        results)
-    (dolist (line lines (nreverse results))
-      (when (string-match "^:\\[\\([^]]+\\)\\] \\(.*\\)$" line)
-        (push
-         (list
-          :sense (match-string 1 line)
-          :text (wiktionary-data--cleanup-text
-                 (match-string 2 line)))
-         results)))))
-
-(defun wiktionary-data--parse-origin (text)
-  "Parse origin block TEXT."
-  (wiktionary-data--cleanup-text text))
-
-(defun wiktionary-data--parse-related (text)
-  "Parse related words block TEXT."
-  (wiktionary-data--parse-sense-lines text))
-
-;;;; Public API
-
-(defun wiktionary-data-fetch (word &optional word-class)
-  "Fetch structured data for WORD from German Wiktionary.
-
-Optional WORD-CLASS restricts extraction to a specific class
-such as \"Substantiv\", \"Verb\", or \"Adjektiv\".
-
-Return a plist containing extracted data."
-  (let* ((url (wiktionary-data--build-query-url word))
-         (json (wiktionary-data--fetch-json url))
-         (content (wiktionary-data--extract-content json))
-         (lang (wiktionary-data--extract-language-section content))
-         (entry (if word-class
-                    (wiktionary-data--extract-wordclass-section
-                     lang word-class)
-                  lang))
-         (meanings (wiktionary-data--extract-block entry "Bedeutungen"))
-         (origin (wiktionary-data--extract-block entry "Herkunft"))
-         (examples (wiktionary-data--extract-block entry "Beispiele"))
-         (idioms (wiktionary-data--extract-block entry "Redewendungen"))
-         (synonyms (wiktionary-data--extract-block entry "Synonyme"))
-         (related (wiktionary-data--extract-block entry "Sinnverwandte Wörter")))
-    (list
-     :word word
-     :meanings (and meanings
-                    (wiktionary-data--parse-numbered-lines meanings))
-     :origin (and origin
-                  (wiktionary-data--parse-origin origin))
-     :examples (and examples
-                    (wiktionary-data--parse-sense-lines examples))
-     :idioms (and idioms
-                  (wiktionary-data--parse-sense-lines idioms))
-     :synonyms (and synonyms
-                    (wiktionary-data--parse-sense-lines synonyms))
-     :related-words (and related
-                         (wiktionary-data--parse-related related)))))
-
-(defun wiktionary-data-fetch-cached (word &optional word-class)
-  "Fetch Wiktionary data for WORD using cache."
-  (let ((key (list word word-class)))
-    (or (gethash key wiktionary-data--cache)
-        (puthash key
-                 (wiktionary-data-fetch word word-class)
-                 wiktionary-data--cache))))
-
-;;;###autoload
-(defun wiktionary-data-fetch-noun (word)
-  "Fetch noun data for WORD from German Wiktionary."
-  (interactive "sWord: ")
-  (wiktionary-data-fetch-cached word "Substantiv"))
-
-(provide 'wiktionary-data)
-
-;;; wiktionary-data.el ends here
+;;; woerterbuch-wiktionary.el ends here
