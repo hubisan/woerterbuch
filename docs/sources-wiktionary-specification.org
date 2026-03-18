@@ -8,8 +8,8 @@ alongside DWDS, Duden and OpenThesaurus.
 
 The focus is on:
 
-- fetching raw wikitext through the MediaWiki API
-- identifying the German lemma entry inside the returned page content
+- fetching the rendered article page
+- identifying the German lemma entry inside the HTML content
 - splitting multiple lemma sections into separate homographs
 - mapping Wiktionary blocks to the normalized plist format already used
   by the other backends
@@ -20,17 +20,13 @@ helper-function level.
 
 * Local Example Files
 
-The following saved API responses and extracted raw wikitext files
-serve as reference material for parser development and tests:
+The following saved rendered HTML pages serve as reference material
+for parser development and tests:
 
-- [[file:../tests/files/wiktionary/wiktionary-api-bank.json][Bank API JSON]]
-- [[file:../tests/files/wiktionary/wiktionary-bank.wiki][Bank raw wikitext]]
-- [[file:../tests/files/wiktionary/wiktionary-api-haus.json][Haus API JSON]]
-- [[file:../tests/files/wiktionary/wiktionary-haus.wiki][Haus raw wikitext]]
-- [[file:../tests/files/wiktionary/wiktionary-api-zaun.json][Zaun API JSON]]
-- [[file:../tests/files/wiktionary/wiktionary-zaun.wiki][Zaun raw wikitext]]
-- [[file:../tests/files/wiktionary/wiktionary-api-existiertnicht.json][Existiertnicht API JSON]]
-- [[file:../tests/files/wiktionary/wiktionary-existiertnicht.wiki][Existiertnicht raw wikitext]]
+- [[file:../tests/files/wiktionary/wiktionary-bank.html][Bank HTML]]
+- [[file:../tests/files/wiktionary/wiktionary-haus.html][Haus HTML]]
+- [[file:../tests/files/wiktionary/wiktionary-zaun.html][Zaun HTML]]
+- [[file:../tests/files/wiktionary/wiktionary-existiertnicht.html][Existiertnicht HTML]]
 
 Observed from these fixtures:
 
@@ -40,51 +36,28 @@ Observed from these fixtures:
   German =Deklinierte Form= section. The declension-only section must
   not become a homograph for the lemma lookup.
 - =Zaun= contains one regular German =Substantiv= entry.
-- =Existiertnicht= returns a MediaWiki page object with =missing:
-  true= and no revisions.
+- =Existiertnicht= yields no usable German lexical entry and should
+  therefore produce a normalized no-match result.
 
 * Base URLs
 
-** MediaWiki API request
-
-Use the Wiktionary API and request the raw page content from the
-=main= slot.
-
-#+BEGIN_SRC text
-https://de.wiktionary.org/w/api.php?action=query&titles=<LEMMA>&prop=revisions&rvslots=main&rvprop=content&formatversion=2&format=json
-#+END_SRC
-
-Example:
-
-#+BEGIN_SRC text
-https://de.wiktionary.org/w/api.php?action=query&titles=Bank&prop=revisions&rvslots=main&rvprop=content&formatversion=2&format=json
-#+END_SRC
-
-** Human-facing entry URL
-
-For the normalized result object, expose the human-facing page URL:
+Use the human-facing page URL both for fetching and for the normalized
+result object:
 
 #+BEGIN_SRC text
 https://de.wiktionary.org/wiki/<LEMMA>
 #+END_SRC
 
-This matches the spirit of the other backends, which expose the normal
-entry URL instead of an internal API endpoint.
-
 * High-Level Fetch Flow
 
-1. Build the MediaWiki API URL for the requested lemma.
-2. Fetch JSON with normal request headers.
+1. Build the Wiktionary page URL for the requested lemma.
+2. Fetch rendered HTML with normal request headers.
 3. If the response status is >= 400, return an error plist.
-4. Parse the JSON page object.
-5. If the page is marked =missing: true=, return a normalized
-   no-match result.
-6. Extract =query.pages[0].revisions[0].slots.main.content= as raw
-   wikitext.
-7. Restrict parsing to the German language section for the requested
+4. Parse the HTML DOM.
+5. Restrict parsing to the German language section for the requested
    lemma.
-8. Split matching lemma sections into separate homographs.
-9. Parse requested content blocks from each homograph and map them to
+6. Split matching lemma sections into separate homographs.
+7. Parse requested content blocks from each homograph and map them to
    the normalized plist format.
 
 * Request Headers and Error Handling
@@ -99,18 +72,19 @@ Error behavior:
 
 - network failures return an error plist with source =wiktionary=
 - HTTP >= 400 returns an error plist
-- MediaWiki =missing: true= returns =(:ok nil ... :error "No matches found")=
-- malformed or unexpected JSON returns an error plist
+- missing or unusable lexical entry returns
+  =(:ok nil ... :error "No matches found")=
+- malformed or unexpected HTML returns an error plist
 - missing German lemma section returns =No matches found=
 
-* Relevant Wikitext Structure
+* Relevant HTML Structure
 
 ** Language heading
 
-German sections are introduced by a level-2 heading such as:
+German sections are introduced by a rendered level-2 heading such as:
 
 #+BEGIN_SRC text
-== Bank ({{Sprache|Deutsch}}) ==
+Deutsch
 #+END_SRC
 
 Only the German section for the requested page title is relevant.
@@ -118,16 +92,17 @@ Ignore other languages entirely.
 
 ** Entry / homograph heading
 
-Lemma sections inside the German block are introduced by level-3
-headings, for example:
+Lemma sections inside the German block are introduced by rendered
+level-3 headings, for example:
 
 #+BEGIN_SRC text
-=== {{Wortart|Substantiv|Deutsch}}, {{f}}, ''Bänke'' ===
-=== {{Wortart|Substantiv|Deutsch}}, {{f}}, ''Banken'' ===
+Substantiv, f
+Verb, unregelmäßig
+Adjektiv
 #+END_SRC
 
-For =Bank= these two headings represent two different homographs and
-must be returned separately.
+For =Bank= the page still contains two relevant German =Substantiv=
+homographs and they must be returned separately.
 
 * Matching and Filtering Rules
 
@@ -144,17 +119,11 @@ Target scope of the backend:
 - it should eventually support lexical entries such as
   =Substantiv=, =Verb=, =Adjektiv= and =Adverb=
 
-For the initial implementation, include only sections whose heading
-contains:
-
-- ={{Wortart|Substantiv|Deutsch}}=
-
 Explicitly ignore sections such as:
 
-- ={{Wortart|Deklinierte Form|Deutsch}}=
-- ={{Wortart|Konjugierte Form|Deutsch}}=
-- pronunciation-only or reference-only material outside a lexical
-  entry heading
+- =Deklinierte Form=
+- =Konjugierte Form=
+- entries without useful extracted content
 
 Rationale:
 

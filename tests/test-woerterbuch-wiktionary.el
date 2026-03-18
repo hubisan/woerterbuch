@@ -14,7 +14,7 @@
                                       default-directory)))
 
 (defun test-woerterbuch-wiktionary--parse-response-file (name input)
-  "Parse local Wiktionary API response fixture NAME for INPUT."
+  "Parse local Wiktionary HTML fixture NAME for INPUT."
   (with-temp-buffer
     (insert "HTTP/1.1 200 OK\n\n")
     (insert-file-contents (test-woerterbuch-wiktionary--fixture name))
@@ -26,7 +26,7 @@
 (describe "Wiktionary Backend:"
   (it "parses Bank into two noun homographs"
     (let* ((result (test-woerterbuch-wiktionary--parse-response-file
-                    "wiktionary-api-bank.json"
+                    "wiktionary-bank.html"
                     "Bank"))
            (homographs (plist-get result :homographs))
            (first (nth 0 homographs))
@@ -38,8 +38,8 @@
       (expect (plist-get result :url)
               :to-equal "https://de.wiktionary.org/wiki/Bank")
       (expect (length homographs) :to-equal 2)
-      (expect (plist-get first :title) :to-equal "Bank, Substantiv, f, Bänke")
-      (expect (plist-get second :title) :to-equal "Bank, Substantiv, f, Banken")
+      (expect (plist-get first :title) :to-equal "Bank, Substantiv, f")
+      (expect (plist-get second :title) :to-equal "Bank, Substantiv, f")
       (expect (plist-get first :wortart) :to-equal "Substantiv")
       (expect (plist-get second :grammar) :to-equal "Substantiv")
       (expect (plist-get first-def :label) :to-equal "1")
@@ -48,16 +48,16 @@
       (expect (plist-get second-def :definition)
               :to-match "Geldinstitut")
       (expect (car (plist-get first-def :examples))
-              :to-match "Sollen wir uns auf diese Bank setzen")
+              :to-match "Diese Bank war")
       (expect (plist-get first :origin) :to-match "banki-")
       (expect (plist-get first :idioms)
-              :to-contain "etwas auf die lange Bank schieben - immer wieder auf einen spaeteren Zeitpunkt verschieben")
+              :to-contain "etwas auf die lange Bank schieben")
       (expect (plist-get second :idioms)
               :to-contain "Die Bank gewinnt immer.")
       (expect (plist-get first :synonyms)
               :to-equal
-              '((:sense "2" :items ("Lage"))
-                (:sense "5" :items ("Theke" "Tresen"))
+              '((:sense "2" :items ("Bankett"))
+                (:sense "5" :items ("Tisch" "Theke" "Werkbank"))
                 (:sense "6" :items ("Auswechselbank" "Ersatzbank"))))
       (expect (plist-get second :synonyms)
               :to-equal
@@ -71,7 +71,7 @@
 
   (it "parses Haus and ignores the later declension-only section"
     (let* ((result (test-woerterbuch-wiktionary--parse-response-file
-                    "wiktionary-api-haus.json"
+                    "wiktionary-haus.html"
                     "Haus"))
            (homographs (plist-get result :homographs))
            (entry (car homographs)))
@@ -88,7 +88,7 @@
 
   (it "parses Zaun including merged synonyms and related words"
     (let* ((result (test-woerterbuch-wiktionary--parse-response-file
-                    "wiktionary-api-zaun.json"
+                    "wiktionary-zaun.html"
                     "Zaun"))
            (entry (car (plist-get result :homographs))))
       (expect (length (plist-get result :homographs)) :to-equal 1)
@@ -101,16 +101,17 @@
               :to-contain "ein lebender Zaun")
       (expect (plist-get entry :synonyms)
               :to-equal
-              '((:sense "1" :items ("Abzaeunung"
-                                    "Einfriedigung/Einfriedung"
-                                    "Einzaeunung"
-                                    "Umzaeunung"
-                                    "geh.:" "Befriedung"
-                                    "Umfriedigung/Umfriedung"
-                                    "besonders Forstwesen:" "Einhegung"
-                                    "Schweiz:" "Hag"
-                                    "Namibia:" "Fence"
-                                    "landschaftlich, besonders Nordamerika, Suedafrika KwaZulu-Natal:"
+              '((:sense "1" :items ("Abzäunung"
+                                    "Einfriedigung"
+                                    "Einfriedung"
+                                    "Einzäunung"
+                                    "Umzäunung"
+                                    "Befriedung"
+                                    "Umfriedigung"
+                                    "Umfriedung"
+                                    "Einhegung"
+                                    "Hag"
+                                    "Fence"
                                     "Fenz"
                                     "Eingrenzung"
                                     "Gatter"
@@ -121,7 +122,7 @@
   (it "returns the expected no-match result object"
     (expect
      (test-woerterbuch-wiktionary--parse-response-file
-      "wiktionary-api-existiertnicht.json"
+      "wiktionary-existiertnicht.html"
       "Existiertnicht")
      :to-equal
      '(:source wiktionary
