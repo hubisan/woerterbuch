@@ -1,0 +1,161 @@
+#+TITLE: Manueller Vergleich Output mit Html-Seite
+#+STARTUP: showall
+
+Habe die Test-Output-Files (.el) manuell mit der Webseite verglichen. Hier die Erkenntnisse daraus.
+
+* Openthesaurus
+
+- Bank: sehr gut, passt alles.
+
+* DWDS
+
+- Bank: eigentlich auch gut, bis auf Spezialfälle.
+
+** TODO Notwendige Verbesserungen [0/3]
+
+*** TODO Fehlende Qualifier?
+
+https://www.dwds.de/wb/Bank#2
+
+Bei dieser Bedeutung, Überschrift in DWDS, handelt es sich um eine Zwischenüberschrift ohne Definition. Im Output fehlt jedoch der Qualifier fehlt, auf DWSD wird dies als Überschrift mit dem Qualifier in grün ohne weiteren Text angezeigt.
+
+Der Qualifier ist hier zu finden: ~<span class="dwdswb-fachgebiet">Glücksspiel</span>~~
+
+Allenfalls muss man davon ausgehen, dass alle span in ~class="dwdswb-diasystematik"~ Qualifier sind. Zumindest mit Klasse die mit dwdswb- startet.
+
+Aktueller Output:
+
+#+BEGIN_SRC emacs-lisp
+  (:id 3 :dwds-id "d-2-3" :label "3."
+       :definition "" :qualifiers nil :examples
+       nil :definitions
+       (...))
+#+END_SRC
+
+Html dazu:
+
+#+BEGIN_SRC html
+  <div class="dwdswb-lesart" id="d-2-3"><div class="dwdswb-lesart-n" data-n="3.">3.</div><div class="dwdswb-lesart-content" style="padding-top:4px"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-fachgebiet">Glücksspiel</span></span> </div><div class="dwdswb-lesart" id="d-2-3-1"><div class="dwdswb-lesart-n" data-n="3a.">a)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"><span class="dwdswb-definitionen"><span class="dwdswb-definition">Geldeinsatz desjenigen Spielers, der bei Bankhalter-Spielen allein gegen alle übrigen spielt</span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-kompetenzbeispiel"><span class="dwdswb-belegtext">die <span class="dwdswb-stichwort">Bank</span> übernehmen, halten, sprengen</span><span class="dwdswb-binnenquelle dwdswb-binnenquelle-neu" data-orig-display="inline-block" style="display: none; opacity: 0; transition: opacity 1600ms, background-color 3200ms;"><abbr data-toggle="tooltip" title="" data-original-title="Wörterbuch der deutschen Gegenwartssprache">eWDG</abbr>, 1967</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Bei Spielen wie Poker und Baccarat fungiert das Kasino – anders als im Black Jack und Roulette – nicht als <span class="dwdswb-stichwort">Bank</span> und macht deshalb keinen Gewinn.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Zürcher Zeitung, 22.04.2012]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Die Kugel kommt auf der schwarzen Acht zum Liegen. Ein Mann <span data-toggle="tooltip" title="" data-original-title="im Peter-Pan-Kostüm">[…]</span> starrt auf das Türmchen seiner 100‑Dollar‑Chips, das der Croupier zur <span class="dwdswb-stichwort">Bank</span> hinüberschiebt.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Süddeutsche Zeitung, 12.11.2011]</span></div><div class="dwdswb-beleg"><span class="dwdswb-diasystematik" style="margin-right:10px"><span class="dwdswb-bedeutungsebene">vergleichend</span></span><span class="dwdswb-belegtext"> Wie ein Spieler, der seine gerade eingestrichenen Gewinne auf eine Karte setzt, um die <span class="dwdswb-stichwort">Bank</span> zu sprengen, scheint auch Arafat immer wieder bereit, alles zu riskieren – nur um dann letztlich doch zu verlieren.</span> 
+  ...
+#+END_SRC
+
+*** TODO Umgang mit Verweis - Synonym von
+
+https://www.dwds.de/wb/Bank#2
+
+Analyse:
+
+Als Definition wird auch ein Synonym aufgeführt. Leider wird diese Bedeutung dann nur verlinkt.
+
+Die Bedeutung ist aber zum Glück im Popover zu finden: ~data-content="&lt;span style=&quot;color:#000;font-style:normal&quot;&gt;Person, die das Spiel leitet, die Einsätze verwaltet und gegen die die übrigen Spieler spielen&lt;/span&Guten Tag;"~.
+
+Am besten nimmt man noch dies hinzu: ~...title="">Synonym zu <a class="intern" href="/wb/Bankhalter">Bankhalter</a>~.
+
+Daran erkennt man glaube ich, dass es was anderes ist: ~dwdswb-verweise~.
+
+Im Output sollte unter :definition dann Folgendes stehen: "Synonym zu Bankhalter = Person, die das Spiel leitet, die Einsätze verwaltet und gegen die die übrigen Spieler spielen" 
+
+Aktueller Output:
+
+#+BEGIN_SRC emacs-lisp
+  (:id 2 :dwds-id "d-2-3-2" :label "b)"
+       :definition "" :qualifiers
+       ("metonymisch") :examples
+       ("Nebenberuflich war die 25‑Jährige bisher im Automatenkasino in Baden als Gästebetreuerin tätig. Der Beruf des Croupiers sei anspruchsvoller, sagt sie; immerhin verwalte sie als » Bank « Jetons im Wert von 15.000 Franken."
+        "Die Regeln [beim Black Jack] sind simpel: Jeder spielt für sich, und alle spielen gegen die Bank.")
+       :definitions nil)
+#+END_SRC
+
+Html dazu:
+
+#+BEGIN_SRC html
+  <div class="dwdswb-lesart" id="d-2-3-2"><div class="dwdswb-lesart-n" data-n="3b.">b)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">metonymisch</span></span> <span class="dwdswb-verweise"><span class="dwdswb-verweis" data-lemma="Bankhalter" data-hidx="" data-lesart="" data-popover-def="1" data-content="&lt;span style=&quot;color:#000;font-style:normal&quot;&gt;Person, die das Spiel leitet, die Einsätze verwaltet und gegen die die übrigen Spieler spielen&lt;/span&gt;" data-html="true" data-toggle="popover" data-trigger="hover" data-original-title="" title="">Synonym zu <a class="intern" href="/wb/Bankhalter">Bankhalter</a></span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Nebenberuflich war die 25‑Jährige bisher im Automatenkasino in Baden als Gästebetreuerin tätig. Der Beruf des Croupiers sei anspruchsvoller, sagt sie; immerhin verwalte sie als »<span class="dwdswb-stichwort">Bank</span>« Jetons im Wert von 15.000 Franken.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Zürcher Zeitung, 12.06.2002]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Die Regeln <span class="dwdswb-autorenzusatz">[beim Black Jack]</span> sind simpel: Jeder spielt für sich, und alle spielen gegen die <span class="dwdswb-stichwort">Bank</span>.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Der Spiegel, 14.04.1997]</span></div></div></div></div>
+#+END_SRC
+
+*** TODO Umgang mit MWA
+
+Die Mehrwortausdrücke werden bereits bei Idioms aufgelistet. Hier ist einer davon aber noch im Text einzeln aufgeführt. Ich denke, dies ist der Fall, wenn dem Wort in einem MWA eine andere Bedeutung zukommt (deshalb hat es auch einen Qualifier nehme ich einmal an). Ist bei Zaun auch so.
+
+In dem Fall sollten wir es so machen im Output:
+
+:definition wäre: "eine Bank sein (MWA) = etwas sein, das die an es gestellten (hohen) Erwartungen verlässlich erfüllt; jmd sein, der die von ihm erwartete (erfolgreiche) Leistung mit Sicherheit erbringt"
+
+Bei Zaun wäre es so: "einen Streit, Krieg vom Zaune brechen (MWA) = einen Streit, Krieg unvermittelt heraufbeschwören"
+
+Erkennen kann man es an beim Beispiel Bank (bei Zaun ist es ziemlich anders):
+~src="https://www.dwds.de/dwds_static/images/letters/letter-mwa.svg~ oder ~data-original-title="Artikel für Mehrwortausdruck ...~, ah oder wohl am besten aufgrund von ~<div class="dwdswb-phraseme"><div class="dwdswb-phrasem">~. Genau, hat ja diese Bedeutung: "Unter einem Phraseologismus, einem Phrasem oder einem Idiom versteht man in der Sprachwissenschaft eine zu einer festen Form verwachsene Wortfolge."
+
+Noch schwierig zu identifizieren, bei Zaun ist es irgendwie ganz anderers. Witzigerweise ist sogar noch ein Beispiel aufgeführt, in welchem es dann eigentlich noch eine andere Bedeutung hat.
+
+**** Bank
+
+#+BEGIN_SRC emacs-lisp
+  (:id 3 :dwds-id "d-2-3-3" :label "c)"
+       :definition "" :qualifiers
+       ("umgangssprachlich") :examples
+       nil :definitions nil)
+#+END_SRC
+
+#+BEGIN_SRC html
+  <div class="dwdswb-lesart" id="d-2-3-3"><div class="dwdswb-lesart-n" data-n="3c.">c)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-stilebene">umgangssprachlich</span></span>  <span style="white-space:nowrap"><a tabindex="0" role="button" class="touch-only glyphicon glyphicon-info-sign smaller" style="color:#000;opacity:.5" data-toggle-hint="popover" data-placement="top" data-trigger="focus" title="" data-original-title="Artikel für Mehrwortausdruck ‘eine Bank sein’ anzeigen"></a><a data-toggle="tooltip" data-placement="top" title="" href="/wb/eine%20Bank%20sein" data-original-title="Artikel für Mehrwortausdruck ‘eine Bank sein’ anzeigen"><img src="https://www.dwds.de/dwds_static/images/letters/letter-mwa.svg" style="height:16px; margin:auto auto 2px 5px"></a></span></div><div class="dwdswb-block-label">Phrasem:</div><div class="dwdswb-phraseme"><div class="dwdswb-phrasem">⟨<span class="dwdswb-belegtext">eine <span class="dwdswb-stichwort">Bank</span> sein <span class="dwdswb-paraphrase">(= <abbr title="" data-toggle="tooltip" data-original-title="etwas">etw.</abbr> sein, das die an es gestellten (hohen) Erwartungen verlässlich erfüllt)</span> <span class="dwdswb-paraphrase">(= <abbr title="" data-toggle="tooltip" data-original-title="jemand">jmd.</abbr> sein, der die von ihm erwartete (erfolgreiche) Leistung mit Sicherheit erbringt)</span></span>⟩</div></div><div class="dwdswb-verweise"></div></div></div>
+#+END_SRC
+
+**** Zaun
+
+Output ist eigentlich schon sehr gut, aber neu wie oben definiert mit (MWA) udn auch der Bedeutung:
+
+#+BEGIN_SRC emacs-lisp
+  (:id 1 :dwds-id "d-1-1-1" :label "●"
+       :definition
+       "⟨ einen Streit, Krieg vom Zaune brechen ⟩"
+       :qualifiers ("übertragen")
+       :examples
+       ("sie hatten mutwillig eine Schlägerei, Prügelei vom Zaun gebrochen"
+        "Man muß auch mal was vom Zaune brechen (= man muss auch mal improvisieren), aus dem Stegreif leben können […]")
+       :definitions nil)
+#+END_SRC
+
+#+BEGIN_SRC html
+  <div class="dwdswb-lesart" id="d-1-1-1"><div class="dwdswb-lesart-n" data-n=" ●">●</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">übertragen</span></span> <span class="dwdswb-syntagmatik"><span class="dwdswb-konstruktionsmuster">⟨<span class="dwdswb-belegtext">einen Streit, Krieg vom <span class="dwdswb-stichwort">Zaune</span> brechen <span class="dwdswb-paraphrase">(= einen Streit, Krieg unvermittelt heraufbeschwören)</span></span>⟩ <span style="white-space:nowrap"><a tabindex="0" role="button" class="touch-only glyphicon glyphicon-info-sign smaller" style="color:#000;opacity:.5" data-toggle-hint="popover" data-placement="top" data-trigger="focus" title="" data-original-title="Artikel für Mehrwortausdruck ‘etw. vom Zaun brechen’ anzeigen"></a><a data-toggle="tooltip" data-placement="top" title="" href="/wb/etw.%20vom%20Zaun%20brechen" data-original-title="Artikel für Mehrwortausdruck ‘etw. vom Zaun brechen’ anzeigen"><img src="https://www.dwds.de/dwds_static/images/letters/letter-mwa.svg" style="height:16px; margin:auto auto 2px 5px"></a><span class="dwdswb-binnenquelle dwdswb-binnenquelle-neu" data-orig-display="inline-block" style="display: none; opacity: 0; transition: opacity 1600ms, background-color 3200ms;"><abbr data-toggle="tooltip" title="" data-original-title="Digitales Wörterbuch der deutschen Sprache">DWDS</abbr>, 15.10.2025</span></span></span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-kompetenzbeispiel"><span class="dwdswb-belegtext">sie hatten mutwillig eine Schlägerei, Prügelei vom <span class="dwdswb-stichwort">Zaun</span> gebrochen</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">Man muß auch mal was vom <span class="dwdswb-stichwort">Zaune</span> brechen <span class="dwdswb-paraphrase">(= man muss auch mal improvisieren)</span>, aus dem Stegreif leben können <span class="dwdswb-autorenzusatz">[…]</span></span> <span class="dwdswb-fundstelle"><span class="no-wrap">[<a title="" data-toggle="tooltip" data-placement="bottom" class="wdg-bibl-link" href="https://www.dwds.de/wb/wdg/bibl#ZWEARNEEK" data-original-title="zum Eintrag im WDG-Quellenverzeichnis"><i class="bi bi-arrow-up-right dwds-aur"></i></a> </span><span class="dwdswb-fundstelle-autor">A. Zweig</span><span class="dwdswb-fundstelle-titel">Einsetzung</span><span class="dwdswb-fundstelle-stelle">178</span>]</span></div></div></div></div>
+#+END_SRC
+
+* Wiktionary
+
+- Bank: Alles i. O. ausser Redewendungen bei erster Bedeutung.
+  
+** TODO Notwendige Verbesserungen [0/1]
+
+*** TODO Redewendungen
+
+Bei Bank (erste Bedeutung) wurden die Redewendungen nicht erkannt. Bei der zweiten Bedeutung schon. Sehe den Grund nicht. Allenfalls da es dort keine Nummerierung hat wie [1] (Zuordnung zur Bedeutung).
+
+**** Bank
+
+Output: [[file:bank.el]]
+
+***** Redwendungen
+
+Redewendungen bei erster Bedeutung:
+
+#+BEGIN_SRC html
+  <p style="margin-bottom:-0.5em; font-weight:bold; " title="Phraseologismen" about="#mwt43" typeof="mw:Transclusion" data-mw="{&quot;parts&quot;:[{&quot;template&quot;:{&quot;target&quot;:{&quot;wt&quot;:&quot;Redewendungen&quot;,&quot;href&quot;:&quot;./Vorlage:Redewendungen&quot;},&quot;params&quot;:{},&quot;i&quot;:0}}]}" id="mw2w">Redewendungen:</p>
+
+  <dl id="mw3A"><dd id="mw3Q"><a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/durch_die_Bank?action=edit&amp;redlink=1" title="durch die Bank (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mw3g" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;durch die Bank&quot;]}}">durch die <i id="mw3w">Bank</i></a> … – eine Eigenschaft, die gleichermaßen auf alle Beteiligten zutrifft</dd>
+  <dd id="mw4A"><a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/etwas_auf_die_lange_Bank_schieben" title="etwas auf die lange Bank schieben" id="mw4Q">etwas auf die lange <i id="mw4g">Bank</i> schieben</a> – immer wieder auf einen späteren Zeitpunkt verschieben</dd>
+  <dd id="mw4w"><a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/vor_leeren_Bänken_sprechen?action=edit&amp;redlink=1" title="vor leeren Bänken sprechen (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mw5A" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;vor leeren Bänken sprechen&quot;]}}">vor leeren <i id="mw5Q">Bänken</i> sprechen</a> – vor sehr wenig Publikum sprechen</dd></dl>
+#+END_SRC
+
+Und bei der zweiten:
+
+#+BEGIN_SRC html
+  <p style="margin-bottom:-0.5em; font-weight:bold; " title="Phraseologismen" about="#mwt93" typeof="mw:Transclusion" data-mw="{&quot;parts&quot;:[{&quot;template&quot;:{&quot;target&quot;:{&quot;wt&quot;:&quot;Redewendungen&quot;,&quot;href&quot;:&quot;./Vorlage:Redewendungen&quot;},&quot;params&quot;:{},&quot;i&quot;:0}}]}" id="mwAi4">Redewendungen:</p>
+
+  <dl id="mwAi8"><dd id="mwAjA">[1] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/eine_sichere_Bank_sein" title="eine sichere Bank sein" id="mwAjE">eine sichere <i id="mwAjI">Bank</i></a></dd>
+  <dd id="mwAjM">[1] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/ich_bin_doch_nicht_die_Bank_von_England?action=edit&amp;redlink=1" title="ich bin doch nicht die Bank von England (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwAjQ" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;ich bin doch nicht die Bank von England&quot;]}}">ich bin doch nicht die <i id="mwAjU">Bank</i> von England!</a></dd>
+  <dd id="mwAjY">[2] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/die_Bank_gewinnt_immer?action=edit&amp;redlink=1" title="die Bank gewinnt immer (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwAjc" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;die Bank gewinnt immer&quot;]}}">Die <i id="mwAjg">Bank</i> gewinnt immer.</a></dd></dl>
+#+END_SRC
+
+
+* Duden
+
+- Bank: Sehr gut, alles i. O.
