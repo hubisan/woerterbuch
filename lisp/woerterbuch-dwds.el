@@ -12,6 +12,15 @@
   "https://www.dwds.de/wb/"
   "Base URL for DWDS dictionary pages.")
 
+(defconst woerterbuch-dwds-request-headers
+  '(("User-Agent" . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
+    ("Accept" . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+    ("Accept-Language" . "en-US,en;q=0.5")
+    ("Accept-Encoding" . "gzip, deflate, br")
+    ("DNT" . "1")
+    ("Connection" . "keep-alive"))
+  "HTTP headers used for DWDS requests, mimicking Tor Browser.")
+
 (defconst woerterbuch-dwds--definition-qualifier-classes
   '("dwdswb-bedeutungsebene"
     "dwdswb-stilebene"
@@ -438,6 +447,18 @@ stamps are ignored automatically."
         (setq result (plist-put result :homographs (plist-get entry :homographs)))
         result))))
 
+(defun woerterbuch-dwds--request-needed-p (sections)
+  "Return non-nil when DWDS can contribute anything for SECTIONS."
+  (or (woerterbuch-core-section-requested-p :definitions sections)
+      (woerterbuch-core-section-requested-p :examples sections)
+      (woerterbuch-core-section-requested-p :origin sections)
+      (woerterbuch-core-section-requested-p :idioms sections)))
+
+(defun woerterbuch-dwds--with-headers (thunk)
+  "Call THUNK with DWDS request headers configured."
+  (let ((url-request-extra-headers woerterbuch-dwds-request-headers))
+    (funcall thunk)))
+
 (defun woerterbuch-dwds--status-http-code (status)
   "Return HTTP status code from callback STATUS when available."
   (or (and (boundp 'url-http-response-status)
@@ -490,30 +511,21 @@ stamps are ignored automatically."
         (kill-buffer (current-buffer))))
     (funcall callback result)))
 
-(defun woerterbuch-dwds--request-needed-p (sections)
-  "Return non-nil when DWDS can contribute anything for SECTIONS."
-  (or (woerterbuch-core-section-requested-p :definitions sections)
-      (woerterbuch-core-section-requested-p :examples sections)
-      (woerterbuch-core-section-requested-p :origin sections)
-      (woerterbuch-core-section-requested-p :idioms sections)))
-
 (defun woerterbuch-dwds-fetch (lemma sections callback)
   "Fetch LEMMA from DWDS and invoke CALLBACK once.
-
 The request goes directly to the canonical dictionary page
 https://www.dwds.de/wb/<lemma>. Homographs such as Bank#1 and Bank#2 are
 kept as subentries in :homographs but always share the same canonical :url."
   (if (not (woerterbuch-dwds--request-needed-p sections))
       (funcall callback (woerterbuch-core-make-result 'dwds lemma))
-    (let ((url-request-extra-headers
-           '(("User-Agent" . "woerterbuch/0.1")
-             ("Accept-Language" . "de,en;q=0.8"))))
-      (url-retrieve
-       (woerterbuch-dwds--build-url lemma)
-       #'woerterbuch-dwds--fetch-callback
-       (list lemma sections callback)
-       t
-       t))))
+    (woerterbuch-dwds--with-headers
+     (lambda ()
+       (url-retrieve
+        (woerterbuch-dwds--build-url lemma)
+        #'woerterbuch-dwds--fetch-callback
+        (list lemma sections callback)
+        t
+        t)))))
 
 (provide 'woerterbuch-dwds)
 

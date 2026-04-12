@@ -17,9 +17,13 @@
   "Base URL for Duden search pages.")
 
 (defconst woerterbuch-duden-request-headers
-  '(("User-Agent" . "woerterbuch/0.1")
-    ("Accept-Language" . "de,en;q=0.8"))
-  "HTTP headers used for Duden requests.")
+  '(("User-Agent" . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
+    ("Accept" . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+    ("Accept-Language" . "en-US,en;q=0.5")
+    ("Accept-Encoding" . "gzip, deflate, br")
+    ("DNT" . "1")
+    ("Connection" . "keep-alive"))
+  "HTTP headers used for Duden requests, mimicking Tor Browser for better privacy.")
 
 (defun woerterbuch-duden--build-url (lemma)
   "Build Duden AMP page URL for LEMMA."
