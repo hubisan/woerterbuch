@@ -6,12 +6,22 @@ Habe die Test-Output-Files (.el) manuell mit der Webseite verglichen. Hier die E
 * Openthesaurus
 
 - Bank: sehr gut, passt alles.
+- Haus: sehr gut, passt alles.
+- springt: sehr gut, passt alles.
+- verliebt: sehr gut, keine Treffer gefunden, ist aber so.
+- Wolke: sehr gut, passt alles.
+- Zaun: sehr gut, passt alles.
 
 * DWDS
 
 - Bank: eigentlich auch gut, bis auf Spezialfälle.
+- Zaun: Bereits geprüft, Anmerkungen bei Verbesserungen.
+- Haus: Sieht gut aus, sehr viel Text, aber wie auf Seite selbst.
+- springt: Sieht gut aus, sehr viel Text, aber wie auf Seite selbst.
+- verliebt: Sieht gut aus.
+- Wolke: Sieht gut aus.
 
-** TODO Notwendige Verbesserungen [0/3]
+** TODO Notwendige Verbesserungen [0/4]
 
 *** TODO Fehlende Qualifier?
 
@@ -38,6 +48,16 @@ Html dazu:
   <div class="dwdswb-lesart" id="d-2-3"><div class="dwdswb-lesart-n" data-n="3.">3.</div><div class="dwdswb-lesart-content" style="padding-top:4px"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-fachgebiet">Glücksspiel</span></span> </div><div class="dwdswb-lesart" id="d-2-3-1"><div class="dwdswb-lesart-n" data-n="3a.">a)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"><span class="dwdswb-definitionen"><span class="dwdswb-definition">Geldeinsatz desjenigen Spielers, der bei Bankhalter-Spielen allein gegen alle übrigen spielt</span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-kompetenzbeispiel"><span class="dwdswb-belegtext">die <span class="dwdswb-stichwort">Bank</span> übernehmen, halten, sprengen</span><span class="dwdswb-binnenquelle dwdswb-binnenquelle-neu" data-orig-display="inline-block" style="display: none; opacity: 0; transition: opacity 1600ms, background-color 3200ms;"><abbr data-toggle="tooltip" title="" data-original-title="Wörterbuch der deutschen Gegenwartssprache">eWDG</abbr>, 1967</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Bei Spielen wie Poker und Baccarat fungiert das Kasino – anders als im Black Jack und Roulette – nicht als <span class="dwdswb-stichwort">Bank</span> und macht deshalb keinen Gewinn.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Zürcher Zeitung, 22.04.2012]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Die Kugel kommt auf der schwarzen Acht zum Liegen. Ein Mann <span data-toggle="tooltip" title="" data-original-title="im Peter-Pan-Kostüm">[…]</span> starrt auf das Türmchen seiner 100‑Dollar‑Chips, das der Croupier zur <span class="dwdswb-stichwort">Bank</span> hinüberschiebt.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Süddeutsche Zeitung, 12.11.2011]</span></div><div class="dwdswb-beleg"><span class="dwdswb-diasystematik" style="margin-right:10px"><span class="dwdswb-bedeutungsebene">vergleichend</span></span><span class="dwdswb-belegtext"> Wie ein Spieler, der seine gerade eingestrichenen Gewinne auf eine Karte setzt, um die <span class="dwdswb-stichwort">Bank</span> zu sprengen, scheint auch Arafat immer wieder bereit, alles zu riskieren – nur um dann letztlich doch zu verlieren.</span> 
   ...
 #+END_SRC
+
+Ist auch bei weiteren wie hier bei Wolke, da fehlt "berlinisch":
+
+#+BEGIN_SRC html
+  <span class="dwdswb-diasystematik"><span class="dwdswb-sprachraum">berlinisch</span>, <span class="dwdswb-stilebene">salopp</span></span>
+#+END_SRC
+
+*** TODO Diese Zeichen bereinigen
+
+Hat häufigt diese Zeichen im geparsten Output: "⟨ ". Jeweils den Abstand entfernen. Anstatt "⟨ sich in jmdn. verlieben ⟩ ..." wird dies "⟨sich in jmdn. verlieben⟩ ...".
 
 *** TODO Umgang mit Verweis - Synonym von
 
@@ -154,7 +174,6 @@ Und bei der zweiten:
   <dd id="mwAjM">[1] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/ich_bin_doch_nicht_die_Bank_von_England?action=edit&amp;redlink=1" title="ich bin doch nicht die Bank von England (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwAjQ" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;ich bin doch nicht die Bank von England&quot;]}}">ich bin doch nicht die <i id="mwAjU">Bank</i> von England!</a></dd>
   <dd id="mwAjY">[2] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/die_Bank_gewinnt_immer?action=edit&amp;redlink=1" title="die Bank gewinnt immer (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwAjc" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;die Bank gewinnt immer&quot;]}}">Die <i id="mwAjg">Bank</i> gewinnt immer.</a></dd></dl>
 #+END_SRC
-
 
 * Duden
 

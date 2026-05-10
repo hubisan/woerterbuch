@@ -24,3 +24,6 @@ flycheck_*.el
 
 # Projectiles
 .projectile
+
+# VS Code Vorg
+.vorg.db

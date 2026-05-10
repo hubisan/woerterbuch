@@ -1,5 +1,27 @@
 #+TITLE: Wörterbuch - TODOs
 #+STARTUP: showall
+#+TODO: TODO(t) NEXT(n) WAIT(w) REVIEW(r) | DONE(d) CANCEL(c)
+
+* Instruktionen für AI-Agents
+
+In diese Files sind alle TODOs.
+
+Bedeutung der Keywords:
+
+- TODO noch offen, nicht gestartet. Erste starten, wenn auf NEXT.
+- NEXT diese Tasks sind als nächstes zu erledigen.
+- WAIT da kommt man nicht weiter, bis eine Voraussetzung geschaffen wurde.
+- REVIEW diese sind zu prüfen.
+- DONE diese sind erledigt.
+- CANCEL diese wurden abgebrochen.
+
+Der AI-Agent soll Folgendes machen:
+
+1. Alles hier berücksichtigen.
+2. Tasks mit NEXT lösen.
+3. Sobald erledigt auf REVIEW setzen. Wenn möglich dazu einen Test machen.
+4. Ich prüfe die REVIEW Tasks. Falls nicht gut, kommentiere ich es entsprechend und bitte dich, es zu verbessern.
+5. Sobald erledigt, gebe ich dir Bescheid > Status auf DONE setzen und in Changelog reinnehmen.
 
 * TODOS
 
@@ -570,7 +592,7 @@ Struktur des Outputs:
 
 ** Manuelle Tests
 
-*** TODO Timeout testen
+*** DONE Timeout testen
 
 ** Weiteres Vorgehen
 
@@ -582,7 +604,7 @@ Struktur des Outputs:
 
 **** DONE Duden
 
-**** TODO Wiktionary (DE)
+**** DONE Wiktionary (DE)
 
 *** Tests
 
@@ -592,6 +614,8 @@ Gute Tests:
 - Haus - sehr viele Bedeutungen
 - Zaun - viele Redewendungen
 - das Gras ist grüner auf der anderen Seite - MWA
+
+**** NEXT Habe in 
 
 **** Bank
 
