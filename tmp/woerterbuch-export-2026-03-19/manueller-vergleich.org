@@ -3,7 +3,7 @@
 
 Habe die Test-Output-Files (.el) manuell mit der Webseite verglichen. Hier die Erkenntnisse daraus.
 
-* Openthesaurus
+* DONE Openthesaurus
 
 - Bank: sehr gut, passt alles.
 - Haus: sehr gut, passt alles.
@@ -12,7 +12,7 @@ Habe die Test-Output-Files (.el) manuell mit der Webseite verglichen. Hier die E
 - Wolke: sehr gut, passt alles.
 - Zaun: sehr gut, passt alles.
 
-* DWDS
+* NEXT DWDS
 
 - Bank: eigentlich auch gut, bis auf Spezialfälle.
 - Zaun: Bereits geprüft, Anmerkungen bei Verbesserungen.
@@ -21,9 +21,9 @@ Habe die Test-Output-Files (.el) manuell mit der Webseite verglichen. Hier die E
 - verliebt: Sieht gut aus.
 - Wolke: Sieht gut aus.
 
-** TODO Notwendige Verbesserungen [0/4]
+** Notwendige Verbesserungen [0/4]
 
-*** TODO Fehlende Qualifier?
+*** NEXT Fehlende Qualifier?
 
 https://www.dwds.de/wb/Bank#2
 
@@ -55,11 +55,13 @@ Ist auch bei weiteren wie hier bei Wolke, da fehlt "berlinisch":
   <span class="dwdswb-diasystematik"><span class="dwdswb-sprachraum">berlinisch</span>, <span class="dwdswb-stilebene">salopp</span></span>
 #+END_SRC
 
-*** TODO Diese Zeichen bereinigen
+*** NEXT Diese Zeichen bereinigen
 
 Hat häufigt diese Zeichen im geparsten Output: "⟨ ". Jeweils den Abstand entfernen. Anstatt "⟨ sich in jmdn. verlieben ⟩ ..." wird dies "⟨sich in jmdn. verlieben⟩ ...".
 
-*** TODO Umgang mit Verweis - Synonym von
+Nennt sich Konstruktionsmuster in dem Fall, aber ist etwas, einfach immer das Leerzeichen wegnehmen.
+
+*** NEXT Umgang mit Verweis - Synonym von
 
 https://www.dwds.de/wb/Bank#2
 
@@ -92,7 +94,7 @@ Html dazu:
   <div class="dwdswb-lesart" id="d-2-3-2"><div class="dwdswb-lesart-n" data-n="3b.">b)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">metonymisch</span></span> <span class="dwdswb-verweise"><span class="dwdswb-verweis" data-lemma="Bankhalter" data-hidx="" data-lesart="" data-popover-def="1" data-content="&lt;span style=&quot;color:#000;font-style:normal&quot;&gt;Person, die das Spiel leitet, die Einsätze verwaltet und gegen die die übrigen Spieler spielen&lt;/span&gt;" data-html="true" data-toggle="popover" data-trigger="hover" data-original-title="" title="">Synonym zu <a class="intern" href="/wb/Bankhalter">Bankhalter</a></span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Nebenberuflich war die 25‑Jährige bisher im Automatenkasino in Baden als Gästebetreuerin tätig. Der Beruf des Croupiers sei anspruchsvoller, sagt sie; immerhin verwalte sie als »<span class="dwdswb-stichwort">Bank</span>« Jetons im Wert von 15.000 Franken.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Zürcher Zeitung, 12.06.2002]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Die Regeln <span class="dwdswb-autorenzusatz">[beim Black Jack]</span> sind simpel: Jeder spielt für sich, und alle spielen gegen die <span class="dwdswb-stichwort">Bank</span>.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Der Spiegel, 14.04.1997]</span></div></div></div></div>
 #+END_SRC
 
-*** TODO Umgang mit MWA
+*** NEXT Umgang mit MWA
 
 Die Mehrwortausdrücke werden bereits bei Idioms aufgelistet. Hier ist einer davon aber noch im Text einzeln aufgeführt. Ich denke, dies ist der Fall, wenn dem Wort in einem MWA eine andere Bedeutung zukommt (deshalb hat es auch einen Qualifier nehme ich einmal an). Ist bei Zaun auch so.
 
@@ -122,7 +124,7 @@ Noch schwierig zu identifizieren, bei Zaun ist es irgendwie ganz anderers. Witzi
 
 **** Zaun
 
-Output ist eigentlich schon sehr gut, aber neu wie oben definiert mit (MWA) udn auch der Bedeutung:
+Output ist eigentlich schon sehr gut, aber neu wie oben definiert mit (MWA) und auch der Bedeutung:
 
 #+BEGIN_SRC emacs-lisp
   (:id 1 :dwds-id "d-1-1-1" :label "●"
@@ -139,11 +141,14 @@ Output ist eigentlich schon sehr gut, aber neu wie oben definiert mit (MWA) udn 
   <div class="dwdswb-lesart" id="d-1-1-1"><div class="dwdswb-lesart-n" data-n=" ●">●</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">übertragen</span></span> <span class="dwdswb-syntagmatik"><span class="dwdswb-konstruktionsmuster">⟨<span class="dwdswb-belegtext">einen Streit, Krieg vom <span class="dwdswb-stichwort">Zaune</span> brechen <span class="dwdswb-paraphrase">(= einen Streit, Krieg unvermittelt heraufbeschwören)</span></span>⟩ <span style="white-space:nowrap"><a tabindex="0" role="button" class="touch-only glyphicon glyphicon-info-sign smaller" style="color:#000;opacity:.5" data-toggle-hint="popover" data-placement="top" data-trigger="focus" title="" data-original-title="Artikel für Mehrwortausdruck ‘etw. vom Zaun brechen’ anzeigen"></a><a data-toggle="tooltip" data-placement="top" title="" href="/wb/etw.%20vom%20Zaun%20brechen" data-original-title="Artikel für Mehrwortausdruck ‘etw. vom Zaun brechen’ anzeigen"><img src="https://www.dwds.de/dwds_static/images/letters/letter-mwa.svg" style="height:16px; margin:auto auto 2px 5px"></a><span class="dwdswb-binnenquelle dwdswb-binnenquelle-neu" data-orig-display="inline-block" style="display: none; opacity: 0; transition: opacity 1600ms, background-color 3200ms;"><abbr data-toggle="tooltip" title="" data-original-title="Digitales Wörterbuch der deutschen Sprache">DWDS</abbr>, 15.10.2025</span></span></span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-kompetenzbeispiel"><span class="dwdswb-belegtext">sie hatten mutwillig eine Schlägerei, Prügelei vom <span class="dwdswb-stichwort">Zaun</span> gebrochen</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">Man muß auch mal was vom <span class="dwdswb-stichwort">Zaune</span> brechen <span class="dwdswb-paraphrase">(= man muss auch mal improvisieren)</span>, aus dem Stegreif leben können <span class="dwdswb-autorenzusatz">[…]</span></span> <span class="dwdswb-fundstelle"><span class="no-wrap">[<a title="" data-toggle="tooltip" data-placement="bottom" class="wdg-bibl-link" href="https://www.dwds.de/wb/wdg/bibl#ZWEARNEEK" data-original-title="zum Eintrag im WDG-Quellenverzeichnis"><i class="bi bi-arrow-up-right dwds-aur"></i></a> </span><span class="dwdswb-fundstelle-autor">A. Zweig</span><span class="dwdswb-fundstelle-titel">Einsetzung</span><span class="dwdswb-fundstelle-stelle">178</span>]</span></div></div></div></div>
 #+END_SRC
 
-* Wiktionary
+**** NEXT 
+
+* TODO Wiktionary
 
 - Bank: Alles i. O. ausser Redewendungen bei erster Bedeutung.
+- Haus: ah, sehr gut, dies wird korrekt 1, 2 und 3 zugeordnet: [1–3] abwertend:  Spelunke
   
-** TODO Notwendige Verbesserungen [0/1]
+** Notwendige Verbesserungen [0/1]
 
 *** TODO Redewendungen
 

@@ -31,8 +31,10 @@ Before making changes, always read `AGENTS.md` and `TODO.org`.
    - `feature/task-description`
    - `fix/task-name`
    If not on the main branch you can assume that we are already working on a
-   feature or fix. But please notify me, if you thinkg something is wrong.
+   feature or fix. So just use the current branch. But please notify me, if you
+   think something is wrong.
 4. AI sets completed tasks to `REVIEW`. Make a commit with a good message.
+   Write tests or update existing tests to test the changes. Run those tests.
 5. AI documents relevant information in `AI-NOTES.org`:
    - changes made
    - tests/checks performed
@@ -40,11 +42,13 @@ Before making changes, always read `AGENTS.md` and `TODO.org`.
    - open questions
    - follow-up work
 6. The user reviews tasks in `REVIEW`.
-7. If changes are required, the user comments on the task and sets it back to `NEXT`.
-8. After user approval, AI sets the task to `DONE`.
+7. If changes are required, the user comments on the task and sets it back to
+   `NEXT`.
+8. After user approval of the review, AI sets the task to `DONE`.
 9. AI updates `CHANGELOG.org`.
-10. AI creates a squash commit with a clear description.
-11. The user merges into the main branch.
+10. AI creates a commit with a clear description.
+11. The user squashes and merges into the main branch. AI does not do that
+    unless the users instructs it to do so.
 
 ## WAIT Rule
 
@@ -52,6 +56,7 @@ If a task cannot continue:
 
 - set the status to `WAIT`
 - document the reason in `AI-NOTES.org`
+- let the user know
 - do not continue until the user sets the task back to `NEXT`
 
 ## Implementation Rules
@@ -73,8 +78,6 @@ AI should:
 - production configurations
 - deployment credentials
 - large refactorings
-- dependency updates
-- formatting entire files
 
 ## When Unsure
 
