@@ -2,611 +2,21 @@
 #+STARTUP: showall
 #+TODO: TODO(t) NEXT(n) WAIT(w) REVIEW(r) | DONE(d) CANCEL(c)
 
-* Instruktionen für AI-Agents
+Instruktionen für AI-Agents sind in AGENTS.md.
 
-In diese Files sind alle TODOs.
+* NEXT Manueller Vergleich
 
-Bedeutung der Keywords:
+Habe einige Wörter ausgewertet mit der aktuellen Funktion und manuell mit der Webseite abgeglichen.
 
-- TODO noch offen, nicht gestartet. Erste starten, wenn auf NEXT.
-- NEXT diese Tasks sind als nächstes zu erledigen.
-- WAIT da kommt man nicht weiter, bis eine Voraussetzung geschaffen wurde.
-- REVIEW diese sind zu prüfen.
-- DONE diese sind erledigt.
-- CANCEL diese wurden abgebrochen.
+Bitte Tasks markiert mit NEXT in dem File lösen und in dem File dann auf REVIEW setzen. Bitte prüfe den Output nach Anpassungen und vergleiche ihn mit dem alten Output. Nur die Fehler sollten gelöst werden, der Rest darf sich nicht verändern. Speichere den neuen Output in tmp/woerterbuch-export-JJJJ-MM-TT, speichere auch gleich jeweils das Html in diesem Ordner. Vergleiche doch auch gleich das Html mit dem Output, allenfalls erkennst du ja Unstimmmigkeiten. Falls ja mir mitteilen.
 
-Der AI-Agent soll Folgendes machen:
+* TODO Spezifikation aktualisieren oder erstellen
 
-1. Alles hier berücksichtigen.
-2. Tasks mit NEXT lösen.
-3. Sobald erledigt auf REVIEW setzen. Wenn möglich dazu einen Test machen.
-4. Ich prüfe die REVIEW Tasks. Falls nicht gut, kommentiere ich es entsprechend und bitte dich, es zu verbessern.
-5. Sobald erledigt, gebe ich dir Bescheid > Status auf DONE setzen und in Changelog reinnehmen.
+In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
-* TODOS
+* TODO Testing
 
-** Fehler
-
-** Notwendige Anpassungen
-
-*** DONE Implementation von Duden [3/3]
-
-**** DONE Status 404 bei den bisherigen Quellen_
-
-Sollte im GET Header sein. Wird damit bisher was gemacht? der Error gesetzt?
-
-**** DONE Bisherige Source DWDS als Input (woerterbuch-dwds.el)
-
-**** DONE Spezifikation schreiben
-
-Möchte daraus eine Spezifikation schreiben
-
-***** TODO Vorgehen
-
-   1. Url ausprobieren
-
-      Die Url geht wie folgt (amp damit einfacher Seite, sieht zumindest einfacher aus): https://www.duden.de/rechtschreibung/Test?amp 
-
-   2. Wenn gefunden: scrapen
-
-   3. Wenn nicht gefunden (GET liefert Status 404):
-      Prüfen ob es allenfalls Homographs hat, dann unterteilt Duden dies in mehrere Seiten. Um dies rauszufinden nutzen wir dies: https://www.duden.de/suchen/dudenonline/Bank
-
-      Dies liefert Folgendes zurück. Darin kann man alle Einträge berücksichtigen, welche dem Input/Lemma entsprechen. In dem Fall die ersten beiden. Dann muss man für alle gefunden Homographs die Seiten scrapen. In dem Fall https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit?amp und https://www.duden.de/rechtschreibung/Bank_Geldinstitut?amp
-
-      Wenn kein Match, dann nichts scrapen.
-
-      #+BEGIN_SRC html
-        <div class="segment ">
-          <h2 class="segment__title">Wörterbuch</h2>
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Bank_Sitzgelegenheit">
-                <strong>Bank</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-              Substantiv, feminin – Sitzgelegenheit</p>  <a class="vignette__link" href="/rechtschreibung/Bank_Sitzgelegenheit">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Bank_Geldinstitut">
-
-
-
-                <strong>Bank</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, feminin – Geldinstitut</p>  <a class="vignette__link" href="/rechtschreibung/Bank_Geldinstitut">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <div class="tile__wrapper">
-
-
-
-            <aside class="nashanalifamina">
-              <link rel="stylesheet" href="data:text/css,%20%20.nashanalifamina%20%7B%0A%20%20%20%20margin%3A%2010px%20auto%3B%0A%20%20%20%20width%3A%20max-content%3Bposition%3A%20relative%3B%0A%20%20%20%20%20%20z-index%3A%200%3Bpadding-bottom%3A%200.765em%3B%7D%0A%0A%0A%20%20.nashanalifamina%20img%20%7B%0A%20%20%20%20vertical-align%3A%20bottom%3B%0A%20%20%7D%0A%20%20%20%20%20%20.nashanalifamina__label%20%7B%0A%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%20%20font-size%3A%20.5em%3B%0A%20%20%20%20%20%20color%3A%20%23969b9f%3B%0A%20%20%20%20%20%20padding%3A%2015px%200%2010px%3B%0A%20%20%20%20%7D%0A%20%20%0A%20%20%20%20%0A">
-              <header class="nashanalifamina__label">Anzeige</header>
-              <span class="tile__loader"></span>
-              <div class="nashanalifamina__content">
-
-
-                <div id="div-gpt-ad-1407836025217-0"><span id="Duden.de_d_640x480_1"></span></div>
-              </div>
-              <a href="https://lp.duden.de/pur/?utm_source=duden_de&amp;utm_medium=pur_int&amp;utm_campaign=werbebox&amp;utm_content=werbefreiheit_aktivieren" target="_blank" class="tile__footer-link">
-                <img class="tile__footer-img" src="https://cdn.duden.de/statics/ad-free-pur.svg" alt="Werbefreiheit aktivieren" width="89" height="24">Werbefreiheit aktivieren</a>
-            </aside>
-          </div>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Merchant_Bank">
-
-
-
-                <strong>Mer­chant Bank</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, feminin</p>  <a class="vignette__link" href="/rechtschreibung/Merchant_Bank">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Bad_Bank">
-
-
-
-                <strong>Bad Bank</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, feminin</p>  <a class="vignette__link" href="/rechtschreibung/Bad_Bank">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Near_Bank">
-
-
-
-                <strong>Near Bank</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, feminin</p>  <a class="vignette__link" href="/rechtschreibung/Near_Bank">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <div class="tile__wrapper">
-
-
-
-            <aside class="nanashalifamina">
-              <link rel="stylesheet" href="data:text/css,%20%20.nanashalifamina%20%7B%0A%20%20%20%20margin%3A%2010px%20auto%3B%0A%20%20%20%20width%3A%20max-content%3Bposition%3A%20relative%3B%0A%20%20%20%20%20%20z-index%3A%200%3Bpadding-bottom%3A%200.765em%3B%7D%0A%0A%0A%20%20.nanashalifamina%20img%20%7B%0A%20%20%20%20vertical-align%3A%20bottom%3B%0A%20%20%7D%0A%20%20%20%20%20%20.nanashalifamina__label%20%7B%0A%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%20%20font-size%3A%20.5em%3B%0A%20%20%20%20%20%20color%3A%20%23969b9f%3B%0A%20%20%20%20%20%20padding%3A%2015px%200%2010px%3B%0A%20%20%20%20%7D%0A%20%20%0A%20%20%20%20%0A">
-              <header class="nanashalifamina__label">Anzeige</header>
-              <span class="tile__loader"></span>
-              <div class="nanashalifamina__content">
-
-
-                <div id="div-gpt-ad-1407836274994-0"><span id="Duden.de_d_640x480_2"></span></div>
-              </div>
-              <a href="https://lp.duden.de/pur/?utm_source=duden_de&amp;utm_medium=pur_int&amp;utm_campaign=werbebox&amp;utm_content=werbefreiheit_aktivieren" target="_blank" class="tile__footer-link">
-                <img class="tile__footer-img" src="https://cdn.duden.de/statics/ad-free-pur.svg" alt="Werbefreiheit aktivieren" width="89" height="24">Werbefreiheit aktivieren</a>
-            </aside>
-          </div>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Bankster">
-
-
-
-                <strong>Banks­ter</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, maskulin</p>  <a class="vignette__link" href="/rechtschreibung/Bankster">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Banker">
-
-
-
-                <strong>Ban­ker</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, maskulin</p>  <a class="vignette__link" href="/rechtschreibung/Banker">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/_bank">
-
-
-
-                <strong>-bank</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Suffix</p>  <a class="vignette__link" href="/rechtschreibung/_bank">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <div class="tile__wrapper">
-
-
-
-            <aside class="nanalalifamina">
-              <link rel="stylesheet" href="data:text/css,%20%20.nanalalifamina%20%7B%0A%20%20%20%20margin%3A%2010px%20auto%3B%0A%20%20%20%20width%3A%20max-content%3Bposition%3A%20relative%3B%0A%20%20%20%20%20%20z-index%3A%200%3Bpadding-bottom%3A%200.765em%3B%7D%0A%0A%0A%20%20.nanalalifamina%20img%20%7B%0A%20%20%20%20vertical-align%3A%20bottom%3B%0A%20%20%7D%0A%20%20%20%20%20%20.nanalalifamina__label%20%7B%0A%20%20%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20%20%20font-size%3A%20.5em%3B%0A%20%20%20%20%20%20color%3A%20%23969b9f%3B%0A%20%20%20%20%20%20padding%3A%2015px%200%2010px%3B%0A%20%20%20%20%7D%0A%20%20%0A%20%20%20%20%0A">
-              <header class="nanalalifamina__label">Anzeige</header>
-              <span class="tile__loader"></span>
-              <div class="nanalalifamina__content">
-
-
-                <div id="div-gpt-ad-1407836241530-0"><span id="Duden.de_d_640x480_3"></span></div>
-              </div>
-              <a href="https://lp.duden.de/pur/?utm_source=duden_de&amp;utm_medium=pur_int&amp;utm_campaign=werbebox&amp;utm_content=werbefreiheit_aktivieren" target="_blank" class="tile__footer-link">
-                <img class="tile__footer-img" src="https://cdn.duden.de/statics/ad-free-pur.svg" alt="Werbefreiheit aktivieren" width="89" height="24">Werbefreiheit aktivieren</a>
-            </aside>
-          </div>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Baenker">
-
-
-
-                <strong>Bän­ker</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, maskulin</p>  <a class="vignette__link" href="/rechtschreibung/Baenker">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Non_Banks">
-
-
-
-                <strong>Non-Banks</strong>, Non­banks
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Pluralwort</p>  <a class="vignette__link" href="/rechtschreibung/Non_Banks">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Bankfeiertag">
-
-
-
-                <strong>Bank­fei­er­tag</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              Substantiv, maskulin</p>  <a class="vignette__link" href="/rechtschreibung/Bankfeiertag">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-          <section class="vignette">
-            <h2 class="vignette__title">
-              <a class="vignette__label" href="/rechtschreibung/Bankangestellte">
-
-
-
-                <strong>Bank­an­ge­stell­te</strong>
-              </a>
-            </h2>
-            <p class="vignette__snippet">
-
-
-              substantiviertes Adjektiv, feminin</p>  <a class="vignette__link" href="/rechtschreibung/Bankangestellte">
-              <span class="vignette__link-prefix" aria-hidden="true">→</span>
-              <span class="vignette__link-text">alle Informationen</span>
-            </a>
-          </section>
-
-
-
-
-        </div>
-      #+END_SRC
-      
-***** TODO Scrapen
-
-Es hat folgende Teile zum Scrapen, Beispiele mit ganzen HTML später:
-
-- title
-
-  #+BEGIN_SRC html
-    <h1 class="lemma__title lemma__title--shorter"><span class="lemma__main">Bank</span>, <span class="lemma__determiner">die</span></h1>
-  #+END_SRC
-  
-- wortart
-
-  #+BEGIN_SRC html
-    <dl class="tuple">
-            <dt class="tuple__key">Wortart: <a class="tuple__icon" href="/hilfe/wortart" target="_blank">ⓘ</a></dt>
-            <dd class="tuple__val">Substantiv, feminin</dd>
-          </dl>
-  #+END_SRC
-
-  - definitions
-
-    Die Defintionen inklusive Beispiele und Redensarten sind unter:
-
-    #+BEGIN_SRC html
-      <div class="division " id="bedeutungen">
-
-        <header class="division__header">
-          <h2 class="division__title">Bedeutungen (5)</h2>
-          <small class="division__info">
-            <a class="division__info_icon" target="_blank" href="/hilfe/bedeutungen">ⓘ</a>
-          </small>
-        </header>
-
-        <ol class="enumeration" type="1">
-          <li class="enumeration__item">
-            <ol class="enumeration__sub" type="a">
-              <li class="enumeration__sub-item" id="Bedeutung-1a">
-                ...
-              </li>
-              <li class="enumeration__sub-item" id="Bedeutung-1b">
-                ...
-              </li>
-            </ol>
-          </li>
-          <li class="enumeration__item">
-            <ol class="enumeration__sub" type="a">
-              <li class="enumeration__sub-item" id="Bedeutung-2a">
-                ...
-              </li>
-              <li class="enumeration__sub-item" id="Bedeutung-2b">
-                <div class="enumeration__text">bankförmiges Turngerät</div>
-              </li>
-            </ol>
-          </li>
-        </ol>
-
-      </div>
-    #+END_SRC
-
-  - Hier zwei Definitionen mit Beispielen und Redensarten
-
-    #+BEGIN_SRC html
-      <ol class="enumeration__sub" type="a">
-        <li class="enumeration__sub-item" id="Bedeutung-1a">
-          <div class="enumeration__text">Sitzgelegenheit aus Holz, Stein o.&nbsp;Ä., die mehreren Personen nebeneinander Platz bietet</div>
-          <figure class="depiction">
-            <a href="https://cdn.duden.de/_media_/full/B/Bank-201100043436.jpg" data-duden-ref-type="image" data-duden-img-src="Bank-201100043436.jpg"><img src="https://cdn.duden.de/_media_/small/B/Bank-201100043436.jpg" title="Bank" alt="Bank">
-            </a>
-            <figcaption class="depiction__caption">©&nbsp;MEV Verlag, Augsburg</figcaption>
-          </figure>
-          <dl class="note">
-            <dt class="note__title">Beispiele</dt>
-            <dd>
-              <ul class="note__list">
-                <li>sich auf eine Bank setzen</li>
-                <li>in der Schule in einer Bank <i>(Schulbank) </i>sitzen</li>
-                <li>der Angeklagte saß unruhig in der Bank <i>(Anklagebank)</i></li>
-              </ul>
-            </dd>
-          </dl>
-          <dl class="note">
-            <dt class="note__title">Wendungen, Redensarten, Sprichwörter</dt>
-            <dd>
-              <ul class="note__list">
-                <li>etwas auf die lange Bank schieben (umgangssprachlich:  etwas Unangenehmes aufschieben, hinauszögern: er schob den Arztbesuch auf die lange Bank; eigentlich = bis zur Bearbeitung in den langen Aktentruhen der Gerichte aufbewahren lassen)</li>
-                <li>durch die Bank (umgangssprachlich:  durchweg, ohne Ausnahme, ohne Unterschied: das Obst war durch die Bank frisch; eigentlich = in der Reihenfolge, wie die Leute auf einer Bank sitzen)</li>
-                <li>vor leeren Bänken (vor wenigen Zuhörenden, Zuschauenden: sie spielten vor leeren Bänken)</li>
-              </ul>
-            </dd>
-          </dl>
-        </li>
-        <li class="enumeration__sub-item" id="Bedeutung-1b">
-          <div class="enumeration__text">
-            <a href="/rechtschreibung/Auswechselbank" data-duden-ref-type="lexeme" data-duden-target-id="10143237">Auswechselbank</a>
-          </div>
-          <figure class="depiction">
-            <a href="https://cdn.duden.de/_media_/full/B/Bank-201100287392.jpg" data-duden-ref-type="image" data-duden-img-src="Bank-201100287392.jpg"><img src="https://cdn.duden.de/_media_/small/B/Bank-201100287392.jpg" title="Bank" alt="Bank">
-            </a>
-            <figcaption class="depiction__caption">©&nbsp;enruta - Fotolia.com</figcaption>
-          </figure>
-          <dl class="tuple">
-            <dt class="tuple__key">Gebrauch</dt>
-            <dd class="tuple__val">Sport</dd>
-          </dl>
-        </li>
-      </ol>
-
-    #+END_SRC
-
-    Die beiden Definitionen (Link interessiert mich nicht):
-
-    #+BEGIN_SRC html
-      <div class="enumeration__text">Sitzgelegenheit aus Holz, Stein o.&nbsp;Ä., die mehreren Personen nebeneinander Platz bietet</div>
-
-      <div class="enumeration__text">
-        <a href="/rechtschreibung/Auswechselbank" data-duden-ref-type="lexeme" data-duden-target-id="10143237">Auswechselbank</a>
-      </div>
-    #+END_SRC
- 
-    Bilder (url sicher cool zum speichern):
-
-    #+BEGIN_SRC html
-      <figure class="depiction">
-        <a href="https://cdn.duden.de/_media_/full/B/Bank-201100043436.jpg" data-duden-ref-type="image" data-duden-img-src="Bank-201100043436.jpg"><img src="https://cdn.duden.de/_media_/small/B/Bank-201100043436.jpg" title="Bank" alt="Bank">
-        </a>
-        <figcaption class="depiction__caption">©&nbsp;MEV Verlag, Augsburg</figcaption>
-      </figure>
-    #+END_SRC
-
-    Beispiele:
-
-    #+BEGIN_SRC html
-      <dl class="note">
-        <dt class="note__title">Beispiele</dt>
-        <dd>
-          <ul class="note__list">
-            <li>sich auf eine Bank setzen</li>
-            <li>in der Schule in einer Bank <i>(Schulbank) </i>sitzen</li>
-            <li>der Angeklagte saß unruhig in der Bank <i>(Anklagebank)</i></li>
-          </ul>
-        </dd>
-      </dl>
-
-    #+END_SRC
-
-    Idioms:
-
-    #+BEGIN_SRC html
-      <dl class="note">
-        <dt class="note__title">Wendungen, Redensarten, Sprichwörter</dt>
-        <dd>
-          <ul class="note__list">
-            <li>etwas auf die lange Bank schieben (umgangssprachlich:  etwas Unangenehmes aufschieben, hinauszögern: er schob den Arztbesuch auf die lange Bank; eigentlich = bis zur Bearbeitung in den langen Aktentruhen der Gerichte aufbewahren lassen)</li>
-            <li>durch die Bank (umgangssprachlich:  durchweg, ohne Ausnahme, ohne Unterschied: das Obst war durch die Bank frisch; eigentlich = in der Reihenfolge, wie die Leute auf einer Bank sitzen)</li>
-            <li>vor leeren Bänken (vor wenigen Zuhörenden, Zuschauenden: sie spielten vor leeren Bänken)</li>
-          </ul>
-        </dd>
-      </dl>
-
-    #+END_SRC
-
-    Qualifiers (hast du bei DWDS so benannt) oder so:
-
-    #+BEGIN_SRC html
-      <dl class="tuple">
-        <dt class="tuple__key">Gebrauch</dt>
-        <dd class="tuple__val">Sport</dd>
-      </dl>
-    #+END_SRC
-
-    in dem Fall "Gebrauch: Sport"
-
-    Weitere Beispiele zu den Qualifiers von anderen Wörtern:
-
-    #+BEGIN_SRC html
-      <dl class="tuple" style="scroll-behavior: unset;">
-        <dt class="tuple__key" style="scroll-behavior: unset;">Gebrauch</dt>
-        <dd class="tuple__val" style="scroll-behavior: unset;">umgangssprachlich</dd>
-      </dl>
- 
- 
-      <dl class="tuple" style="scroll-behavior: unset;">
-        <dt class="tuple__key" style="scroll-behavior: unset;">Gebrauch</dt>
-        <dd class="tuple__val" style="scroll-behavior: unset;">gehoben</dd>
-      </dl>
-    #+END_SRC
- 
-    Herkunft:
-
-    #+BEGIN_SRC html
-      <div class="division " id="herkunft">
-        <header class="division__header">
-          <h2 class="division__title">Herkunft</h2>
-          <small class="division__info">
-            <a class="division__info_icon" target="_blank" href="/hilfe/herkunft">ⓘ</a>
-          </small>
-        </header>
-        <p>mittelhochdeutsch, althochdeutsch banc = Bank, Tisch, ursprünglich = Erhöhung</p>
-      </div>
-    #+END_SRC
-
-    Synonyme:
-
-    #+BEGIN_SRC html
-      <div class="division " id="synonyme">
-        <header class="division__header">
-          <h2 class="division__title">Synonyme zu <em>Test</em></h2>
-          <small class="division__info">
-            <a class="division__info_icon" target="_blank" href="/hilfe/synonyme">ⓘ</a>
-          </small>
-        </header>
-        <ul><li><a href="/rechtschreibung/Durchsicht" data-duden-ref-type="lexeme" data-duden-target-id="10091161">Durchsicht</a>, <a href="/rechtschreibung/Faktencheck" data-duden-ref-type="lexeme" data-duden-target-id="10305367">Faktencheck</a>, <a href="/rechtschreibung/Kontrolle" data-duden-ref-type="lexeme" data-duden-target-id="10049192">Kontrolle</a>, <a href="/rechtschreibung/Pruefung" data-duden-ref-type="lexeme" data-duden-target-id="10045051">Prüfung</a></li></ul>
-        <nav class="more   " aria-label="More links section">
-          <a href="/synonyme/Test" class="more__link" id="synonyme" aria-label="Pfeil nach links">
-            <span class="more__arrow" aria-hidden="true">→</span> <span class="more__text">Zur Übersicht der Synonyme zu <em class="placeholder">Test</em></span>
-          </a>
-        </nav>
-        
-      </div>
-    #+END_SRC
-    
-
-***** TODO Output definieren
-
-Struktur des Outputs:
-
-****** Beispiele Output inkl. HTML dazu
-
-******* Wort Haus
-
-******* Wort Bank
-
-******* Wort Zaun
-
-** Manuelle Tests
-
-*** DONE Timeout testen
-
-** Weiteres Vorgehen
-
-*** Sources erschliessen
-
-**** DONE Openthesaurus
-
-**** DONE DWDS
-
-**** DONE Duden
-
-**** DONE Wiktionary (DE)
-
-*** Tests
+** Tests
 
 Gute Tests:
 
@@ -614,10 +24,12 @@ Gute Tests:
 - Haus - sehr viele Bedeutungen
 - Zaun - viele Redewendungen
 - das Gras ist grüner auf der anderen Seite - MWA
+- Nixdaexistiert - für 404
+- springt - einfach noch, damit mehr Tests
+- Wolke - einfach noch, damit mehr Tests
+- verliebt - einfach noch, damit mehr Tests
 
-**** NEXT Habe in 
-
-**** Bank
+*** Bank
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -626,7 +38,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-**** Haus
+*** Haus
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -635,7 +47,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-**** Zaun
+*** Zaun
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -644,7 +56,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-**** das Gras ist grüner auf der anderen Seite
+*** das Gras ist grüner auf der anderen Seite
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -653,7 +65,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-**** Nixdaexistiert
+*** Nixdaexistiert
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -662,15 +74,36 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** Output
+*** springt
+
+#+BEGIN_SRC emacs-lisp :results value code replace
+  (woerterbuch-fetch-all-sync
+   "springt"
+   :sections  '(:definitions :examples :origin :synonyms :idioms)
+   :timeout 10)
+#+END_SRC
+
+*** Wolke
+
+#+BEGIN_SRC emacs-lisp :results value code replace
+  (woerterbuch-fetch-all-sync
+   "Wolke"
+   :sections  '(:definitions :examples :origin :synonyms :idioms)
+   :timeout 10)
+#+END_SRC
+
+*** verliebt
+
+#+BEGIN_SRC emacs-lisp :results value code replace
+  (woerterbuch-fetch-all-sync
+   "verliebt"
+   :sections  '(:definitions :examples :origin :synonyms :idioms)
+   :timeout 10)
+#+END_SRC
+
+* TODO Output definieren
 
 Am Schluss will ich das Ganze als Org ausgeben.
-
-**** Anpassung scharfes s zu ss
-
-Defcustom dafür und am Schluss erst beim Output machen.
-
-**** TODO Output definieren
 
 #+BEGIN_SRC emacs-lisp
   (setq org-list-allow-alphabetical t)

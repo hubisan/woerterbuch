@@ -3,7 +3,6 @@
 * Changelog
 
 ** Planned
-*** TODO Functions to show definitions and synonyms at once
 
 ** Unreleased
 
