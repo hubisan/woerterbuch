@@ -64,3 +64,16 @@
 - =eask test buttercup= konnte in dieser Umgebung nicht direkt ausgeführt werden:
   - Standardpfad =~/.eask= ist read-only
   - mit lokalem =HOME= im Repo scheitert die Installation von =buttercup= am gesperrten Netzwerkzugriff
+
+* 2026-05-21 Testhelper-Fix
+
+** Änderungen
+
+- In =tests/test-woerterbuch.el= wurde die interaktive Hilfsfunktion zum Generieren des erwarteten Outputs in =test-helper-woerterbuch-generate-expected-output= umbenannt.
+- Der Sammelaufruf =test-helper-woerterbuch-update-output= verwendet nun den neuen Namen.
+- Damit überschreibt die Datei nicht mehr die 3-Argument-Funktion =test-helper-woerterbuch-fetch-expected-output= aus =tests/test-helper.el=.
+
+** Checks
+
+- =make test=
+  - Ergebnis: 140 Specs, 0 Fehler

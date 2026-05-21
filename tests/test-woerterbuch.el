@@ -37,7 +37,7 @@
               files-dir)
              (test-helper-woerterbuch--source-headers source))))))))
 
-(defun test-helper-woerterbuch-fetch-expected-output ()
+(defun test-helper-woerterbuch-generate-expected-output ()
   "Fetch expected Elisp output for the fixed test words."
   (interactive)
   (let ((files-dir (test-helper-woerterbuch--files-dir)))
@@ -71,7 +71,7 @@
   "Fetch raw source output and expected Elisp output for tests."
   (interactive)
   (test-helper-woerterbuch-fetch-source-output)
-  (test-helper-woerterbuch-fetch-expected-output))
+  (test-helper-woerterbuch-generate-expected-output))
 
 (provide 'test-woerterbuch)
 
