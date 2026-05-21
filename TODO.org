@@ -4,17 +4,50 @@
 
 Instruktionen für AI-Agents sind in AGENTS.md.
 
-* NEXT Manueller Vergleich
+* REVIEW Manueller Vergleich
 
 Habe einige Wörter ausgewertet mit der aktuellen Funktion und manuell mit der Webseite abgeglichen.
 
 Bitte Tasks markiert mit NEXT in dem File lösen und in dem File dann auf REVIEW setzen. Bitte prüfe den Output nach Anpassungen und vergleiche ihn mit dem alten Output. Nur die Fehler sollten gelöst werden, der Rest darf sich nicht verändern. Speichere den neuen Output in tmp/woerterbuch-export-JJJJ-MM-TT, speichere auch gleich jeweils das Html in diesem Ordner. Vergleiche doch auch gleich das Html mit dem Output, allenfalls erkennst du ja Unstimmmigkeiten. Falls ja mir mitteilen.
+
+** DONE Neuer Fehler - Redewendungen Wiktionary [2026-05-21 Thu]
+
+Da haben wir etwas verschlimmbessert. Hier bei einer Redewendung mehrere Einträge (ist die gleiche Redewendung, aber anders formuliert):
+
+#+BEGIN_SRC html
+  <dd id="mwBXo">[2] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/etwas_steht_auf_dem_kurzen_Weg_ins_Haus?action=edit&amp;redlink=1" title="etwas steht auf dem kurzen Weg ins Haus (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwBXs" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;etwas steht auf dem kurzen Weg ins Haus&quot;]}}">etwas steht auf dem kurzen Weg ins <i id="mwBXw">Haus</i></a><sup about="#mwt214" class="mw-ref reference" id="cite_ref-Küpper_9-11" rel="dc:references" typeof="mw:Extension/ref" data-mw="{&quot;name&quot;:&quot;ref&quot;,&quot;attrs&quot;:{&quot;name&quot;:&quot;Küpper&quot;}}"><a href="#cite_note-Küpper-9" id="mwBX0"><span class="mw-reflink-text" id="mwBX4"><span class="cite-bracket" id="mwBX8">[</span>9<span class="cite-bracket" id="mwBYA">]</span></span></a></sup>/<a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/etwas_steht_übern_kurzen_Weg_ins_Haus?action=edit&amp;redlink=1" title="etwas steht übern kurzen Weg ins Haus (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwBYE" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;etwas steht übern kurzen Weg ins Haus&quot;]}}">etwas steht übern kurzen Weg ins <i id="mwBYI">Haus</i></a><sup about="#mwt215" class="mw-ref reference" id="cite_ref-Küpper_9-12" rel="dc:references" typeof="mw:Extension/ref" data-mw="{&quot;name&quot;:&quot;ref&quot;,&quot;attrs&quot;:{&quot;name&quot;:&quot;Küpper&quot;}}"><a href="#cite_note-Küpper-9" id="mwBYM"><span class="mw-reflink-text" id="mwBYQ"><span class="cite-bracket" id="mwBYU">[</span>9<span class="cite-bracket" id="mwBYY">]</span></span></a></sup></dd>
+#+END_SRC
+
+Vor der Anpassung war dies so:
+
+#+BEGIN_SRC emacs-lisp
+  "etwas steht auf dem kurzen Weg ins Haus / etwas steht übern kurzen Weg ins Haus"
+#+END_SRC
+
+Neu ist es so:
+
+#+BEGIN_SRC emacs-lisp
+  "etwas steht auf dem kurzen Weg ins Haus"
+#+END_SRC
+
+** NEXT Vergleich Diff Neu mit Alt
 
 * TODO Spezifikation aktualisieren oder erstellen
 
 In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
 * TODO Testing
+
+Es soll nur dies getestet werden:
+
+- Die HTML lade ich fix runter und speichere sie.
+- Dann wird der erwartete Output mit fetch erstellt und gespeichert. Da ich diesen jetzt geprüft habe, stimmt es.
+- Am besten wohl Output je Source + Section einzeln generieren und dann mit dem vergleichen. Also dwds > definition, dwds > examples, dwds > origin ...
+- Bei dem generieren können wir mit Buttercup das HTML mit dem gespeicherten faken. Bei Duden muss es glaube ich zuerst an einem HTML erkennen, dass es 2 Homographs hat, dies sollte auch getestet werden, einfach mit statischen HTMLs.
+- Danach wird geprüft, ob fetch immer noch diesen erwarteten Output liefert.
+
+- Kann man irgendwie testen, ob sich die Html-Struktur verändert und damit das Parsen nicht mehr richtig funktioniert? Der Inhalt kann sich ja immer ändern, falls die Texte angepasst oder ergänzt werden.
+- Oder halt den Output mit dem aktuellen Html erstellen und zur Info (kein Test-Fehler) melden, falls dies abweicht?
 
 ** Tests
 
@@ -28,6 +61,54 @@ Gute Tests:
 - springt - einfach noch, damit mehr Tests
 - Wolke - einfach noch, damit mehr Tests
 - verliebt - einfach noch, damit mehr Tests
+
+*** Alle ausführen und speichern
+
+#+NAME: fetch-words
+- Bank
+- Haus
+- springt
+- verliebt
+- Wolke
+- Zaun
+- das Gras ist grüner auf der anderen Seite
+- Nixdaexistiert
+
+#+NAME: fetch-sources
+- openthesaurus
+- dwds
+- duden
+- wiktionary
+
+#+BEGIN_SRC emacs-lisp :results value code replace :var dir="./tmp/woerterbuch-export-2026-05-21/" :var split-sections=(eval nil) :var words=fetch-words :var sources=fetch-sources :results silent
+  (let ((dir (expand-file-name dir default-directory))
+        (sections '(:definitions :examples :origin :synonyms :idioms))
+        (woerterbuch-sources sources))
+    (make-directory dir t)
+    (dolist (word words)
+      (let ((result
+             (woerterbuch-fetch-all-sync
+              word
+              :sections sections
+              :timeout 10)))
+        (if split-sections
+            (maphash
+             (lambda (section value)
+               (with-temp-file
+                   (expand-file-name
+                    (format "%s-%s.el"
+                            word
+                            (string-remove-prefix ":" (symbol-name section)))
+                    dir)
+                 (prin1 value (current-buffer))
+                 (terpri)))
+             result)
+          (with-temp-file (expand-file-name (format "%s.el" word) dir)
+            ;; (insert ";;; -*- lexical-binding: t; -*-\n\n")
+            ;; (insert "'")
+            (pp result (current-buffer))
+            (terpri))))))
+#+END_SRC
 
 *** Bank
 
@@ -93,6 +174,8 @@ Gute Tests:
 #+END_SRC
 
 *** verliebt
+
+Wieso auch immer, das Lemma wird verlieben. Habe es mit verschiedenen Lemmatizer ausprobiert.
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync

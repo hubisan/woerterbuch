@@ -13,8 +13,10 @@
   "Base URL for German Wiktionary article pages.")
 
 (defconst woerterbuch-wiktionary-request-headers
-  '(("User-Agent" . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
-    ("Accept" . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+  '(("User-Agent"
+     . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
+    ("Accept"
+     . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     ("Accept-Language" . "en-US,en;q=0.5")
     ("Accept-Encoding" . "gzip, deflate, br")
     ("DNT" . "1")
@@ -70,7 +72,9 @@
   (when string
     (let ((s (woerterbuch-wiktionary--clean-content-text string)))
       ;; Drop language-code backlinks like `→ got` or `→ gmh`.
-      (setq s (replace-regexp-in-string "[[:space:]]*→[[:space:]]*[[:alnum:]-]+\\b" "" s))
+      (setq s
+            (replace-regexp-in-string
+             "[[:space:]]*→[[:space:]]*[[:alnum:]-]+\\b" "" s))
       ;; Tighten typographic single quotes that often end up spaced out.
       (setq s (replace-regexp-in-string "‚[[:space:]]+" "‚" s))
       (setq s (replace-regexp-in-string "[[:space:]]+‘" "‘" s))
@@ -78,11 +82,16 @@
       (setq s (replace-regexp-in-string "[[:space:]]+«" "«" s))
       ;; Clean a few frequent residual artifacts from rendered etymology prose.
       (setq s (replace-regexp-in-string " ☆" "" s))
-      (setq s (replace-regexp-in-string "\\b\\([[:alpha:]]\\)[[:space:]]+-" "\\1-" s))
-      (setq s (replace-regexp-in-string ")[[:space:]]+[fmn][[:space:]]+\\(‚\\|»\\)" ") \\1" s))
-      (setq s (replace-regexp-in-string "\\(\\*[[:alpha:]āēīōūȳə̯-]+\\)-[[:space:]]+\\([[:alpha:]]\\)\\b"
-                                        "\\1-\\2"
-                                        s))
+      (setq s
+            (replace-regexp-in-string "\\b\\([[:alpha:]]\\)[[:space:]]+-" "\\1-"
+                                      s))
+      (setq s
+            (replace-regexp-in-string
+             ")[[:space:]]+[fmn][[:space:]]+\\(‚\\|»\\)" ") \\1" s))
+      (setq s (replace-regexp-in-string
+               "\\(\\*[[:alpha:]āēīōūȳə̯-]+\\)-[[:space:]]+\\([[:alpha:]]\\)\\b"
+               "\\1-\\2"
+               s))
       ;; Re-run generic whitespace cleanup after targeted replacements.
       (setq s (woerterbuch-wiktionary--clean-text s))
       s)))
@@ -239,7 +248,9 @@
     out))
 
 (defun woerterbuch-wiktionary--dd-texts (nodes)
-  "Return readable texts from all `dd' descendants in NODES."
+  "Return full readable texts from all `dd' descendants in NODES.
+This preserves inline qualifier text such as register, domain, or style
+markers because it is used for definitions and examples."
   (let (out)
     (dolist (node nodes)
       (dolist (dd (woerterbuch-wiktionary--descendants-by-tag node 'dd))
@@ -261,7 +272,8 @@
   "Return all descendants with TAG across NODES."
   (let (out)
     (dolist (node nodes)
-      (setq out (nconc out (woerterbuch-wiktionary--descendants-by-tag node tag))))
+      (setq out
+            (nconc out (woerterbuch-wiktionary--descendants-by-tag node tag))))
     out))
 
 (defun woerterbuch-wiktionary--parse-sense-text (text)
@@ -277,7 +289,8 @@
     (dolist (part (split-string (or label "") "[[:space:]]*,[[:space:]]*" t))
       (let ((clean (string-trim part)))
         (cond
-         ((string-match "\\`\\([0-9]+\\)[[:space:]]*[–-][[:space:]]*\\([0-9]+\\)\\'" clean)
+         ((string-match
+           "\\`\\([0-9]+\\)[[:space:]]*[–-][[:space:]]*\\([0-9]+\\)\\'" clean)
           (let ((start (string-to-number (match-string 1 clean)))
                 (end (string-to-number (match-string 2 clean))))
             (when (<= start end)
@@ -289,7 +302,9 @@
 
 (defun woerterbuch-wiktionary--extract-link-texts (node &optional skip)
   "Return readable descendant link texts from NODE.
-
+This is for synonym-like item lists, not full definitions.  Links below
+formatting/meta tags such as `i', `em', and `sup' are ignored so qualifier
+links like \"familiär:\" do not become items.
 When SKIP is non-nil, links below NODE are ignored."
   (let ((tag (and (listp node) (dom-tag node))))
     (cond
@@ -308,7 +323,8 @@ When SKIP is non-nil, links below NODE are ignored."
       (let ((child-skip (or skip (memq tag '(i em sup)))))
         (apply #'nconc
                (mapcar (lambda (child)
-                         (woerterbuch-wiktionary--extract-link-texts child child-skip))
+                         (woerterbuch-wiktionary--extract-link-texts child
+                                                                     child-skip))
                        (dom-children node)))))
      (t nil))))
 
@@ -317,7 +333,8 @@ When SKIP is non-nil, links below NODE are ignored."
   (let* ((text (woerterbuch-wiktionary--text dd))
          (sense-pair (woerterbuch-wiktionary--parse-sense-text text))
          (labels (and sense-pair
-                      (woerterbuch-wiktionary--expand-sense-label (car sense-pair))))
+                      (woerterbuch-wiktionary--expand-sense-label
+                       (car sense-pair))))
          (items (delete-dups
                  (or (woerterbuch-wiktionary--extract-link-texts dd)
                      (woerterbuch-wiktionary--split-list-items
@@ -335,9 +352,9 @@ When SKIP is non-nil, links below NODE are ignored."
                clean)))
          (split-string (or text "") "[[:space:]]*,[[:space:]]*" t))))
 
-(defun woerterbuch-wiktionary--group-sense-items (sense-pairs &optional splitter)
+(defun woerterbuch-wiktionary--group-sense-items
+    (sense-pairs &optional splitter)
   "Group SENSE-PAIRS into `:sense' / `:items' plists.
-
 When SPLITTER is non-nil it is called with the sense text and should
 return a list of item strings."
   (let ((table (make-hash-table :test #'equal))
@@ -352,14 +369,18 @@ return a list of item strings."
         (unless (member sense order)
           (push sense order))
         (when items
-          (puthash sense (delete-dups (nconc bucket (copy-sequence items))) table))))
+          (puthash sense (delete-dups (nconc bucket (copy-sequence items)))
+                   table))))
     (cl-loop for sense in (nreverse order)
              for items = (gethash sense table)
              when items
              collect (list :sense sense :items items))))
 
 (defun woerterbuch-wiktionary--definition-list (blocks sections)
-  "Parse definition objects from BLOCKS according to SECTIONS."
+  "Parse definition objects from BLOCKS according to SECTIONS.
+Definitions are parsed from full `dd' text via
+`woerterbuch-wiktionary--dd-texts', not from extracted link texts, so inline
+qualifiers are preserved."
   (let* ((definition-pairs
           (delq nil
                 (mapcar #'woerterbuch-wiktionary--parse-sense-text
@@ -401,13 +422,36 @@ return a list of item strings."
        (string-join texts " ")))))
 
 (defun woerterbuch-wiktionary--idioms (blocks)
-  "Return idiom texts parsed from BLOCKS."
-  (let ((pairs (delq nil
-                     (mapcar #'woerterbuch-wiktionary--parse-sense-text
-                             (woerterbuch-wiktionary--dd-texts
-                              (woerterbuch-wiktionary--block-nodes
-                               blocks :idioms))))))
-    (mapcar #'cdr pairs)))
+  "Return idiom texts parsed from BLOCKS.
+Rules:
+- Parse idioms from `dd' nodes in the idioms block.
+- Prefer explicit wiki link texts over fallback text.
+- If a `dd' contains multiple wiki links, join all link texts with
+  \"; \" and return them as one idiom entry.
+- Use cleaned fallback text only when no wiki link text exists.
+- In fallback text, discard explanations after a spaced dash separator.
+- Drop empty idioms and remove duplicates while preserving order."
+  (let (idioms)
+    (dolist (dd (woerterbuch-wiktionary--descendants-by-tag-in-nodes
+                 (woerterbuch-wiktionary--block-nodes blocks :idioms)
+                 'dd))
+      (let* ((raw-text (woerterbuch-wiktionary--text dd))
+             (sense-pair (woerterbuch-wiktionary--parse-sense-text raw-text))
+             (link-texts (woerterbuch-wiktionary--extract-link-texts dd))
+             (fallback-text (woerterbuch-wiktionary--clean-content-text
+                             (or (and sense-pair (cdr sense-pair))
+                                 raw-text)))
+             (fallback-text
+              (and fallback-text
+                   (car (split-string fallback-text
+                                      "[[:space:]]+[–-][[:space:]]+"
+                                      t))))
+             (idiom (or (and link-texts
+                             (string-join link-texts "; "))
+                        fallback-text)))
+        (when (and idiom (not (string-empty-p idiom)))
+          (push idiom idioms))))
+    (nreverse (delete-dups (nreverse idioms)))))
 
 (defun woerterbuch-wiktionary--synonyms (blocks)
   "Return synonym groups parsed from BLOCKS."
@@ -441,18 +485,22 @@ return a list of item strings."
   "Create a readable homograph title from LEMMA and rendered HEADING."
   (string-join (delq nil (list lemma heading)) ", "))
 
-(defun woerterbuch-wiktionary--parse-entry-section (lemma section id sections url)
+(defun woerterbuch-wiktionary--parse-entry-section
+    (lemma section id sections url)
   "Parse one rendered Wiktionary SECTION into a homograph plist."
-  (let* ((heading-info (woerterbuch-wiktionary--heading-node-level-and-text section))
-         (heading (cdr heading-info))
-         (word-class (woerterbuch-wiktionary--word-class-from-heading heading))
-         (blocks (woerterbuch-wiktionary--collect-labeled-blocks section))
-         (origin (and (woerterbuch-core-section-requested-p :origin sections)
-                      (woerterbuch-wiktionary--origin-text blocks)))
-         (idioms (and (woerterbuch-core-section-requested-p :idioms sections)
-                      (woerterbuch-wiktionary--idioms blocks)))
-         (synonyms (and (woerterbuch-core-section-requested-p :synonyms sections)
-                        (woerterbuch-wiktionary--synonyms blocks))))
+  (let*
+      ((heading-info
+        (woerterbuch-wiktionary--heading-node-level-and-text section))
+       (heading (cdr heading-info))
+       (word-class (woerterbuch-wiktionary--word-class-from-heading heading))
+       (blocks (woerterbuch-wiktionary--collect-labeled-blocks section))
+       (origin (and (woerterbuch-core-section-requested-p :origin sections)
+                    (woerterbuch-wiktionary--origin-text blocks)))
+       (idioms (and (woerterbuch-core-section-requested-p :idioms sections)
+                    (woerterbuch-wiktionary--idioms blocks)))
+       (synonyms (and
+                  (woerterbuch-core-section-requested-p :synonyms sections)
+                  (woerterbuch-wiktionary--synonyms blocks))))
     (list :id id
           :lemma lemma
           :title (woerterbuch-wiktionary--homograph-title lemma heading)
@@ -551,7 +599,8 @@ return a list of item strings."
                      (or url
                          (woerterbuch-wiktionary--build-web-url
                           (or lemma input)))))
-      (let ((result (woerterbuch-core-make-result 'wiktionary (or lemma input))))
+      (let
+          ((result (woerterbuch-core-make-result 'wiktionary (or lemma input))))
         (setq result (plist-put result :url url))
         (plist-put result :homographs homographs)))))
 

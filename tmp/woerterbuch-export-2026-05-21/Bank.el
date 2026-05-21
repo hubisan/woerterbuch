@@ -1,6 +1,6 @@
 (:input "Bank"
         :lemma "Bank"
-        :sources ((:source openthesaurus
+        :sources ((:source "openthesaurus"
                            :lemma "Bank"
                            :ok t
                            :url "https://www.openthesaurus.de/synonyme/Bank"
@@ -22,7 +22,7 @@
                                                                            "Kreditanstalt"
                                                                            "Kreditinstitut"
                                                                            "Sparkasse"))))))
-                  (:source dwds
+                  (:source "dwds"
                            :lemma "Bank"
                            :ok t
                            :url "https://www.dwds.de/wb/Bank"
@@ -151,7 +151,7 @@
                                                                 :dwds-id "d-2-3"
                                                                 :label "3."
                                                                 :definition ""
-                                                                :qualifiers nil
+                                                                :qualifiers ("Glücksspiel")
                                                                 :examples nil
                                                                 :definitions ((:id 1
                                                                                    :dwds-id "d-2-3-1"
@@ -168,7 +168,7 @@
                                                                               (:id 2
                                                                                    :dwds-id "d-2-3-2"
                                                                                    :label "b)"
-                                                                                   :definition ""
+                                                                                   :definition "Synonym zu Bankhalter = Person, die das Spiel leitet, die Einsätze verwaltet und gegen die die übrigen Spieler spielen"
                                                                                    :qualifiers ("metonymisch")
                                                                                    :examples ("Nebenberuflich war die 25‑Jährige bisher im Automatenkasino in Baden als Gästebetreuerin tätig. Der Beruf des Croupiers sei anspruchsvoller, sagt sie; immerhin verwalte sie als » Bank « Jetons im Wert von 15.000 Franken."
                                                                                               "Die Regeln [beim Black Jack] sind simpel: Jeder spielt für sich, und alle spielen gegen die Bank.")
@@ -176,11 +176,11 @@
                                                                               (:id 3
                                                                                    :dwds-id "d-2-3-3"
                                                                                    :label "c)"
-                                                                                   :definition ""
+                                                                                   :definition "eine Bank sein (MWA) = etw. sein, das die an es gestellten (hohen) Erwartungen verlässlich erfüllt; jmd. sein, der die von ihm erwartete (erfolgreiche) Leistung mit Sicherheit erbringt"
                                                                                    :qualifiers ("umgangssprachlich")
                                                                                    :examples nil
                                                                                    :definitions nil)))))))
-                  (:source duden
+                  (:source "duden"
                            :lemma "Bank"
                            :ok t
                            :url ("https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit?amp"
@@ -235,8 +235,8 @@
                                                                 :definitions ((:id 1
                                                                                    :duden-id "Bedeutung-2a"
                                                                                    :label "2a"
-                                                                                   :definition nil
-                                                                                   :qualifiers ("Kurzform für: verschiedene Handwerkstische wie Drehbank, Hobelbank, Werkbank u. a.")
+                                                                                   :definition "Kurzform für: verschiedene Handwerkstische wie Drehbank, Hobelbank, Werkbank u. a."
+                                                                                   :qualifiers nil
                                                                                    :examples ("an der Bank arbeiten")
                                                                                    :idioms nil
                                                                                    :image nil
@@ -261,8 +261,8 @@
                                                                 :definitions ((:id 1
                                                                                    :duden-id "Bedeutung-3a"
                                                                                    :label "3a"
-                                                                                   :definition nil
-                                                                                   :qualifiers ("Kurzform für: Sandbank")
+                                                                                   :definition "Kurzform für: Sandbank"
+                                                                                   :qualifiers nil
                                                                                    :examples nil
                                                                                    :idioms nil
                                                                                    :image nil
@@ -301,7 +301,7 @@
                                                                 :qualifiers nil
                                                                 :examples ("eine Bank tippen"
                                                                            "dieses Spiel ist eine Bank (kann man als Bank tippen)"
-                                                                           "〈in übertragener Bedeutung:〉 diese Stürmerin ist eine Bank in unserem Team (umgangssprachlich; man kann sich hundertprozentig auf sie verlassen); dieses Geschenk ist eine Bank (ein sicherer Erfolg)")
+                                                                           "⟨in übertragener Bedeutung:⟩ diese Stürmerin ist eine Bank in unserem Team (umgangssprachlich; man kann sich hundertprozentig auf sie verlassen); dieses Geschenk ist eine Bank (ein sicherer Erfolg)")
                                                                 :idioms nil
                                                                 :image nil
                                                                 :definitions nil)
@@ -363,7 +363,7 @@
                                                                 :idioms nil
                                                                 :image nil
                                                                 :definitions nil)))))
-                  (:source wiktionary
+                  (:source "wiktionary"
                            :lemma "Bank"
                            :ok t
                            :url "https://de.wiktionary.org/wiki/Bank"
@@ -373,7 +373,9 @@
                                              :wortart "Substantiv"
                                              :grammar "Substantiv"
                                              :origin "mittelhochdeutsch banc, althochdeutsch bank, germanisch *banki- „Bank“, belegt seit dem 9. Jahrhundert"
-                                             :idioms nil
+                                             :idioms ("vor leeren Bänken sprechen"
+                                                      "etwas auf die lange Bank schieben"
+                                                      "durch die Bank")
                                              :synonyms ((:sense "2" :items ("Lage"))
                                                         (:sense "5"
                                                                 :items ("Theke" "Tresen"))
@@ -428,9 +430,9 @@
                                              :wortart "Substantiv"
                                              :grammar "Substantiv"
                                              :origin "im 13. Jahrhundert von italienisch banco, banca „ Tisch “ für „ Geldhandelsort, Vorratsplatz “ entlehnt. Dem italienischen Wort liegt althochdeutsch banc / bank zu Grunde."
-                                             :idioms ("eine sichere Bank"
+                                             :idioms ("Die Bank gewinnt immer."
                                                       "ich bin doch nicht die Bank von England!"
-                                                      "Die Bank gewinnt immer.")
+                                                      "eine sichere Bank")
                                              :synonyms ((:sense "1"
                                                                 :items ("Geldhaus"
                                                                         "Geldinstitut"

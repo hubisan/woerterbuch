@@ -1,1 +1,43 @@
 #+TITLE: AI Notes
+
+* 2026-05-20 Manueller Vergleich
+
+** Änderungen
+
+- DWDS:
+  - Qualifier aus =dwdswb-diasystematik= werden breiter erkannt, damit Fälle wie =Glücksspiel= oder regionale Marker nicht verloren gehen.
+  - Verweisdefinitionen aus =dwdswb-verweise= werden als Definition übernommen, z. B. =Synonym zu Bankhalter = ...=.
+  - Leerzeichen innerhalb von Winkelklammern werden bereinigt, z. B. =⟨ frei Haus ⟩= -> =⟨frei Haus⟩=.
+  - Mehrwortausdruck-Fälle werden gezielt für die im manuellen Vergleich beschriebenen Strukturen als =... (MWA) = ...= ausgegeben.
+- Duden:
+  - Führende =Kurzform für=-Tuple werden als Definition behandelt statt als Qualifier.
+  - Breite Winkelklammern =〈〉= werden in den geparsten Texten zu =⟨⟩= normalisiert.
+- Wiktionary:
+  - Redewendungen berücksichtigen nun auch Einträge ohne vorangestellte Sense-Nummer.
+  - Bei Redewendungen wird nur der eigentliche Ausdruck übernommen, nicht die nachgestellte Gloss-Erklärung.
+- Dokumentation:
+  - README und Wiktionary-Spezifikation dokumentieren nun, dass unsicher markierte Wiktionary-Qualifier konservativ in der Definition verbleiben.
+
+** Checks
+
+- Batch-Parser-Checks lokal gegen Fixtures:
+  - DWDS =Bank=: inhaltlich geprüft
+  - DWDS =Zaun=: inhaltlich geprüft
+  - Duden =Bank=: inhaltlich geprüft
+- Zusätzliche gezielte Parser-Checks:
+  - =buttercup= ist lokal nicht im Load-Path verfügbar, deshalb kein direkter Testlauf über die Buttercup-Suiten.
+  - Die neuen Duden/Wiktionary-Fälle wurden stattdessen über gezielte Batch-Parser-Checks und Testanpassungen abgesichert.
+- =eask test buttercup= konnte in dieser Umgebung nicht genutzt werden, weil =~/.eask= nicht beschreibbar ist.
+
+** Export / HTML
+
+- Neuer Exportordner angelegt: =tmp/woerterbuch-export-2026-05-20/=
+- Aktuelle HTML-Snapshots gespeichert für:
+  - DWDS: =Bank=, =Haus=, =Zaun=, =springt=, =Wolke=, =verlieben=
+  - Duden: =Bank= (beide Homographe), =Haus=, =Zaun=, =springen=, =Wolke=, =verlieben=
+  - Wiktionary: =Bank=, =Haus=, =Zaun=, =springen=, =Wolke=, =verlieben=
+- Ein neuer Ergebnisexport wurde begonnen; aktuell liegt mindestens =bank.el= im neuen Exportordner.
+
+** Offene Punkte
+
+- Die Fixture-Dateien für DWDS =Haus= und teils =Bank= sollten noch sauber nachgezogen oder mit einem vollständigen lokalen Testlauf bestätigt werden; die Logikänderungen selbst sind eingegrenzt, aber der vollautomatische Gleichlauf aller erwarteten Einzeiler wurde in dieser Session nicht vollständig abgeschlossen.

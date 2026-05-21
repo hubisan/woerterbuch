@@ -51,7 +51,11 @@
               :to-match "Diese Bank war")
       (expect (plist-get first :origin) :to-match "banki-")
       (expect (plist-get first :idioms)
+              :to-contain "durch die Bank")
+      (expect (plist-get first :idioms)
               :to-contain "etwas auf die lange Bank schieben")
+      (expect (plist-get first :idioms)
+              :to-contain "vor leeren Bänken sprechen")
       (expect (plist-get second :idioms)
               :to-contain "Die Bank gewinnt immer.")
       (expect (plist-get first :synonyms)
@@ -68,6 +72,20 @@
                                     "Kreditinstitut"
                                     "Bankhaus"))
                 (:sense "2" :items ("Kasino" "Spielbank"))))))
+
+  (it "parses unlabeled idiom entries without appending gloss text"
+    (let* ((snippet
+            "<div><dl><dd>[1] <a href=\"/wiki/vor_Freude_an_die_Decke_springen\">vor Freude an die Decke springen</a></dd><dd><a href=\"/wiki/dem_Tod_von_der_Schippe_springen\">dem Tod von der Schippe springen</a></dd><dd><a href=\"/wiki/der_springende_Punkt\">der springende Punkt</a></dd><dd><a href=\"/wiki/in_St%C3%BCcke_springen\">in Stücke springen</a> - <i><a href=\"/wiki/zerspringen\">zerspringen</a></i></dd></dl></div>")
+           (dom (with-temp-buffer
+                  (insert snippet)
+                  (libxml-parse-html-region (point-min) (point-max))))
+           (blocks (list (cons :idioms (list dom)))))
+      (expect (woerterbuch-wiktionary--idioms blocks)
+              :to-equal
+              '("vor Freude an die Decke springen"
+                "dem Tod von der Schippe springen"
+                "der springende Punkt"
+                "in Stücke springen"))))
 
   (it "parses Haus and ignores the later declension-only section"
     (let* ((result (test-woerterbuch-wiktionary--parse-response-file

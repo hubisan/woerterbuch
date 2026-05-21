@@ -13,21 +13,15 @@
   "Base URL for DWDS dictionary pages.")
 
 (defconst woerterbuch-dwds-request-headers
-  '(("User-Agent" . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
-    ("Accept" . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+  '(("User-Agent"
+     . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
+    ("Accept"
+     . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     ("Accept-Language" . "en-US,en;q=0.5")
     ("Accept-Encoding" . "gzip, deflate, br")
     ("DNT" . "1")
     ("Connection" . "keep-alive"))
   "HTTP headers used for DWDS requests, mimicking Tor Browser.")
-
-(defconst woerterbuch-dwds--definition-qualifier-classes
-  '("dwdswb-bedeutungsebene"
-    "dwdswb-stilebene"
-    "dwdswb-gebrauchsebene"
-    "dwdswb-gebrauchszeitraum"
-    "dwdswb-stilfaerbung")
-  "DWDS classes that carry definition qualifiers.")
 
 (defconst woerterbuch-dwds--definition-skip-classes
   '("dwdswb-binnenquelle" "dwdswb-paraphrase")
@@ -49,6 +43,8 @@
       (setq s (replace-regexp-in-string " +\\." "." s))
       (setq s (replace-regexp-in-string "( +" "(" s))
       (setq s (replace-regexp-in-string " +)" ")" s))
+      (setq s (replace-regexp-in-string "⟨ +" "⟨" s))
+      (setq s (replace-regexp-in-string " +⟩" "⟩" s))
       s)))
 
 (defun woerterbuch-dwds--text (node)
@@ -123,6 +119,17 @@
           (throw 'found match))))
     nil))
 
+(defun woerterbuch-dwds--find-all (node predicate)
+  "Return all descendants of NODE matching PREDICATE."
+  (let (matches)
+    (dolist (child (woerterbuch-dwds--element-children node))
+      (when (funcall predicate child)
+        (push child matches))
+      (setq matches
+            (nconc (nreverse (woerterbuch-dwds--find-all child predicate))
+                   matches)))
+    (nreverse matches)))
+
 (defun woerterbuch-dwds--canonical-url (dom fallback)
   "Read canonical URL from DOM or return FALLBACK."
   (let ((link (woerterbuch-dwds--find-first
@@ -160,12 +167,19 @@
           (string-trim (match-string 1 head))
         head))))
 
+(defun woerterbuch-dwds--qualifier-node-p (node)
+  "Return non-nil when NODE carries a qualifier within diasystematics."
+  (let ((classes (woerterbuch-dwds--class-list node)))
+    (and classes
+         (not (member "dwdswb-diasystematik" classes))
+         (seq-some (lambda (class)
+                     (string-prefix-p "dwdswb-" class))
+                   classes))))
+
 (defun woerterbuch-dwds--collect-qualifiers (node)
   "Collect qualifier texts below NODE in DOM order."
   (let (out)
-    (when (woerterbuch-dwds--has-any-class-p
-           node
-           woerterbuch-dwds--definition-qualifier-classes)
+    (when (woerterbuch-dwds--qualifier-node-p node)
       (let ((txt (woerterbuch-dwds--text node)))
         (unless (string-empty-p txt)
           (push txt out))))
@@ -181,23 +195,185 @@
         (setq out (nconc out (woerterbuch-dwds--collect-qualifiers child)))))
     out))
 
-(defun woerterbuch-dwds--extract-definition-text (def-node)
-  "Extract definition text from DEF-NODE in DOM order.
+(defun woerterbuch-dwds--strip-html-tags (string)
+  "Return STRING without HTML tags."
+  (when string
+    (replace-regexp-in-string "<[^>]+>" "" string)))
+
+(defun woerterbuch-dwds--reference-definition (node)
+  "Return definition text encoded in DWDS reference NODE."
+  (let* ((popover (dom-attr node 'data-content))
+         (text (woerterbuch-dwds--clean-text
+                (woerterbuch-dwds--strip-html-tags popover))))
+    (unless (string-empty-p (or text ""))
+      text)))
+
+(defun woerterbuch-dwds--extract-reference-text (node)
+  "Return definition text for a DWDS reference wrapper NODE."
+  (let* ((ref-node (or (and
+                        (woerterbuch-dwds--has-class-p node "dwdswb-verweis")
+                            node)
+                       (woerterbuch-dwds--find-first
+                        node
+                        (lambda (child)
+                          (woerterbuch-dwds--has-class-p child
+                                                         "dwdswb-verweis")))))
+         (headline (woerterbuch-dwds--text node))
+         (definition (and ref-node
+                          (woerterbuch-dwds--reference-definition ref-node))))
+    (cond
+     ((and (not (string-empty-p (or headline "")))
+           (not (string-empty-p (or definition ""))))
+      (format "%s = %s" headline definition))
+     ((not (string-empty-p (or headline ""))) headline)
+     (t definition))))
+
+(defun woerterbuch-dwds--mwa-marker-p (node)
+  "Return non-nil when NODE contains an MWA marker."
+  (or (woerterbuch-dwds--find-first
+       node
+       (lambda (child)
+         (let ((src (dom-attr child 'src)))
+           (and src (string-match-p "letter-mwa\\.svg" src)))))
+      (woerterbuch-dwds--find-first
+       node
+       (lambda (child)
+         (let ((title (or (dom-attr child 'title)
+                          (dom-attr child 'data-original-title))))
+           (and title (string-match-p "Mehrwortausdruck" title)))))))
+
+(defun woerterbuch-dwds--local-mwa-marker-p (content-node)
+  "Return non-nil when CONTENT-NODE has an MWA marker outside child senses."
+  (catch 'marker
+    (dolist (child (woerterbuch-dwds--element-children content-node))
+      (unless (woerterbuch-dwds--has-class-p child "dwdswb-lesart")
+        (when (woerterbuch-dwds--mwa-marker-p child)
+          (throw 'marker t))))
+    nil))
+
+(defun woerterbuch-dwds--find-local-mwa-scope (content-node)
+  "Return the direct MWA scope belonging to CONTENT-NODE."
+  (catch 'scope
+    (dolist (child (woerterbuch-dwds--element-children content-node))
+      (unless (woerterbuch-dwds--has-class-p child "dwdswb-lesart")
+        (when (or (woerterbuch-dwds--has-class-p child "dwdswb-phraseme")
+                  (woerterbuch-dwds--has-class-p child "dwdswb-syntagmatik")
+                  (woerterbuch-dwds--has-class-p child
+                                                 "dwdswb-konstruktionsmuster"))
+          (throw 'scope child))
+        (let ((match
+               (woerterbuch-dwds--find-first
+                child
+                (lambda (node)
+                  (or (woerterbuch-dwds--has-class-p node "dwdswb-phrasem")
+                      (woerterbuch-dwds--has-class-p node
+                                                     "dwdswb-konstruktionsmuster"))))))
+          (when match
+            (throw 'scope child)))))
+    nil))
+
+(defun woerterbuch-dwds--normalize-paraphrase-text (text)
+  "Normalize DWDS paraphrase TEXT."
+  (when text
+    (let ((s (woerterbuch-dwds--clean-text text)))
+      (when s
+        (setq s (replace-regexp-in-string "\\`(= *" "" s))
+        (setq s (replace-regexp-in-string " *)\\'" "" s))
+        s))))
+
+(defun woerterbuch-dwds--extract-mwa-text (content-node)
+  "Return MWA definition text from CONTENT-NODE."
+  (let ((local-scope (and content-node
+                          (woerterbuch-dwds--find-local-mwa-scope
+                           content-node))))
+    (when (and local-scope
+               (or (woerterbuch-dwds--mwa-marker-p local-scope)
+                   (woerterbuch-dwds--local-mwa-marker-p content-node)))
+      (let* ((phrase-scope
+              (or (and
+                   (woerterbuch-dwds--has-class-p local-scope "dwdswb-phrasem")
+                       local-scope)
+                  (woerterbuch-dwds--find-first
+                   local-scope
+                   (lambda (child)
+                     (woerterbuch-dwds--has-class-p child "dwdswb-phrasem")))
+                  (and (woerterbuch-dwds--has-class-p local-scope
+                                                     "dwdswb-konstruktionsmuster")
+                       local-scope)
+                  (woerterbuch-dwds--find-first
+                   local-scope
+                   (lambda (child)
+                     (woerterbuch-dwds--has-class-p
+                      child
+                      "dwdswb-konstruktionsmuster")))))
+           (phrase-node
+            (and phrase-scope
+                 (woerterbuch-dwds--find-first
+                  phrase-scope
+                  (lambda (child)
+                    (woerterbuch-dwds--has-class-p child "dwdswb-belegtext")))))
+           (phrase (and phrase-node
+                        (woerterbuch-dwds--text-skipping-classes
+                         phrase-node
+                         '("dwdswb-paraphrase"))))
+            (paraphrases
+             (delq nil
+                   (mapcar
+                    (lambda (node)
+                      (woerterbuch-dwds--normalize-paraphrase-text
+                       (woerterbuch-dwds--text node)))
+                    (and phrase-scope
+                         (woerterbuch-dwds--descendants-with-class
+                          phrase-scope
+                          "dwdswb-paraphrase"))))))
+        (when (and phrase (not (string-empty-p phrase)))
+          (if paraphrases
+              (format "%s (MWA) = %s"
+                      phrase
+                      (string-join paraphrases "; "))
+            (format "%s (MWA)" phrase)))))))
+
+(defun woerterbuch-dwds--explicit-phraseme-block-p (content-node)
+  "Return non-nil when CONTENT-NODE carries an explicit DWDS phraseme block."
+  (seq-some (lambda (child)
+              (woerterbuch-dwds--has-class-p child "dwdswb-phraseme"))
+            (woerterbuch-dwds--element-children content-node)))
+
+(defun woerterbuch-dwds--extract-definition-text (def-node content-node)
+  "Extract definition text from DEF-NODE and CONTENT-NODE in DOM order.
 
 Only syntagmatic and actual definition content is included. Semantic
 qualifiers from `.dwdswb-diasystematik' are handled separately via
 `woerterbuch-dwds--extract-qualifiers'."
   (let (parts)
     (dolist (child (woerterbuch-dwds--element-children def-node))
-      (when (or (woerterbuch-dwds--has-class-p child "dwdswb-syntagmatik")
-                (woerterbuch-dwds--has-class-p child "dwdswb-definitionen")
-                (woerterbuch-dwds--has-class-p child "dwdswb-definition"))
+      (cond
+       ((woerterbuch-dwds--has-class-p child "dwdswb-verweise")
+        (let ((txt (woerterbuch-dwds--extract-reference-text child)))
+          (unless (string-empty-p (or txt ""))
+            (push txt parts))))
+       ((or (woerterbuch-dwds--has-class-p child "dwdswb-syntagmatik")
+            (woerterbuch-dwds--has-class-p child "dwdswb-definitionen")
+            (woerterbuch-dwds--has-class-p child "dwdswb-definition"))
         (let ((txt (woerterbuch-dwds--text-skipping-classes
                     child
                     woerterbuch-dwds--definition-skip-classes)))
           (unless (string-empty-p txt)
-            (push txt parts)))))
-    (string-join (nreverse parts) " ")))
+            (push txt parts))))))
+    (let ((definition (string-join (nreverse parts) " "))
+          (mwa-definition (woerterbuch-dwds--extract-mwa-text content-node))
+          (qualifiers (woerterbuch-dwds--extract-qualifiers def-node)))
+      (cond
+       ((and mwa-definition
+             (woerterbuch-dwds--explicit-phraseme-block-p content-node))
+        mwa-definition)
+       ((and mwa-definition
+             (not (string-empty-p definition))
+             (string-prefix-p "⟨" definition)
+             (member "übertragen" qualifiers))
+        mwa-definition)
+       ((not (string-empty-p definition)) definition)
+       (t (or mwa-definition definition))))))
 
 (defun woerterbuch-dwds--extract-examples (usage-node)
   "Extract example texts from USAGE-NODE.
@@ -242,25 +418,18 @@ stamps are ignored automatically."
     (nreverse acc)))
 
 (defun woerterbuch-dwds--parse-idioms (article)
-  "Extract idioms from ARTICLE's Mehrwortausdrücke field."
-  (let ((field-block
-         (cl-loop
-          for block in
-          (woerterbuch-dwds--descendants-with-class article "dwdswb-ft-block")
-          for label =
-          (woerterbuch-dwds--text
-           (woerterbuch-dwds--find-first
-            block
-            (lambda (node)
-              (woerterbuch-dwds--has-class-p node "dwdswb-ft-blocklabel"))))
-          when (and label (string-match-p "Mehrwortausdrücke" label))
-          return
-          (woerterbuch-dwds--find-first
-           block
-           (lambda (node)
-             (woerterbuch-dwds--has-class-p node "dwdswb-ft-blocktext"))))))
-    (when field-block
-      (woerterbuch-dwds--extract-idioms-from-block field-block))))
+  "Extract idioms from ARTICLE's Mehrwortausdrücke relation block.
+The block id is expected to match `relation-block-[0-9]+-mwa',
+for example `relation-block-1-mwa' or `relation-block-2-mwa'."
+  (when-let* ((field-block
+               (woerterbuch-dwds--find-first
+                article
+                (lambda (node)
+                  (let ((id (dom-attr node 'id)))
+                    (and (stringp id)
+                         (string-match-p
+                          "\\`relation-block-[0-9]+-mwa\\'" id)))))))
+    (woerterbuch-dwds--extract-idioms-from-block field-block)))
 
 (defun woerterbuch-dwds--parse-etymology (scope)
   "Extract etymology text from SCOPE."
@@ -331,7 +500,8 @@ stamps are ignored automatically."
                    :label (woerterbuch-dwds--text label-node)
                    :definition (and def-node
                                     (woerterbuch-dwds--extract-definition-text
-                                     def-node))
+                                     def-node
+                                     content-node))
                    :qualifiers (and def-node
                                     (woerterbuch-dwds--extract-qualifiers
                                      def-node))
@@ -444,7 +614,8 @@ stamps are ignored automatically."
         (setq result (plist-put result :lemma (or (plist-get entry :lemma)
                                                   lemma)))
         (setq result (plist-put result :url (plist-get entry :url)))
-        (setq result (plist-put result :homographs (plist-get entry :homographs)))
+        (setq result
+              (plist-put result :homographs (plist-get entry :homographs)))
         result))))
 
 (defun woerterbuch-dwds--request-needed-p (sections)

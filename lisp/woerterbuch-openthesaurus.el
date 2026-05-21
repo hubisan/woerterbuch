@@ -41,7 +41,8 @@
        'silent
        'inhibit-cookies))))
 
-(defun woerterbuch-openthesaurus--request-callback (status input sections callback)
+(defun woerterbuch-openthesaurus--request-callback
+    (status input sections callback)
   "Handle async response STATUS for INPUT, SECTIONS, and CALLBACK."
   (let (result)
     (unwind-protect
@@ -116,7 +117,8 @@
              (woerterbuch-openthesaurus--normalize-categories
               (alist-get 'categories synset))
              :synonyms
-             (woerterbuch-openthesaurus--extract-synonyms-from-synset synset lemma))
+             (woerterbuch-openthesaurus--extract-synonyms-from-synset synset
+                                                                      lemma))
        groups))
     (nreverse groups)))
 

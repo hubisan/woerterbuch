@@ -17,8 +17,10 @@
   "Base URL for Duden search pages.")
 
 (defconst woerterbuch-duden-request-headers
-  '(("User-Agent" . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
-    ("Accept" . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+  '(("User-Agent"
+     . "Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0")
+    ("Accept"
+     . "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
     ("Accept-Language" . "en-US,en;q=0.5")
     ("Accept-Encoding" . "gzip, deflate, br")
     ("DNT" . "1")
@@ -41,6 +43,8 @@
   (when string
     (let ((s (string-trim
               (replace-regexp-in-string "[[:space:] ]+" " " string))))
+      (setq s (replace-regexp-in-string "〈" "⟨" s))
+      (setq s (replace-regexp-in-string "〉" "⟩" s))
       (setq s (replace-regexp-in-string " +," "," s))
       (setq s (replace-regexp-in-string " +\\." "." s))
       (setq s (replace-regexp-in-string "( +" "(" s))
@@ -199,9 +203,23 @@
 
 (defun woerterbuch-duden--extract-qualifiers (node)
   "Return qualifiers for meaning NODE."
-  (mapcar (lambda (pair)
-            (format "%s: %s" (car pair) (cdr pair)))
-          (woerterbuch-duden--tuple-pairs node)))
+  (let ((pairs (woerterbuch-duden--tuple-pairs node)))
+    (mapcar (lambda (pair)
+              (format "%s: %s" (car pair) (cdr pair)))
+            (seq-remove (lambda (pair)
+                          (string-equal (car pair) "Kurzform für"))
+                        pairs))))
+
+(defun woerterbuch-duden--extract-shortform-definition (node)
+  "Return a definition string for a leading `Kurzform für' tuple in NODE."
+  (let ((first-child (car (woerterbuch-duden--element-children node))))
+    (when (and first-child
+               (eq (dom-tag first-child) 'dl)
+               (woerterbuch-duden--has-class-p first-child "tuple"))
+      (let* ((pairs (woerterbuch-duden--tuple-pairs node))
+             (pair (car pairs)))
+        (when (and pair (string-equal (car pair) "Kurzform für"))
+          (format "%s: %s" (car pair) (cdr pair)))))))
 
 (defun woerterbuch-duden--note-values (notes title)
   "Return note values from NOTES for TITLE."
@@ -224,8 +242,10 @@ LABEL is the human-visible numbering label."
          (want-idioms
           (woerterbuch-core-section-requested-p :idioms sections))
          (definition
-          (let ((txt (woerterbuch-duden--text text-node)))
-            (unless (string-empty-p txt) txt)))
+          (or
+           (let ((txt (woerterbuch-duden--text text-node)))
+             (unless (string-empty-p txt) txt))
+           (woerterbuch-duden--extract-shortform-definition node)))
          (qualifiers (woerterbuch-duden--extract-qualifiers node))
          (image (woerterbuch-duden--extract-image-url node))
          (children
@@ -268,7 +288,8 @@ LABEL is the human-visible numbering label."
            (let ((text-node (woerterbuch-duden--direct-child-by-tag-and-class
                              section 'div "enumeration__text")))
              (let ((txt (woerterbuch-duden--text text-node)))
-               (unless (string-empty-p txt) txt))))))
+               (unless (string-empty-p txt) txt)))
+           (woerterbuch-duden--extract-shortform-definition section))))
     (when definition
       (list
        (list :id 1
@@ -277,7 +298,8 @@ LABEL is the human-visible numbering label."
              :definition definition
              :qualifiers (woerterbuch-duden--extract-qualifiers section)
              :examples (and want-examples
-                            (or (woerterbuch-duden--note-values notes "Beispiele")
+                            (or
+                             (woerterbuch-duden--note-values notes "Beispiele")
                                 (woerterbuch-duden--note-values notes "Beispiel")))
              :idioms (and want-idioms
                           (woerterbuch-duden--note-values
@@ -392,7 +414,8 @@ LABEL is the human-visible numbering label."
     (when ul
       (let ((seen (make-hash-table :test #'equal))
             out)
-        (dolist (li (woerterbuch-duden--direct-children-by-tag-and-class ul 'li nil))
+        (dolist
+            (li (woerterbuch-duden--direct-children-by-tag-and-class ul 'li nil))
           (dolist (syn (woerterbuch-duden--split-synonym-text
                         (woerterbuch-duden--text li)))
             (unless (gethash syn seen)
@@ -458,7 +481,8 @@ HOMOGRAPH-ID is the 1-based index assigned by the caller."
               (woerterbuch-core-section-requested-p :examples sections)
               (woerterbuch-core-section-requested-p :idioms sections)))
          (want-origin (woerterbuch-core-section-requested-p :origin sections))
-         (want-synonyms (woerterbuch-core-section-requested-p :synonyms sections)))
+         (want-synonyms
+          (woerterbuch-core-section-requested-p :synonyms sections)))
     (list :id homograph-id
           :lemma lemma
           :title title

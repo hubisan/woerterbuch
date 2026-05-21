@@ -1,4 +1,5 @@
 #+TITLE: Specification of Source WIKTIONARY
+#+STARTUP: showall
 
 * Goal
 
@@ -181,6 +182,17 @@ Each definition node:
  :definitions  nil)
 #+END_SRC
 
+Qualifier handling note:
+
+- Wiktionary markup is not reliable enough to extract qualifiers into
+  =:qualifiers= safely across entries.
+- If a leading label such as =veraltet=, =reflexiv= or a similar usage
+  marker is only embedded in the rendered sense text, it should remain
+  inside =:definition= instead of being moved heuristically into
+  =:qualifiers=.
+- Avoid false positives here; preserving the visible meaning text is
+  more important than aggressively structuring qualifiers.
+
 Notes:
 
 - unlike Duden, Wiktionary senses in the observed fixtures are flat;
@@ -241,37 +253,29 @@ with the other backends.
 Source block:
 
 #+BEGIN_SRC text
-{{Bedeutungen}}
+Bedeutungen
 :[1] ...
 :[2] ...
 #+END_SRC
 
 Rules:
 
-- each =:[N] ...= line becomes one definition node
-- the numeric label becomes =:label=
-- the cleaned sense text becomes =:definition=
-- inline templates at the start of a sense, for example
-  ={{K|Sport|kurz für}}= or ={{K|ugs.}}=, should be normalized into
-  =:qualifiers=
-- for the first iteration, template payload may be split mechanically
-  on the pipe separator and stored as a flat string list
-- the leading template name, for example =K=, should be discarded
+- each rendered =dd= entry in the meanings block becomes one definition node
+- the numeric sense marker becomes =:label= when present
+- the full cleaned =dd= text becomes =:definition=
+- inline usage, register, domain, or style markers such as =familiär=,
+  =veraltet= or =umgangssprachlich= are preserved in =:definition=
+  unless they can be extracted safely
+- do not drop italic or emphasized text in definitions; it can be part
+  of the readable meaning text
+- keep =:qualifiers= conservative and avoid heuristic extraction from
+  rendered HTML when this could lose visible content
 
-Example:
+Rationale:
 
-#+BEGIN_SRC text
-{{K|Sport|kurz für}}
-#+END_SRC
-
-becomes:
-
-#+BEGIN_SRC emacs-lisp
-("Sport" "kurz für")
-#+END_SRC
-
-This deliberately favors a simple testable rule over perfect template
-semantics.
+Definitions are parsed from full readable definition text, not from
+isolated link items.  This preserves qualifier text that Wiktionary
+renders inline before or inside the definition.
 
 ** Beispiele -> =definition :examples=
 
@@ -308,23 +312,42 @@ Rules:
 Source block:
 
 #+BEGIN_SRC text
-{{Redewendungen}}
+Redewendungen
 :[1] ...
 #+END_SRC
 
 Rules:
 
-- collect idiom lines as plain cleaned strings
+- collect idiom entries as plain cleaned strings
+- prefer the actual linked expression when the line contains both a
+  qualifier and an idiom link
+- ignore link texts below purely descriptive or meta formatting such as
+  =i=, =em= and =sup=, so labels like =familiär:= do not become idiom
+  items
 - if a sense label is present, it is acceptable in the first
   implementation to keep idioms only at homograph level rather than
   distribute them onto definition nodes
+
+Example:
+
+A rendered line like:
+
+#+BEGIN_SRC html
+<i>familiär:</i> <a>altes <i>Haus</i></a>
+#+END_SRC
+
+should yield:
+
+#+BEGIN_SRC emacs-lisp
+"altes Haus"
+#+END_SRC
 
 ** Synonyme und Sinnverwandte Wörter -> =:synonyms=
 
 Source block:
 
 #+BEGIN_SRC text
-{{Synonyme}}
+Synonyme
 :[1] ...
 :[2] ...
 #+END_SRC
@@ -333,6 +356,10 @@ Rules:
 
 - collect synonym lines grouped by sense
 - treat =Sinnverwandte Wörter= the same way as =Synonyme=
+- extract synonym items primarily from readable descendant link texts
+- ignore links below meta or formatting tags such as =i=, =em= and
+  =sup=, so usage labels, references, and superscript notes do not
+  become synonym items
 - if both blocks exist for the same sense, merge their items into the
   same sense-group list while preserving order as far as practical
 - recommended normalized shape:

@@ -166,6 +166,8 @@ This information is removed, when reading from the minibuffer. Else it is not re
 
 It appears that when composing synonyms on Wiktionary, users have the a lot of freedom to formulate the text. Therefore, I avoid parsing the synonyms into a list which is used when reading from the minibuffer. Similar to Openthesaurus, the synonyms are inserted into an Org buffer exactly as they are formulated.
 
+For meanings and usage labels, Wiktionary is also intentionally parsed conservatively. If a qualifier such as =veraltet= or =reflexiv= is only embedded in the rendered sense text and not marked up reliably, it remains inside the definition text instead of being moved heuristically into a separate qualifier field.
+
 Examples of texts used (word 'geben'):
 
 #+BEGIN_EXAMPLE

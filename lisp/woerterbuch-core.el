@@ -28,6 +28,7 @@ the order in which results are returned by `woerterbuch-fetch-all'."
 
 (defcustom woerterbuch-normalize-lemma t
   "Whether `woerterbuch-fetch-all' normalizes input to its lemma by default.
+
 If `woerterbuch-fetch-all' is called with a non-nil or nil optional
 NORMALIZE-LEMMA argument, that argument overrides this variable."
   :type 'boolean
@@ -113,12 +114,11 @@ lemma, for example if the source redirects or normalizes differently."
 
 (defun woerterbuch-core--source-fetcher (source)
   "Return fetch function symbol for SOURCE."
-  (pcase source
-    ('openthesaurus #'woerterbuch-openthesaurus-fetch)
-    ('duden         #'woerterbuch-duden-fetch)
-    ('dwds          #'woerterbuch-dwds-fetch)
-    ('wiktionary    #'woerterbuch-wiktionary-fetch)
-    (_ (error "Unknown woerterbuch source: %S" source))))
+  (let ((fn (intern-soft
+             (format "woerterbuch-%s-fetch" source))))
+    (unless (and fn (fboundp fn))
+      (error "Unknown or unavailable woerterbuch source: %S" source))
+    fn))
 
 (defun woerterbuch-core--source-timeout (source)
   "Return timeout in seconds for SOURCE."
@@ -276,7 +276,8 @@ Failure:
   (let ((wrapper (woerterbuch-core-make-wrapper input lemma)))
     (plist-put wrapper :sources source-results)))
 
-(defun woerterbuch-core--fetch-all-with-lemma (input lemma sections final-callback)
+(defun woerterbuch-core--fetch-all-with-lemma
+    (input lemma sections final-callback)
   "Fetch SECTIONS for INPUT using LEMMA as backend query.
 
 FINAL-CALLBACK is called exactly once with a wrapper plist of the form:

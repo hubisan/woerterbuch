@@ -16,7 +16,7 @@ Achtung: bei verliebt hat es als Lemma verlieben verwenden. Habe diverse andere 
 - Wolke: sehr gut, passt alles.
 - Zaun: sehr gut, passt alles.
 
-* NEXT DWDS
+* DONE DWDS
 
 ** Vergleich Status
 
@@ -27,9 +27,9 @@ Achtung: bei verliebt hat es als Lemma verlieben verwenden. Habe diverse andere 
 - verliebt: Sieht gut aus.
 - Wolke: Sieht gut aus.
 
-** Notwendige Verbesserungen [0/4]
+** Notwendige Verbesserungen [4/4]
 
-*** NEXT Fehlende Qualifier?
+*** DONE Fehlende Qualifier?
 
 https://www.dwds.de/wb/Bank#2
 
@@ -61,13 +61,13 @@ Ist auch bei weiteren wie hier bei Wolke, da fehlt "berlinisch":
   <span class="dwdswb-diasystematik"><span class="dwdswb-sprachraum">berlinisch</span>, <span class="dwdswb-stilebene">salopp</span></span>
 #+END_SRC
 
-*** NEXT Diese Zeichen bereinigen
+*** DONE Diese Zeichen bereinigen
 
 Hat häufigt diese Zeichen im geparsten Output: "⟨ ". Jeweils den Abstand entfernen. Anstatt "⟨ sich in jmdn. verlieben ⟩ ..." wird dies "⟨sich in jmdn. verlieben⟩ ...".
 
 Nennt sich Konstruktionsmuster in dem Fall, aber ist etwas, einfach immer das Leerzeichen wegnehmen.
 
-*** NEXT Umgang mit Verweis - Synonym von
+*** DONE Umgang mit Verweis - Synonym von
 
 https://www.dwds.de/wb/Bank#2
 
@@ -100,7 +100,7 @@ Html dazu:
   <div class="dwdswb-lesart" id="d-2-3-2"><div class="dwdswb-lesart-n" data-n="3b.">b)</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">metonymisch</span></span> <span class="dwdswb-verweise"><span class="dwdswb-verweis" data-lemma="Bankhalter" data-hidx="" data-lesart="" data-popover-def="1" data-content="&lt;span style=&quot;color:#000;font-style:normal&quot;&gt;Person, die das Spiel leitet, die Einsätze verwaltet und gegen die die übrigen Spieler spielen&lt;/span&gt;" data-html="true" data-toggle="popover" data-trigger="hover" data-original-title="" title="">Synonym zu <a class="intern" href="/wb/Bankhalter">Bankhalter</a></span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Nebenberuflich war die 25‑Jährige bisher im Automatenkasino in Baden als Gästebetreuerin tätig. Der Beruf des Croupiers sei anspruchsvoller, sagt sie; immerhin verwalte sie als »<span class="dwdswb-stichwort">Bank</span>« Jetons im Wert von 15.000 Franken.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Neue Zürcher Zeitung, 12.06.2002]</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext"> Die Regeln <span class="dwdswb-autorenzusatz">[beim Black Jack]</span> sind simpel: Jeder spielt für sich, und alle spielen gegen die <span class="dwdswb-stichwort">Bank</span>.</span> <span class="dwdswb-fundstelle"><span class="no-wrap">[</span>Der Spiegel, 14.04.1997]</span></div></div></div></div>
 #+END_SRC
 
-*** NEXT Umgang mit MWA
+*** DONE Umgang mit MWA
 
 Die Mehrwortausdrücke werden bereits bei Idioms aufgelistet. Hier ist einer davon aber noch im Text einzeln aufgeführt. Ich denke, dies ist der Fall, wenn dem Wort in einem MWA eine andere Bedeutung zukommt (deshalb hat es auch einen Qualifier nehme ich einmal an). Ist bei Zaun auch so.
 
@@ -147,7 +147,7 @@ Output ist eigentlich schon sehr gut, aber neu wie oben definiert mit (MWA) und 
   <div class="dwdswb-lesart" id="d-1-1-1"><div class="dwdswb-lesart-n" data-n=" ●">●</div><div class="dwdswb-lesart-content"><div class="dwdswb-lesart-def"> <span class="dwdswb-diasystematik"><span class="dwdswb-bedeutungsebene">übertragen</span></span> <span class="dwdswb-syntagmatik"><span class="dwdswb-konstruktionsmuster">⟨<span class="dwdswb-belegtext">einen Streit, Krieg vom <span class="dwdswb-stichwort">Zaune</span> brechen <span class="dwdswb-paraphrase">(= einen Streit, Krieg unvermittelt heraufbeschwören)</span></span>⟩ <span style="white-space:nowrap"><a tabindex="0" role="button" class="touch-only glyphicon glyphicon-info-sign smaller" style="color:#000;opacity:.5" data-toggle-hint="popover" data-placement="top" data-trigger="focus" title="" data-original-title="Artikel für Mehrwortausdruck ‘etw. vom Zaun brechen’ anzeigen"></a><a data-toggle="tooltip" data-placement="top" title="" href="/wb/etw.%20vom%20Zaun%20brechen" data-original-title="Artikel für Mehrwortausdruck ‘etw. vom Zaun brechen’ anzeigen"><img src="https://www.dwds.de/dwds_static/images/letters/letter-mwa.svg" style="height:16px; margin:auto auto 2px 5px"></a><span class="dwdswb-binnenquelle dwdswb-binnenquelle-neu" data-orig-display="inline-block" style="display: none; opacity: 0; transition: opacity 1600ms, background-color 3200ms;"><abbr data-toggle="tooltip" title="" data-original-title="Digitales Wörterbuch der deutschen Sprache">DWDS</abbr>, 15.10.2025</span></span></span></span></div><div class="dwdswb-verwendungsbeispiele"><div class="dwdswb-block-label">Beispiele:</div><div class="dwdswb-kompetenzbeispiel"><span class="dwdswb-belegtext">sie hatten mutwillig eine Schlägerei, Prügelei vom <span class="dwdswb-stichwort">Zaun</span> gebrochen</span></div><div class="dwdswb-beleg"><span class="dwdswb-belegtext">Man muß auch mal was vom <span class="dwdswb-stichwort">Zaune</span> brechen <span class="dwdswb-paraphrase">(= man muss auch mal improvisieren)</span>, aus dem Stegreif leben können <span class="dwdswb-autorenzusatz">[…]</span></span> <span class="dwdswb-fundstelle"><span class="no-wrap">[<a title="" data-toggle="tooltip" data-placement="bottom" class="wdg-bibl-link" href="https://www.dwds.de/wb/wdg/bibl#ZWEARNEEK" data-original-title="zum Eintrag im WDG-Quellenverzeichnis"><i class="bi bi-arrow-up-right dwds-aur"></i></a> </span><span class="dwdswb-fundstelle-autor">A. Zweig</span><span class="dwdswb-fundstelle-titel">Einsetzung</span><span class="dwdswb-fundstelle-stelle">178</span>]</span></div></div></div></div>
 #+END_SRC
 
-* TODO Wiktionary
+* DONE Wiktionary
 
 ** Vergleich Status
 
@@ -158,9 +158,33 @@ Output ist eigentlich schon sehr gut, aber neu wie oben definiert mit (MWA) und 
 - [X] verliebt bzw. verlieben:
 - [X] Wolke: Perfekt
   
-** Notwendige Verbesserungen [0/2]
+** Notwendige Verbesserungen [2/2]
 
-*** TODO Redewendungen
+*** DONE Redewendungen - Update [2026-05-20 Wed 23:32]
+
+Dies geht trotz den Anpassungen noch nicht ~:idioms nil~:
+
+#+BEGIN_SRC emacs-lisp
+  (:id 1 :lemma "Bank" :title "Bank, Substantiv, f, Bänke"
+       :wortart "Substantiv" :grammar "Substantiv" :origin
+       "mittelhochdeutsch banc, althochdeutsch bank, germanisch *banki- „Bank“, belegt seit dem 9. Jahrhundert"
+       :idioms nil :synonyms
+       ((:sense "2" :items ("Lage"))
+        (:sense "5" :items ("Theke" "Tresen"))
+        (:sense "6" :items ("Auswechselbank" "Ersatzbank")))
+       :url "https://de.wiktionary.org/wiki/Bank" :definitions
+       ((:id 1 :label "1" :definition
+             "Sitz- oder Ablagegelegenheit für mehrere Personen oder Dinge nebeneinander"
+             :qualifiers nil :examples
+             ("Sollen wir uns auf diese Bank setzen?"
+              "„Nach dem Abendessen gingen Sung und Hideo auf eine Runde in den Park und saßen dann lange schweigend auf einer Bank am Teich.“"
+              "„Smoaks setzte sich auf die gegenüberliegende Bank und sah ihn an.“"
+              "„Die kleine Bank mit den zwei Kissen war fortgeräumt, und statt ihrer stand eine Chaiselongue da, darauf die Kranke ruhte, den Oberkörper mit einem Schal, die Füße mit einer Reisedecke zugedeckt, in die das Wappen der St. Arnauds oder vielleicht auch das der Woronesch von Zacha eingestickt war.“"
+              "„Darüber wurde der Fußboden eingezogen, und an den Wänden stellte man Bänke auf, die gleichzeitig als Truhen dienten.“")
+             :definitions nil)
+        ...
+        ))
+#+END_SRC
 
 Bei Bank (erste Bedeutung) wurden die Redewendungen nicht erkannt. Bei der zweiten Bedeutung schon. Sehe den Grund nicht. Allenfalls da es dort keine Nummerierung hat wie [1] (Zuordnung zur Bedeutung).
 
@@ -205,7 +229,7 @@ Hier das HTML dazu. Ist eine dl, somit kann man jedes dd berücksichtigen. Der B
   <dd id="mwoA"><a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/in_Stücke_springen?action=edit&amp;redlink=1" title="in Stücke springen (Seite nicht vorhanden)" class="new" typeof="mw:LocalizedAttrs" id="mwoQ" data-mw-i18n="{&quot;title&quot;:{&quot;lang&quot;:&quot;x-page&quot;,&quot;key&quot;:&quot;red-link-title&quot;,&quot;params&quot;:[&quot;in Stücke springen&quot;]}}">in Stücke springen</a> - <i id="mwog"><a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/zerspringen" title="zerspringen" id="mwow">zerspringen</a></i></dd></dl>
 #+END_SRC
 
-*** TODO Qualifier in Bedeutung anstatt als Qualifier - NICHT BEHEBEN, ABER DOKUMENTIEREN
+*** DONE Qualifier in Bedeutung anstatt als Qualifier - NICHT BEHEBEN, ABER DOKUMENTIEREN
 
 Wiki hat keine wirklich verlässliche Art, diese Qualifier zu identifizieren. Hängt wohl auch immer vom Editor ab. Besser in der Bedeutung belassen, damit sie nicht fälschlicherweise in den Qualifiers laden. Dies aber in der README und der Spezifikation festhalten: [[file:../../docs/sources-wiktionary-specification.org]]
 
@@ -234,7 +258,7 @@ Hier ist das gleiche Problem, hmm, scheint nicht wirklich klar gekennzeichnet zu
   <dl id="mwHw"><dd id="mwIA">[1] <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/reflexiv" title="reflexiv" about="#mwt17" typeof="mw:Transclusion" id="mwIQ" data-mw="{&quot;parts&quot;:[{&quot;template&quot;:{&quot;target&quot;:{&quot;wt&quot;:&quot;refl.&quot;,&quot;href&quot;:&quot;./Vorlage:refl.&quot;},&quot;params&quot;:{&quot;1&quot;:{&quot;wt&quot;:&quot;:&quot;}},&quot;i&quot;:0}}]}"><i>reflexiv:</i></a> <i id="mwIg"><a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/Person" title="Person" id="mwIw">Personen</a>:</i> <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/anfangen" title="anfangen" id="mwJA">anfangen</a>, für jemanden <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/Liebe" title="Liebe" id="mwJQ">Liebe</a> zu <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/empfinden" title="empfinden" id="mwJg">empfinden</a>; <i id="mwJw">auch <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/übertragen" title="übertragen" id="mwKA">übertragen</a>:</i> etwas <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/reizend" title="reizend" id="mwKQ">reizend</a>, <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/nett" title="nett" id="mwKg">nett</a>, <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/schön" title="schön" id="mwKw">schön</a> <a rel="mw:WikiLink" href="//de.wiktionary.org/wiki/finden" title="finden" id="mwLA">finden</a></dd></dl>
 #+END_SRC
 
-* Duden
+* DONE Duden
 
 ** Vergleich Status
 
@@ -245,7 +269,9 @@ Hier ist das gleiche Problem, hmm, scheint nicht wirklich klar gekennzeichnet zu
 - [X] verliebt: Sehr gut
 - [X] Wolke: Sehr gut
   
-** TODO Bedeutung als Qualifier bei "Kurzform für"
+** Notwendige Verbesserungen [2/2]
+
+*** DONE Bedeutung als Qualifier bei "Kurzform für"
 
 Bei Bank ist zweimal die Definition im Qualifier gelandet, fälschlicherweise. Das Problem ist, dass dies wie bei einem normalen Qualifier die Bedeutung in <dl class="tuple"> wrapped. Man kann wohl davon ausgehen, dass, falls dies gleich zu Beginn kommt, es sich um keinen Qualifier sondern die Bedeutung handelt. In dem Fall gleich den ganzen Text inklusive "Kurzform für" als Bedeutung übernehmen.
 
@@ -317,8 +343,29 @@ Hier noch ein korrekter Qualifier zum Vergleich:
               </li>
 #+END_SRC
 
-** TODO Breite Zeichen ersetzen
+*** DONE Breite Zeichen ersetzen - Update [2026-05-20 Wed 23:43]
+
+Dies taucht leider immer noch auf:
+
+#+BEGIN_SRC emacs-lisp
+(:id 2 :duden-id "Bedeutung-1b" :label "1b"
+     :definition
+     "Gebäude, das zu einem bestimmten Zweck errichtet wurde"
+     :qualifiers nil :examples
+     ("das große (besonders für Aufführungen von Opern, großen Schauspielen o. Ä. bestimmte), kleine (besonders für kleinere Bühnenstücke bestimmte) Haus des Theaters war bis auf den letzten Platz ausverkauft"
+      "das weltberühmte Orchester hat auf seinen Tourneen volle Häuser (seine Konzerte sind ausverkauft)"
+      "Haus (Hotel, Pension) Meeresblick"
+      "(gehoben) das Haus des Herrn (Gotteshaus)"
+      "das Weiße Haus in Washington (der Amtssitz des Präsidenten der USA)"
+      "(veraltet verhüllend) ein öffentliches Haus (Bordell)"
+      "das erste Haus (Hotel) am Platz[e]"
+      "die Chefin ist zurzeit nicht im Haus[e] (im Gebäude der Firma) ; Abkürzung: i. H."
+      "〈in übertragener Bedeutung:〉 das gemeinsame europäische Haus")
+     :idioms
+     ("Haus der offenen Tür (Gelegenheit, bei der Betriebe, Verwaltungsstellen usw. von allen Bürgern besichtigt werden können)"
+      "um die Häuser ziehen (umgangssprachlich: ausgehen; ein Lokal nach dem anderen aufsuchen: wir sollten mal wieder zusammen um die Häuser ziehen; früher sind wir nächtelang um die Häuser gezogen)")
+     :image nil :definitions nil)
+#+END_SRC
+
 
 Diese beiden Zeichen tauch teils auf: 〈und 〉. Sind sehr breit, ersetzen durch ⟨ und ⟩.
-
-** Notwendige Verbesserungen [0/0]

@@ -1,6 +1,6 @@
 (:input "Haus"
         :lemma "Haus"
-        :sources ((:source openthesaurus
+        :sources ((:source "openthesaurus"
                            :lemma "Haus"
                            :ok t
                            :url "https://www.openthesaurus.de/synonyme/Haus"
@@ -89,7 +89,7 @@
                                                                 :categories nil
                                                                 :synonyms ("Ministerium"
                                                                            "(das) Haus (+ Ministername)"))))))
-                  (:source dwds
+                  (:source "dwds"
                            :lemma "Haus"
                            :ok t
                            :url "https://www.dwds.de/wb/Haus"
@@ -106,6 +106,7 @@
                                                       "das erste Haus am Platz"
                                                       "das erste Haus am Platze"
                                                       "das Weiße Haus"
+                                                      "die Axt im Haus erspart den Zimmermann"
                                                       "etw. auf den Tisch bringen"
                                                       "etw. auf den Tisch des Hauses bringen"
                                                       "etw. auf den Tisch legen"
@@ -170,7 +171,7 @@
                                                                                                  (:id 2
                                                                                                       :dwds-id "d-1-1-1-2"
                                                                                                       :label "β)"
-                                                                                                      :definition "⟨ frei Haus ⟩"
+                                                                                                      :definition "⟨frei Haus⟩"
                                                                                                       :qualifiers nil
                                                                                                       :examples ("die Kohlen, Kartoffeln frei Haus liefern")
                                                                                                       :definitions nil)
@@ -231,7 +232,7 @@
                                                                               (:id 3
                                                                                    :dwds-id "d-1-1-3"
                                                                                    :label "c)"
-                                                                                   :definition "⟨ nach Hause, zu Hause ⟩ dort, dorthin, wo man (ständig) wohnt, heim"
+                                                                                   :definition "⟨nach Hause, zu Hause⟩ dort, dorthin, wo man (ständig) wohnt, heim"
                                                                                    :qualifiers nil
                                                                                    :examples ("nach Hause gehen, kommen"
                                                                                               "etw., jmdn. nach Hause bringen, schaffen"
@@ -325,7 +326,7 @@
                                                                 :definitions ((:id 1
                                                                                    :dwds-id "d-1-3-1"
                                                                                    :label "●"
-                                                                                   :definition "⟨ ein (großes) Haus machen ⟩"
+                                                                                   :definition "⟨ein (großes) Haus machen⟩"
                                                                                    :qualifiers ("veraltet")
                                                                                    :examples ("Frau von Tümmler war gesellig von Anlage. Sie liebte es, auszugehen und in den ihr gesteckten Grenzen ein Haus zu machen")
                                                                                    :definitions nil)))
@@ -345,19 +346,19 @@
                                                                 :definitions ((:id 1
                                                                                    :dwds-id "d-1-5-1"
                                                                                    :label "a)"
-                                                                                   :definition "⟨ ein fideles Haus ⟩"
+                                                                                   :definition "⟨ein fideles Haus⟩"
                                                                                    :qualifiers ("salopp" "scherzhaft")
                                                                                    :examples ("er war ein gelehrtes, gemütliches, patentes Haus")
                                                                                    :definitions nil)
                                                                               (:id 2
                                                                                    :dwds-id "d-1-5-2"
                                                                                    :label "b)"
-                                                                                   :definition "⟨ altes Haus ! ⟩"
+                                                                                   :definition "⟨altes Haus !⟩"
                                                                                    :qualifiers ("umgangssprachlich"
                                                                                                 "scherzhaft")
                                                                                    :examples ("na, wie geht’s, altes Haus ?")
                                                                                    :definitions nil)))))))
-                  (:source duden
+                  (:source "duden"
                            :lemma "Haus"
                            :ok t
                            :url ("https://www.duden.de/rechtschreibung/Haus?amp")
@@ -416,7 +417,7 @@
                                                                                               "(veraltet verhüllend) ein öffentliches Haus (Bordell)"
                                                                                               "das erste Haus (Hotel) am Platz[e]"
                                                                                               "die Chefin ist zurzeit nicht im Haus[e] (im Gebäude der Firma) ; Abkürzung: i. H."
-                                                                                              "〈in übertragener Bedeutung:〉 das gemeinsame europäische Haus")
+                                                                                              "⟨in übertragener Bedeutung:⟩ das gemeinsame europäische Haus")
                                                                                    :idioms ("Haus der offenen Tür (Gelegenheit, bei der Betriebe, Verwaltungsstellen usw. von allen Bürgern besichtigt werden können)"
                                                                                             "um die Häuser ziehen (umgangssprachlich: ausgehen; ein Lokal nach dem anderen aufsuchen: wir sollten mal wieder zusammen um die Häuser ziehen; früher sind wir nächtelang um die Häuser gezogen)")
                                                                                    :image nil
@@ -440,14 +441,14 @@
                                                                                               "Haus an Haus (nebeneinander) wohnen"
                                                                                               "sie fühlt sich schon ganz [wie] zu Haus[e] (fühlt sich in einer neuen Umgebung nicht mehr fremd)"
                                                                                               "von zu Hause abhauen, fort sein"
-                                                                                              "〈in übertragener Bedeutung:〉 aus dem Haus sein (nicht mehr bei den Eltern wohnen)"
-                                                                                              "〈in übertragener Bedeutung:〉 ein Paket, einen Brief nach Haus[e] (an die Angehörigen) schicken"
-                                                                                              "〈in übertragener Bedeutung:〉 sie ist, wohnt noch zu Haus[e] (bei den Eltern)"
-                                                                                              "〈in übertragener Bedeutung:〉 er war in Berlin zu Hause (wohnte in Berlin)"
-                                                                                              "〈in übertragener Bedeutung:〉 der Brauch des Osterreitens ist in der Lausitz zu Haus[e] (wird dort gepflegt; ist dort üblich; kommt von dort)"
-                                                                                              "〈in übertragener Bedeutung:〉 sie war überall zu Hause (kannte sich überall bestens aus)"
-                                                                                              "〈in übertragener Bedeutung:〉 ich bin für niemanden/für dich bin ich immer zu Haus[e] (zu sprechen)"
-                                                                                              "〈in übertragener Bedeutung:〉 der Verein spielt, tritt am Samstag zu Haus[e] (Sportjargon; auf dem eigenen Platz; vor einheimischem Publikum) [zum Wettkampf] an")
+                                                                                              "⟨in übertragener Bedeutung:⟩ aus dem Haus sein (nicht mehr bei den Eltern wohnen)"
+                                                                                              "⟨in übertragener Bedeutung:⟩ ein Paket, einen Brief nach Haus[e] (an die Angehörigen) schicken"
+                                                                                              "⟨in übertragener Bedeutung:⟩ sie ist, wohnt noch zu Haus[e] (bei den Eltern)"
+                                                                                              "⟨in übertragener Bedeutung:⟩ er war in Berlin zu Hause (wohnte in Berlin)"
+                                                                                              "⟨in übertragener Bedeutung:⟩ der Brauch des Osterreitens ist in der Lausitz zu Haus[e] (wird dort gepflegt; ist dort üblich; kommt von dort)"
+                                                                                              "⟨in übertragener Bedeutung:⟩ sie war überall zu Hause (kannte sich überall bestens aus)"
+                                                                                              "⟨in übertragener Bedeutung:⟩ ich bin für niemanden/für dich bin ich immer zu Haus[e] (zu sprechen)"
+                                                                                              "⟨in übertragener Bedeutung:⟩ der Verein spielt, tritt am Samstag zu Haus[e] (Sportjargon; auf dem eigenen Platz; vor einheimischem Publikum) [zum Wettkampf] an")
                                                                                    :idioms ("das Haus hüten (aus irgendeinem Grund nicht mit andern nach draußen gehen [können], zu Hause bleiben [müssen])"
                                                                                             "jemandem das Haus einrennen/einlaufen (umgangssprachlich: 1. jemanden ständig wegen einer Sache zu Hause aufsuchen und bedrängen. 2. [von Käufern, Käuferinnen o. Ä.] auf jemandes Angebot mit großem Zulauf, Interesse reagieren.)"
                                                                                             "jemandem ins Haus schneien/geschneit kommen (umgangssprachlich: überraschend, unerwartet jemanden besuchen, bei jemandem auftauchen)"
@@ -562,7 +563,7 @@
                                                                                    :idioms nil
                                                                                    :image nil
                                                                                    :definitions nil)))))))
-                  (:source wiktionary
+                  (:source "wiktionary"
                            :lemma "Haus"
                            :ok t
                            :url "https://de.wiktionary.org/wiki/Haus"
@@ -572,67 +573,67 @@
                                              :wortart "Substantiv"
                                              :grammar "Substantiv"
                                              :origin "Bei dem Wort handelt es sich um ein seit dem 8. Jahrhundert bezeugtes Erbwort, dessen althochdeutsche Form hūs lautete und sowohl das ‚Gebäude‘ als auch die ‚Familie‘, das ‚Hauswesen‘ und das ‚Geschlecht‘ bezeichnete. Die entsprechende mittelhochdeutsche Form lautete ebenfalls hūs, bezeichnete jedoch neben ‚Gebäude‘, ‚Familie‘ und ‚Geschlecht‘ auch noch ‚Wohnung‘, ‚Hütte‘, ‚Schloss‘, ‚Rathaus‘ sowie ‚Haushaltung‘ (vergleiche mittelniederdeutsch hūs, mittelniederländisch huus). Alle genannten Formen entstammen der (nicht belegten, aber erschlossenen) germanischen Form *hūsa-n, der die Bedeutung ‚Haus‘ beigemessen wird. Der gleichen Quelle sollen auch gotisches -hūs, das nur in 𐌲𐌿𐌳𐌷𐌿𐍃 (gudhūs) ‚Gotteshaus, Tempel‘ bezeugt ist – da ‚Haus‘ im Gotischen sonst als 𐍂𐌰𐌶𐌽 (razn) bezeichnet wird, sowie altnordisches hūs, altsächsisches hūs, altenglisches hús ‚house; family‘ und altfriesisches hūs entstammen. Die weitere Herkunft ist unklar: Einerseits wird eine Verwandtschaft mit »Hütte« angenommen, so dass *hūsa- wohl mit Dentalschwund und Ersatzdehnung auf *hud-s-a- zurückgeht. Außerdem sei ein Zusammenhang mit altgriechischem κεῦθος (keuthos) ‚Versteck, Höhle, Tiefe‘ und seiner Verwandtschaft denkbar, aber nicht naheliegend. Andererseits wird im Sinne von ‚Bedeckendes‘ ein Anschluss an die (nicht belegte, aber erschlossene) indoeuropäische Wurzel *(s)keus- angenommen (wozu auch »Hose« und »Hort« gehören), bei der es sich ihrerseits um eine s-Erweiterung der weitverbreiteten (erschlossenen) indoeuropäischen Wurzelformen *(s)keu-, *(s)keu̯ə-, *(s)kū- ‚bedecken, umhüllen‘ (siehe »Haut«, »Hode«, »Hütte«, »Scheune«, »Schuh«) handeln solle."
-                                             :idioms ("auf jemanden Häuser bauen können"
-                                                      "das europäische Haus / das gemeinsame Haus Europa"
-                                                      "Einfälle haben wie ein altes Haus"
-                                                      "erstes Haus am Platz / erstes Haus am Platze"
-                                                      "etwas auf den Tisch des Hauses legen"
-                                                      "Haus auf Rädern"
-                                                      "Haus der offenen Tür"
-                                                      "Haus des Herrn, Haus Gottes"
-                                                      "Häuser auf jemanden bauen"
-                                                      "euphemistisch: öffentliches Haus; umgangssprachlich: Haus der barmherzigen Schwestern, Haus der Bewegung, Haus der Freuden, Haus der roten Laterne, Haus der sieben Sünden"
-                                                      "bar auf den Tisch des Hauses"
-                                                      "ein Rausch wie ein Haus"
-                                                      "österreichisch: sich über die Häuser hauen"
-                                                      "um die Häuser ziehen"
-                                                      "Haus der fünfhundert Schlafzimmer"
-                                                      "Haus der tausend Betten"
-                                                      "umgangssprachlich: Haus von der Stange"
-                                                      "umgangssprachlich seltener: Holz vor dem Haus haben"
-                                                      "Haus und Hof"
-                                                      "ins Haus stehen"
-                                                      "etwas steht auf dem kurzen Weg ins Haus / etwas steht übern kurzen Weg ins Haus"
-                                                      "Haus am Haken, Haus im Schlepp, rollendes Haus"
-                                                      "jemanden das iverbieten"
-                                                      "mit der Tür ins Haus fallen"
-                                                      "alles aus dem Haus tragen"
-                                                      "jemandem etwas (Brief) ins Haus flattern"
-                                                      "Haus ohne Hüter"
-                                                      "aus dem Haus sein"
-                                                      "das Haus hüten"
-                                                      "fachsprachlich, Kaufmannssprache: frei Haus"
-                                                      "für jemanden zu Haus sein / für jemanden zu Hause sein"
-                                                      "komm du nur nach Haus !/ komm du nur nach Hause !"
-                                                      "mein Haus, meine Welt !"
-                                                      "noch zu Haus sein / noch zu Hause sein / noch zu Haus wohnen / noch zu Hause wohnen"
-                                                      "sich zu Haus fühlen / sich zu Hause fühlen / sich wie zu Haus fühlen / sich wie zu Hause fühlen"
-                                                      "auf etwas (einem bestimmten Gebiet) zu Hause sein / in etwas (einem bestimmten Fach) zu Hause sein"
-                                                      "da werden nachts die Häuser reingeholt / da werden nachts die Häuser durchs Fenster reingeholt"
-                                                      "etwas zu Hause lassen"
-                                                      "etwas nach Haus schicken / etwas nach Hause schicken"
-                                                      "jemandem das Haus einlaufen / jemandem das Haus einrennen"
-                                                      "jemanden ins Haus geplatzt kommen / jemandem ins Haus platzen / jemandem ins Haus geschneit kommen / jemandem ins Haus schneien; umgangssprachlich: jemandem ins Haus fallen"
-                                                      "jemandem nach Hause leuchten"
-                                                      "mit etwas zu Hause bleiben"
-                                                      "nie zu Hause sein"
-                                                      "Postkarte genügt, komme ins i !"
-                                                      "wenn er hinfällt, ist er zu Haus / wenn er zweimal hinfällt, ist er zu Haus"
-                                                      "einen nach Hause bringen"
-                                                      "kein Haus ohne Maus"
-                                                      "der Herr im Haus sein / der Herr im Hause sein"
-                                                      "in den ersten Häusern verkehren / in den ersten Häusern der Stadt verkehren"
-                                                      "von Haus aus / von Hause aus"
-                                                      "gehoben: das Haus bestellen / sein Haus bestellen"
-                                                      "ein großes Haus führen / ein offenes Haus führen"
-                                                      "veraltet: ein (großes) Haus machen"
-                                                      "Haus und Herd"
-                                                      "Haus halten"
-                                                      "familiär: altes Haus"
-                                                      "bemoostes Haus"
-                                                      "fesches Haus"
+                                             :idioms ("Fall Haus"
                                                       "zünftiges Haus"
-                                                      "umgangssprachlich: Fall Haus")
+                                                      "fesches Haus"
+                                                      "bemoostes Haus"
+                                                      "altes Haus"
+                                                      "Haus halten"
+                                                      "Haus und Herd"
+                                                      "ein (großes) Haus machen"
+                                                      "ein großes Haus führen; ein offenes Haus führen"
+                                                      "das Haus bestellen; sein Haus bestellen"
+                                                      "von Haus aus; von Hause aus"
+                                                      "in den ersten Häusern verkehren; in den ersten Häusern der Stadt verkehren"
+                                                      "der Herr im Haus sein; der Herr im Hause sein"
+                                                      "kein Haus ohne Maus"
+                                                      "einen nach Hause bringen"
+                                                      "wenn er hinfällt, ist er zu Haus; wenn er zweimal hinfällt, ist er zu Haus"
+                                                      "Postkarte genügt, komme ins i"
+                                                      "nie zu Hause sein"
+                                                      "mit etwas zu Hause bleiben"
+                                                      "jemandem nach Hause leuchten"
+                                                      "jemanden ins Haus geplatzt kommen; jemandem ins Haus platzen; jemandem ins Haus geschneit kommen; jemandem ins Haus schneien; jemandem ins Haus fallen"
+                                                      "jemandem das Haus einlaufen; jemandem das Haus einrennen"
+                                                      "etwas nach Haus schicken; etwas nach Hause schicken"
+                                                      "etwas zu Hause lassen"
+                                                      "da werden nachts die Häuser reingeholt; da werden nachts die Häuser durchs Fenster reingeholt"
+                                                      "auf etwas (einem bestimmten Gebiet) zu Hause sein; in etwas (einem bestimmten Fach) zu Hause sein"
+                                                      "sich zu Haus fühlen; sich zu Hause fühlen; sich wie zu Haus fühlen; sich wie zu Hause fühlen"
+                                                      "noch zu Haus sein; noch zu Hause sein; noch zu Haus wohnen; noch zu Hause wohnen"
+                                                      "mein Haus, meine Welt"
+                                                      "komm du nur nach Haus; komm du nur nach Hause"
+                                                      "für jemanden zu Haus sein; für jemanden zu Hause sein"
+                                                      "frei Haus"
+                                                      "das Haus hüten"
+                                                      "aus dem Haus sein"
+                                                      "Haus ohne Hüter"
+                                                      "jemandem etwas (Brief) ins Haus flattern"
+                                                      "alles aus dem Haus tragen"
+                                                      "mit der Tür ins Haus fallen"
+                                                      "jemanden das iverbieten"
+                                                      "Haus am Haken; Haus im Schlepp; rollendes Haus"
+                                                      "etwas steht auf dem kurzen Weg ins Haus; etwas steht übern kurzen Weg ins Haus"
+                                                      "ins Haus stehen"
+                                                      "Haus und Hof"
+                                                      "Holz vor dem Haus haben"
+                                                      "Haus von der Stange"
+                                                      "Haus der tausend Betten"
+                                                      "Haus der fünfhundert Schlafzimmer"
+                                                      "um die Häuser ziehen"
+                                                      "sich über die Häuser hauen"
+                                                      "ein Rausch wie ein Haus"
+                                                      "bar auf den Tisch des Hauses"
+                                                      "öffentliches Haus; Haus der barmherzigen Schwestern; Haus der Bewegung; Haus der Freuden; Haus der roten Laterne; Haus der sieben Sünden"
+                                                      "Häuser auf jemanden bauen"
+                                                      "Haus des Herrn; Haus Gottes"
+                                                      "Haus der offenen Tür"
+                                                      "Haus auf Rädern"
+                                                      "etwas auf den Tisch des Hauses legen"
+                                                      "erstes Haus am Platz; erstes Haus am Platze"
+                                                      "Einfälle haben wie ein altes Haus"
+                                                      "das europäische Haus; das gemeinsame Haus Europa"
+                                                      "auf jemanden Häuser bauen können")
                                              :synonyms ((:sense "1"
                                                                 :items ("Winde"
                                                                         "Affenkasten"
