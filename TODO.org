@@ -189,7 +189,7 @@ Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources ne
 
 Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was sich verändert hat. Mache ich manuell. Da ich aber das Package viel brauche, werde ich Fehler sowieso rasch entdecken.
 
-* REVIEW Tests gruppieren
+* DONE Tests gruppieren
 
 Unter Gruppierung nach Source auch noch eine nach Wort einfügen:
 
