@@ -31,7 +31,8 @@
           (url-hexify-string lemma)))
 
 (defun woerterbuch-openthesaurus-fetch (input sections callback)
-  "Fetch INPUT asynchronously from OpenThesaurus for SECTIONS."
+  "Fetch INPUT asynchronously from OpenThesaurus for SECTIONS.
+CALLBACK is tranmitted to the follow up function."
   (if (not (woerterbuch-core-section-requested-p :synonyms sections))
       (let ((result (woerterbuch-core-make-result 'openthesaurus input)))
         (setq result

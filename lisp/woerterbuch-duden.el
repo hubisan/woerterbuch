@@ -685,7 +685,8 @@ PUSH-ENTRY stores the parsed homograph. FAIL stores an error result."
     (funcall continue)))
 
 (defun woerterbuch-duden--initial-callback (status input sections callback)
-  "Handle initial Duden entry lookup STATUS for INPUT and SECTIONS."
+  "Handle initial Duden entry lookup STATUS for INPUT and SECTIONS.
+CALLBACK is handled over to follow up function."
   (let ((http-code (woerterbuch-duden--status-http-code status))
         result)
     (unwind-protect
