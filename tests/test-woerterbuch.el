@@ -14,62 +14,10 @@
 
 ;;; Configuration
 
-(defconst test-helper-woerterbuch-output-words
-  '("Bank" "Haus" "springen" "verlieben" "Wolke" "Zaun" "Nixdaexistiert")
-  "Words used for generated test output.")
-
-(defconst test-helper-woerterbuch-output-sources
-  '(openthesaurus dwds duden wiktionary)
-  "Sources used for generated test output.")
-
-(defconst test-helper-woerterbuch-output-sections
-  '(:definitions :examples :origin :synonyms :idioms)
-  "Sections used for generated expected output.")
-
-(defconst test-helper-woerterbuch-duden-extra-urls
-  '(("Bank"
-     ("https://www.duden.de/suchen/dudenonline/Bank"
-      "duden-Bank-search.html")
-     ("https://www.duden.de/rechtschreibung/Bank_Sitzgelegenheit?amp"
-      "duden-Bank-1.html")
-     ("https://www.duden.de/rechtschreibung/Bank_Geldinstitut?amp"
-      "duden-Bank-2.html")))
-  "Fixed Duden URLs for homograph test words.")
-
 ;;; Get exptected Output and fetch HTML/JSON
 
 ;; Both will be stored. And tests will compare the output to the expected,
 ;; stored one. And the Html and JSON will be used to mockup the data.
-
-(defun test-helper-woerterbuch--source-output-files (source word)
-  "Return `(URL FILE-NAME)' pairs for SOURCE and WORD.
-If there are multiple homographs for a word Duden has one page for each
-homograph."
-  (pcase source
-    ('openthesaurus
-     (list (list (woerterbuch-openthesaurus--build-url word)
-                 (format "openthesaurus-%s.json" word))))
-    ('dwds
-     (list (list (woerterbuch-dwds--build-url word)
-                 (format "dwds-%s.html" word))))
-    ('wiktionary
-     (list (list (woerterbuch-wiktionary--build-web-url word)
-                 (format "wiktionary-%s.html" word))))
-    ('duden
-     (or (cdr (assoc word test-helper-woerterbuch-duden-extra-urls))
-         (list (list (woerterbuch-duden--build-url word)
-                     (format "duden-%s.html" word)))))
-    (_
-     (error "Unknown source: %S" source))))
-
-(defun test-helper-woerterbuch--source-headers (source)
-  "Return request headers for SOURCE."
-  (pcase source
-    ('dwds woerterbuch-dwds-request-headers)
-    ('duden woerterbuch-duden-request-headers)
-    ('wiktionary woerterbuch-wiktionary-request-headers)
-    ('openthesaurus '(("User-Agent" . "woerterbuch/0.1")))
-    (_ nil)))
 
 (defun test-helper-woerterbuch-fetch-source-output ()
   "Fetch raw HTML/JSON source output for the fixed test words."

@@ -41,3 +41,26 @@
 ** Offene Punkte
 
 - Die Fixture-Dateien für DWDS =Haus= und teils =Bank= sollten noch sauber nachgezogen oder mit einem vollständigen lokalen Testlauf bestätigt werden; die Logikänderungen selbst sind eingegrenzt, aber der vollautomatische Gleichlauf aller erwarteten Einzeiler wurde in dieser Session nicht vollständig abgeschlossen.
+
+* 2026-05-21 Testing mit Fixtures
+
+** Änderungen
+
+- Die Source-Tests für =duden=, =dwds=, =openthesaurus= und =wiktionary= wurden stark vereinfacht.
+- Die bisherigen parsernahen Einzeltests wurden durch reine Fixture-Vergleiche ersetzt:
+  - gespeicherte HTML/JSON-Antworten werden als Mock für =url-retrieve= verwendet
+  - pro Source, Wort und Section wird nur noch der öffentliche Fetch-Weg gegen den gespeicherten erwarteten Output geprüft
+- Gemeinsame Test-Helfer und die URL-zu-Fixture-Zuordnung liegen nun zentral in =tests/test-helper.el=.
+- Spezielle 404-Fälle ohne gespeicherten Body werden im Mock deterministisch simuliert:
+  - Duden =Bank= initial 404 mit Search-Fallback
+  - Duden =Nixdaexistiert=
+  - Wiktionary =Nixdaexistiert=
+
+** Checks
+
+- Vollständiger Fixture-Abgleich aller Kombinationen aus Source, Wort und Section per Batch-Emacs:
+  - =emacs -Q --batch -L lisp -L tests -l test-helper --eval ...=
+  - Ergebnis: alle Vergleiche erfolgreich
+- =eask test buttercup= konnte in dieser Umgebung nicht direkt ausgeführt werden:
+  - Standardpfad =~/.eask= ist read-only
+  - mit lokalem =HOME= im Repo scheitert die Installation von =buttercup= am gesperrten Netzwerkzugriff

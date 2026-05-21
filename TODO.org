@@ -4,7 +4,7 @@
 
 Instruktionen für AI-Agents sind in AGENTS.md.
 
-* REVIEW Manueller Vergleich
+* DONE Manueller Vergleich
 
 Habe einige Wörter ausgewertet mit der aktuellen Funktion und manuell mit der Webseite abgeglichen.
 
@@ -30,26 +30,11 @@ Neu ist es so:
   "etwas steht auf dem kurzen Weg ins Haus"
 #+END_SRC
 
-** NEXT Vergleich Diff Neu mit Alt
+** DONE Vergleich Diff Neu mit Alt
 
-* TODO Spezifikation aktualisieren oder erstellen
+** DONE Tests ausführen
 
-In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
-
-* TODO Testing
-
-Es soll nur dies getestet werden:
-
-- Die HTML lade ich fix runter und speichere sie.
-- Dann wird der erwartete Output mit fetch erstellt und gespeichert. Da ich diesen jetzt geprüft habe, stimmt es.
-- Am besten wohl Output je Source + Section einzeln generieren und dann mit dem vergleichen. Also dwds > definition, dwds > examples, dwds > origin ...
-- Bei dem generieren können wir mit Buttercup das HTML mit dem gespeicherten faken. Bei Duden muss es glaube ich zuerst an einem HTML erkennen, dass es 2 Homographs hat, dies sollte auch getestet werden, einfach mit statischen HTMLs.
-- Danach wird geprüft, ob fetch immer noch diesen erwarteten Output liefert.
-
-- Kann man irgendwie testen, ob sich die Html-Struktur verändert und damit das Parsen nicht mehr richtig funktioniert? Der Inhalt kann sich ja immer ändern, falls die Texte angepasst oder ergänzt werden.
-- Oder halt den Output mit dem aktuellen Html erstellen und zur Info (kein Test-Fehler) melden, falls dies abweicht?
-
-** Tests
+Diese Tests kann ich gleich hier ausführen, für den Vergleich.
 
 Gute Tests:
 
@@ -183,6 +168,24 @@ Wieso auch immer, das Lemma wird verlieben. Habe es mit verschiedenen Lemmatizer
    :sections  '(:definitions :examples :origin :synonyms :idioms)
    :timeout 10)
 #+END_SRC
+
+* CANCEL Spezifikation aktualisieren oder erstellen
+
+In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
+
+* REVIEW Testing
+
+Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources neu aufsetzen. Kann man wohl einfach leeren.
+
+- Die HTML lade ich fix runter und speichere sie.
+  Habe eine Funktion in test-woerterbuch.el gemacht, welche mir die html runterlädt und dann den erwarteten Output generiert. Habe es ausgeführt. Ist alles im Testordner im Ordner Files bereit = musst du nicht mehr machen.
+- Der erwartete Output ist pro Source und Section einzeln.
+- Bei Duden hat es auch das Search HTML für Bank, wo es 2 Homographen hat.
+- Jetzt einfach mit Buttercup die Tests schreiben und den Output generieren, dabei die gespeicherten Html/Json als Mockup (oder wie dies heisst) verwenden.
+- Natürlich pro Source und Section wie der erwartete Output. Von der Test-Funktion kopieren, wie dieser in die Datei eingefügt wird (mit pp und newline am ende)
+- Dann prüfen ob die Objekte jeweils gleich sind. Keine weitere Tests sind notwendig.
+
+Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was sich verändert hat. Mache ich manuell. Da ich aber das Package viel brauche, werde ich Fehler sowieso rasch entdecken.
 
 * TODO Output definieren
 
