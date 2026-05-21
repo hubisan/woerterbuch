@@ -1,5 +1,11 @@
 ;;; woerterbuch-openthesaurus.el --- OpenThesaurus backend -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; OpenThesaurus backend implementation.
+
+;;; Code:
+
 (require 'url)
 (require 'json)
 (require 'subr-x)
@@ -25,7 +31,7 @@
           (url-hexify-string lemma)))
 
 (defun woerterbuch-openthesaurus-fetch (input sections callback)
-  "Fetch INPUT asynchronously from OpenThesaurus."
+  "Fetch INPUT asynchronously from OpenThesaurus for SECTIONS."
   (if (not (woerterbuch-core-section-requested-p :synonyms sections))
       (let ((result (woerterbuch-core-make-result 'openthesaurus input)))
         (setq result

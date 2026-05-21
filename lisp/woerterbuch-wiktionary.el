@@ -1,5 +1,11 @@
 ;;; woerterbuch-wiktionary.el --- Wiktionary backend -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; German Wiktionary backend implementation and DOM parsers.
+
+;;; Code:
+
 (require 'cl-lib)
 (require 'dom)
 (require 'seq)
@@ -487,7 +493,7 @@ Rules:
 
 (defun woerterbuch-wiktionary--parse-entry-section
     (lemma section id sections url)
-  "Parse one rendered Wiktionary SECTION into a homograph plist."
+  "Parse one rendered Wiktionary SECTION for LEMMA into a homograph plist."
   (let*
       ((heading-info
         (woerterbuch-wiktionary--heading-node-level-and-text section))
@@ -605,7 +611,7 @@ Rules:
         (plist-put result :homographs homographs)))))
 
 (defun woerterbuch-wiktionary--parse-current-buffer (input sections)
-  "Parse current HTTP buffer as rendered Wiktionary page for INPUT."
+  "Parse current HTTP buffer as rendered Wiktionary page for INPUT and SECTIONS."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
            (integerp url-http-end-of-headers))
@@ -649,7 +655,9 @@ Rules:
       (woerterbuch-core-section-requested-p :synonyms sections)))
 
 (defun woerterbuch-wiktionary--request-callback (status input sections callback)
-  "Handle Wiktionary page response STATUS for INPUT and invoke CALLBACK."
+  "Handle Wiktionary page response STATUS for INPUT and SECTIONS.
+
+Invoke CALLBACK with the parsed result."
   (let (result)
     (unwind-protect
         (setq result
@@ -681,7 +689,7 @@ Rules:
     (funcall callback result)))
 
 (defun woerterbuch-wiktionary-fetch (input sections callback)
-  "Fetch INPUT from German Wiktionary and invoke CALLBACK once."
+  "Fetch INPUT from German Wiktionary for SECTIONS and invoke CALLBACK once."
   (if (not (woerterbuch-wiktionary--request-needed-p sections))
       (let ((result (woerterbuch-core-make-result 'wiktionary input)))
         (setq result

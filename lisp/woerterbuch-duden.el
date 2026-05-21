@@ -1,5 +1,11 @@
 ;;; woerterbuch-duden.el --- Duden backend -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; Duden backend implementation and offline parsing helpers.
+
+;;; Code:
+
 (require 'cl-lib)
 (require 'dom)
 (require 'seq)
@@ -300,7 +306,7 @@ LABEL is the human-visible numbering label."
              :examples (and want-examples
                             (or
                              (woerterbuch-duden--note-values notes "Beispiele")
-                                (woerterbuch-duden--note-values notes "Beispiel")))
+                             (woerterbuch-duden--note-values notes "Beispiel")))
              :idioms (and want-idioms
                           (woerterbuch-duden--note-values
                            notes
@@ -557,7 +563,9 @@ HOMOGRAPH-ID is the 1-based index assigned by the caller."
          (not (woerterbuch-duden--status-http-code status)))))
 
 (defun woerterbuch-duden--fetch-search (input sections callback)
-  "Fetch Duden search results for INPUT and continue with CALLBACK."
+  "Fetch Duden search results for INPUT covering SECTIONS.
+
+Continue with CALLBACK."
   (woerterbuch-duden--with-headers
    (lambda ()
      (url-retrieve
@@ -604,7 +612,9 @@ HOMOGRAPH-ID is the 1-based index assigned by the caller."
       (funcall callback result))))
 
 (defun woerterbuch-duden--fetch-entry-urls (input sections urls callback)
-  "Fetch each Duden entry in URLS and invoke CALLBACK once."
+  "Fetch each Duden entry in URLS for INPUT and SECTIONS.
+
+Invoke CALLBACK once."
   (let ((remaining urls)
         (homographs nil)
         (failed nil))
@@ -614,9 +624,9 @@ HOMOGRAPH-ID is the 1-based index assigned by the caller."
             (failed
              (funcall callback failed))
             ((null remaining)
-               (funcall callback
-                        (woerterbuch-duden--result-from-homographs
-                         input (nreverse homographs))))
+             (funcall callback
+                      (woerterbuch-duden--result-from-homographs
+                       input (nreverse homographs))))
             (t
              (let* ((url (car remaining))
                     (index (1+ (length homographs))))
@@ -675,7 +685,7 @@ PUSH-ENTRY stores the parsed homograph. FAIL stores an error result."
     (funcall continue)))
 
 (defun woerterbuch-duden--initial-callback (status input sections callback)
-  "Handle initial Duden entry lookup STATUS."
+  "Handle initial Duden entry lookup STATUS for INPUT and SECTIONS."
   (let ((http-code (woerterbuch-duden--status-http-code status))
         result)
     (unwind-protect
@@ -713,7 +723,9 @@ PUSH-ENTRY stores the parsed homograph. FAIL stores an error result."
       (funcall callback result))))
 
 (defun woerterbuch-duden-fetch (input sections callback)
-  "Fetch INPUT from Duden asynchronously and invoke CALLBACK once."
+  "Fetch INPUT from Duden asynchronously for SECTIONS.
+
+Invoke CALLBACK once."
   (if (not (woerterbuch-duden--request-needed-p sections))
       (funcall callback (woerterbuch-core-make-result 'duden input))
     (woerterbuch-duden--with-headers
@@ -741,6 +753,7 @@ SECTIONS controls extraction. URL and HOMOGRAPH-ID override defaults."
     (file input sections &optional url homograph-id)
   "Parse local Duden HTML FILE as entry for INPUT.
 
+SECTIONS controls extraction.  URL and HOMOGRAPH-ID override defaults.
 This helper is meant for offline tests."
   (with-temp-buffer
     (insert-file-contents file)

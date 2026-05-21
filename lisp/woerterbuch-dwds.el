@@ -1,5 +1,11 @@
 ;;; woerterbuch-dwds.el --- DWDS backend -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; DWDS backend implementation and DOM parsers.
+
+;;; Code:
+
 (require 'cl-lib)
 (require 'dom)
 (require 'seq)
@@ -212,7 +218,7 @@
   "Return definition text for a DWDS reference wrapper NODE."
   (let* ((ref-node (or (and
                         (woerterbuch-dwds--has-class-p node "dwdswb-verweis")
-                            node)
+                        node)
                        (woerterbuch-dwds--find-first
                         node
                         (lambda (child)
@@ -292,13 +298,13 @@
       (let* ((phrase-scope
               (or (and
                    (woerterbuch-dwds--has-class-p local-scope "dwdswb-phrasem")
-                       local-scope)
+                   local-scope)
                   (woerterbuch-dwds--find-first
                    local-scope
                    (lambda (child)
                      (woerterbuch-dwds--has-class-p child "dwdswb-phrasem")))
                   (and (woerterbuch-dwds--has-class-p local-scope
-                                                     "dwdswb-konstruktionsmuster")
+                                                      "dwdswb-konstruktionsmuster")
                        local-scope)
                   (woerterbuch-dwds--find-first
                    local-scope
@@ -306,26 +312,26 @@
                      (woerterbuch-dwds--has-class-p
                       child
                       "dwdswb-konstruktionsmuster")))))
-           (phrase-node
-            (and phrase-scope
-                 (woerterbuch-dwds--find-first
-                  phrase-scope
-                  (lambda (child)
-                    (woerterbuch-dwds--has-class-p child "dwdswb-belegtext")))))
-           (phrase (and phrase-node
-                        (woerterbuch-dwds--text-skipping-classes
-                         phrase-node
-                         '("dwdswb-paraphrase"))))
-            (paraphrases
-             (delq nil
-                   (mapcar
-                    (lambda (node)
-                      (woerterbuch-dwds--normalize-paraphrase-text
-                       (woerterbuch-dwds--text node)))
-                    (and phrase-scope
-                         (woerterbuch-dwds--descendants-with-class
-                          phrase-scope
-                          "dwdswb-paraphrase"))))))
+             (phrase-node
+              (and phrase-scope
+                   (woerterbuch-dwds--find-first
+                    phrase-scope
+                    (lambda (child)
+                      (woerterbuch-dwds--has-class-p child "dwdswb-belegtext")))))
+             (phrase (and phrase-node
+                          (woerterbuch-dwds--text-skipping-classes
+                           phrase-node
+                           '("dwdswb-paraphrase"))))
+             (paraphrases
+              (delq nil
+                    (mapcar
+                     (lambda (node)
+                       (woerterbuch-dwds--normalize-paraphrase-text
+                        (woerterbuch-dwds--text node)))
+                     (and phrase-scope
+                          (woerterbuch-dwds--descendants-with-class
+                           phrase-scope
+                           "dwdswb-paraphrase"))))))
         (when (and phrase (not (string-empty-p phrase)))
           (if paraphrases
               (format "%s (MWA) = %s"
@@ -450,7 +456,7 @@ for example `relation-block-1-mwa' or `relation-block-2-mwa'."
        (not (equal (dom-attr node 'id) "0"))))
 
 (defun woerterbuch-dwds--article-scopes (dom)
-  "Return scopes that each contain one article."
+  "Return article scopes collected from DOM."
   (let ((panes (seq-filter #'woerterbuch-dwds--article-scope-p
                            (woerterbuch-dwds--descendants-with-class
                             dom
@@ -599,7 +605,7 @@ for example `relation-block-1-mwa' or `relation-block-2-mwa'."
           :homographs homographs)))
 
 (defun woerterbuch-dwds--parse-current-buffer (lemma sections)
-  "Parse current HTTP buffer as a DWDS page for LEMMA."
+  "Parse current HTTP buffer as a DWDS page for LEMMA and SECTIONS."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
            (integerp url-http-end-of-headers))
@@ -649,7 +655,9 @@ for example `relation-block-1-mwa' or `relation-block-2-mwa'."
          (not (woerterbuch-dwds--status-http-code status)))))
 
 (defun woerterbuch-dwds--fetch-callback (status lemma sections callback)
-  "Handle DWDS response STATUS for LEMMA and invoke CALLBACK."
+  "Handle DWDS response STATUS for LEMMA and SECTIONS.
+
+Invoke CALLBACK with the parsed result."
   (let ((result nil)
         (http-code (woerterbuch-dwds--status-http-code status)))
     (unwind-protect
@@ -683,7 +691,8 @@ for example `relation-block-1-mwa' or `relation-block-2-mwa'."
     (funcall callback result)))
 
 (defun woerterbuch-dwds-fetch (lemma sections callback)
-  "Fetch LEMMA from DWDS and invoke CALLBACK once.
+  "Fetch LEMMA from DWDS for SECTIONS and invoke CALLBACK once.
+
 The request goes directly to the canonical dictionary page
 https://www.dwds.de/wb/<lemma>. Homographs such as Bank#1 and Bank#2 are
 kept as subentries in :homographs but always share the same canonical :url."

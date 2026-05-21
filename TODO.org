@@ -175,6 +175,52 @@ In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
 * REVIEW Testing
 
+[2026-05-21 Thu 23:39] Update: Noch Checkdoc Warnungen beheben:
+
+#+BEGIN_SRC text
+
+  >>> checkdoc
+
+  `lisp/woerterbuch.el` with checkdoc (0.6.2)
+  No issues found
+
+  `lisp/woerterbuch-core.el` with checkdoc (0.6.2)
+  woerterbuch-core.el:0: You should have a section marked ";;; Commentary:"
+  woerterbuch-core.el:10: You should have a section marked ";;; Code:"
+  woerterbuch-core.el:386: Messages should start with a capital letter
+
+  `lisp/woerterbuch-duden.el` with checkdoc (0.6.2)
+  woerterbuch-duden.el:0: You should have a section marked ";;; Commentary:"
+  woerterbuch-duden.el:11: You should have a section marked ";;; Code:"
+  woerterbuch-duden.el:560: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+  woerterbuch-duden.el:607: Argument ‘input’ should appear (as INPUT) in the doc string
+  woerterbuch-duden.el:678: Argument ‘input’ should appear (as INPUT) in the doc string
+  woerterbuch-duden.el:716: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+  woerterbuch-duden.el:742: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+
+  `lisp/woerterbuch-dwds.el` with checkdoc (0.6.2)
+  woerterbuch-dwds.el:0: You should have a section marked ";;; Commentary:"
+  woerterbuch-dwds.el:11: You should have a section marked ";;; Code:"
+  woerterbuch-dwds.el:453: Argument ‘dom’ should appear (as DOM) in the doc string
+  woerterbuch-dwds.el:602: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+  woerterbuch-dwds.el:652: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+  woerterbuch-dwds.el:686: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+
+  `lisp/woerterbuch-openthesaurus.el` with checkdoc (0.6.2)
+  woerterbuch-openthesaurus.el:0: You should have a section marked ";;; Commentary:"
+  woerterbuch-openthesaurus.el:8: You should have a section marked ";;; Code:"
+  woerterbuch-openthesaurus.el:28: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+
+  `lisp/woerterbuch-wiktionary.el` with checkdoc (0.6.2)
+  woerterbuch-wiktionary.el:0: You should have a section marked ";;; Commentary:"
+  woerterbuch-wiktionary.el:11: You should have a section marked ";;; Code:"
+  woerterbuch-wiktionary.el:490: Argument ‘lemma’ should appear (as LEMMA) in the doc string
+  woerterbuch-wiktionary.el:608: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+  woerterbuch-wiktionary.el:652: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+  woerterbuch-wiktionary.el:684: Argument ‘sections’ should appear (as SECTIONS) in the doc string
+#+END_SRC
+
+
 Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources neu aufsetzen. Kann man wohl einfach leeren.
 
 - Die HTML lade ich fix runter und speichere sie.

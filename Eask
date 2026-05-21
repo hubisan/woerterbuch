@@ -30,8 +30,7 @@
 ;; https://emacs-eask.github.io/DSL/#-development-rest-body
 (development
  (depends-on "buttercup")
- (depends-on "with-simulated-input")
- (depends-on "ellsp"))
+ (depends-on "with-simulated-input"))
 
 ;; Tell checkdoc not to demand two spaces after a period.
 (setq sentence-end-double-space nil)

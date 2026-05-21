@@ -1,5 +1,11 @@
 ;;; woerterbuch-core.el --- Core helpers for woerterbuch -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; Shared helpers for coordinating source backends and normalizing results.
+
+;;; Code:
+
 (require 'cl-lib)
 (require 'url)
 (require 'json)
@@ -383,7 +389,8 @@ largest configured source timeout plus one second."
                 (< (float-time) deadline))
       (accept-process-output nil woerterbuch-sync-poll-interval))
     (unless done
-      (error "woerterbuch-fetch-all-sync timed out after %ss" timeout))
+      (error "Timed out waiting in woerterbuch-fetch-all-sync after %ss"
+             timeout))
     result))
 
 (provide 'woerterbuch-core)

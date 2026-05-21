@@ -77,3 +77,22 @@
 
 - =make test=
   - Ergebnis: 140 Specs, 0 Fehler
+
+* 2026-05-21 Checkdoc-Warnungen
+
+** Änderungen
+
+- In den Backend-Dateien wurden fehlende =;;; Commentary:= und =;;; Code:=-Abschnitte ergänzt.
+- Betroffene Docstrings wurden so präzisiert, dass die Parameter =INPUT=, =LEMMA=, =DOM= und =SECTIONS= explizit genannt werden.
+- Die Timeout-Fehlermeldung in =woerterbuch-core.el= beginnt nun mit einem Großbuchstaben, damit sie Checkdoc entspricht.
+
+** Checks
+
+- Batch-Checkdoc lokal für:
+  - =lisp/woerterbuch-core.el=
+  - =lisp/woerterbuch-duden.el=
+  - =lisp/woerterbuch-dwds.el=
+  - =lisp/woerterbuch-openthesaurus.el=
+  - =lisp/woerterbuch-wiktionary.el=
+- =make test=
+  - Ergebnis: 140 Specs, 0 Fehler
