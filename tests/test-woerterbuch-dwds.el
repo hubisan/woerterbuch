@@ -86,3 +86,7 @@
               '(:source dwds :lemma "Nixtdaexistiert" :ok nil
                         :homographs nil
                         :error "No matches found")))))
+
+(provide 'test-woerterbuch-dwds)
+
+;;; test-woerterbuch-dwds.el ends here

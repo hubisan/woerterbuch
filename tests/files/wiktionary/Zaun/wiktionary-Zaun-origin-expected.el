@@ -1,0 +1,11 @@
+(:input "Zaun" :lemma "Zaun" :sources
+        ((:source wiktionary :lemma "Zaun" :ok t :url
+                  "https://de.wiktionary.org/wiki/Zaun" :homographs
+                  ((:id 1 :lemma "Zaun" :title "Zaun, Substantiv, m" :wortart
+                        "Substantiv" :grammar "Substantiv" :origin
+                        "Bei dem Wort handelt es sich um ein seit dem 8. Jahrhundert bezeugtes Erbwort, dessen mittelhochdeutsche Formen zūn und zoun ‚Umzäunung, Hecke, Gehege‘ (vergleiche mittelniederdeutsch tūn ‚Flechtzaun, Gehege, Garten‘, mittelniederländisch tuun ‚Flechtzaun, umzäunter Hof‘) lauteten. Diese entstammen der gleichbedeutend althochdeutschen Form zūn, welche ihrerseits auf die (nicht bezeugte, aber rekonstruierte) germanische Form *tūna-m ‚Zaun‘ zurückgeführt wird. Der gleichen Quelle sollen altnordisch tūn n ‚eingezäuntes Land, eingehegter Grasplatz vor dem Haus, Hof, Hofplatz, Ortschaft, Stadt‘, altfriesisch tūn, altsächsisch tūn ‚Flechtzaun, Gehege, Garten‘ und altenglisch tūn ‚Zaun; Garten; Feld; Hof; Landhaus; Wohnung; Dorf, Stadt, Ortschaft‘ entspringen. So wird deutlich, dass sich im Altnordischen und Altenglischen die Bedeutung zu ‚eingehegter Platz‘ weiter entwickelt, so dass sich englisch town ‚Stadt‘, niederländisch tuin ‚Garten‘, (mundartliches) schwedisch tun ‚Zaun‘ und isländisch tún ergeben. Die Herkunft der erschlossenen germanischen Form bleibt jedoch letztlich unklar. Außergermanische Anknüpfungsmöglichkeiten finden sich im Keltischen: altirisch dūn oder dún n ‚Burg, befestigte Stadt‘, altwalisisch din ‚Burg‘. Vermutlich gehört hierhin auch das gallisch - lateinische Element -dūnum oder -dunum, das als zweites Glied in Ortsnamen auftritt, wie zum Beispiel in Lugdūnum ‚Lyon‘, Noviodunum ‚Neuenburg‘ (Name mehrerer keltischer Städte), Tarodūnum ‚Zarten‘, Virodūnum ‚Verdun‘."
+                        :idioms nil :synonyms nil :url
+                        "https://de.wiktionary.org/wiki/Zaun" :definitions
+                        ((:id 1 :label "1" :definition
+                              "eine aus Drahtgeflecht oder aus (gekreuzten, parallel angeordneten oder dergleichen) Metall- oder Holzstäben bestehende Vorrichtung, die zumeist ein Grundstück, ein bestimmtes Areal oder dergleichen eingrenzt"
+                              :qualifiers nil :examples nil :definitions nil)))))))

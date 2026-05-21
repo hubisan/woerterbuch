@@ -1,0 +1,9 @@
+(:input "Wolke" :lemma "Wolke" :sources
+        ((:source dwds :lemma "Wolke" :ok t :url "https://www.dwds.de/wb/Wolke"
+                  :homographs
+                  ((:id 1 :hidx "" :lemma "Wolke" :title "Wolke, die" :wortart
+                        "Substantiv" :grammar
+                        "Substantiv (Femininum) · Genitiv Singular: Wolke · Nominativ Plural: Wolken"
+                        :origin
+                        "Wolke f. Gebilde aus verdichtetem Wasserdampf. Die unterschiedliche Stammbildung aufweisenden westgerm. Substantive ahd. wolkan n. (8. Jh.), mhd. wolken, wulken n. (m.), daneben ahd. wolka f. (9. Jh.), mhd. wolke f. und ahd. wolko m. (9. Jh.), mhd. wolke m. n., wolk m., asächs. wolkan n., mnd. wolken n. (auch m.), wolke f., mnl. wolken n. neben mnl. wolke f., wolkene f., nl. wolk f., afries. wulken n., aengl. weolcen, wolc(e)n n. m., engl. (dichterich) welkin ‘Himmel’ (germ. *wulkna- n., *wulkō f.) gehören als schwundstufige Bildungen wahrscheinlich mit den unter welk (s. d.) angegebenen Formen zu ie. *u̯elg- ‘feucht, naß’ bei einer Ausgangsbedeutung ‘die Feuchte, Nasse’, d. h. ‘die Regenhaltige’. Im Nhd. setzt sich die fem. gegen die ältere neutr. Form (bis ins 16. Jh. belegt) durch. Redensartlich aus den Wolken fallen ‘überrascht sein’ (18. Jh.), heute meist aus allen Wolken fallen. – wolkig Adj. ‘mit Wolken behangen’ (15. Jh.). bewölken Vb. reflexiv ‘wolkig werden, sich verdunkeln, unfreundlich werden’ (15. Jh.), vgl. mhd. bewülken ; bewölkt Part.adj. ‘wolkig, trübe’, übertragen ‘nachdenklich, sorgenvoll, unfreundlich, finster’ (17. Jh.). Wolkenkratzer m. ‘Hochhaus’, Übersetzung (Anfang 20. Jh.) der scherzhaften Bildung amerik.-engl. skyscraper, eigentlich ‘den (bzw. am) Himmel Kratzender’."
+                        :idioms nil :definitions nil)))))

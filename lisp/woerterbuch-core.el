@@ -279,11 +279,8 @@ Failure:
 (defun woerterbuch-core--fetch-all-with-lemma
     (input lemma sections final-callback)
   "Fetch SECTIONS for INPUT using LEMMA as backend query.
-
 FINAL-CALLBACK is called exactly once with a wrapper plist of the form:
-
   (:input INPUT :lemma LEMMA :sources SOURCES)
-
 where SOURCES is a list of normalized source results in stable source
 order."
   (let* ((sources woerterbuch-sources)
@@ -324,22 +321,20 @@ order."
            &key
            (sections woerterbuch-default-sections)
            (normalize-lemma woerterbuch-normalize-lemma))
-  "Fetch INPUT from all configured sources.
-
-INPUT is the original user input. Some sources may support not only
-single words, but also multi-word expressions or idioms (for example
-DWDS).
-
-FINAL-CALLBACK is called once with a wrapper plist of the form:
-
+  "Fetch dictionary data for INPUT from all configured sources.
+Call FINAL-CALLBACK once with a wrapper plist:
   (:input INPUT :lemma LEMMA :sources SOURCES)
-
-SECTIONS is a list of keywords such as `:synonyms' or `:definitions'.
-When omitted, `woerterbuch-default-sections' is used.
-
-When NORMALIZE-LEMMA is non-nil, INPUT is first normalized to its base
-form via DWDS before querying backends. If INPUT is not normalized,
-then the wrapper lemma is equal to INPUT."
+where SOURCES is a list of normalized source results in stable source
+order.
+INPUT is the original query string and may be a word, phrase, or
+idiom, depending on backend support.
+SECTIONS limits requested data to keys such as `:definitions',
+`:examples', `:origin', `:synonyms' or `:idioms'.  When nil or
+omitted, use `woerterbuch-default-sections'.
+When NORMALIZE-LEMMA is non-nil, normalize INPUT through DWDS before
+querying the backends.  The normalized form becomes LEMMA in the
+wrapper plist.  When normalization fails or is disabled, LEMMA is
+INPUT."
   (if normalize-lemma
       (woerterbuch-core-normalize-lemma
        input
@@ -360,13 +355,16 @@ then the wrapper lemma is equal to INPUT."
            (sections woerterbuch-default-sections)
            (normalize-lemma woerterbuch-normalize-lemma)
            timeout)
-  "Synchronously fetch INPUT from all configured sources.
-
-Returns the wrapper result that `woerterbuch-fetch-all' would pass to
-its callback.
-
-TIMEOUT limits the total wait time in seconds for the whole operation.
-When nil, use the maximum configured source timeout plus 1 second."
+  "Synchronously fetch dictionary data for INPUT.
+Return the same wrapper plist that `woerterbuch-fetch-all' passes to
+its callback:
+  (:input INPUT :lemma LEMMA :sources SOURCES)
+where SOURCES is a list of normalized source results in stable source
+order.
+SECTIONS and NORMALIZE-LEMMA have the same meaning as in
+`woerterbuch-fetch-all'.
+TIMEOUT is the maximum total wait time in seconds.  When nil, use the
+largest configured source timeout plus one second."
   (let* ((done nil)
          (result nil)
          (timeout (or timeout
