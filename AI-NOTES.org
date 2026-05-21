@@ -96,3 +96,15 @@
   - =lisp/woerterbuch-wiktionary.el=
 - =make test=
   - Ergebnis: 140 Specs, 0 Fehler
+
+* 2026-05-22 Tests gruppieren
+
+** Änderungen
+
+- Die Buttercup-Suiten für =duden=, =dwds=, =openthesaurus= und =wiktionary= sind nun zusätzlich nach Wort verschachtelt.
+- Die fachlichen Vergleiche blieben unverändert; nur die Testausgabe wurde von =Source -> Spec= auf =Source -> Wort -> Spec= umgestellt.
+
+** Checks
+
+- =make test=
+  - Ergebnis: 140 Specs, 0 Fehler

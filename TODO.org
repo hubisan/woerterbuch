@@ -173,53 +173,9 @@ Wieso auch immer, das Lemma wird verlieben. Habe es mit verschiedenen Lemmatizer
 
 In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
-* REVIEW Testing
+* DONE Testing
 
-[2026-05-21 Thu 23:39] Update: Noch Checkdoc Warnungen beheben:
-
-#+BEGIN_SRC text
-
-  >>> checkdoc
-
-  `lisp/woerterbuch.el` with checkdoc (0.6.2)
-  No issues found
-
-  `lisp/woerterbuch-core.el` with checkdoc (0.6.2)
-  woerterbuch-core.el:0: You should have a section marked ";;; Commentary:"
-  woerterbuch-core.el:10: You should have a section marked ";;; Code:"
-  woerterbuch-core.el:386: Messages should start with a capital letter
-
-  `lisp/woerterbuch-duden.el` with checkdoc (0.6.2)
-  woerterbuch-duden.el:0: You should have a section marked ";;; Commentary:"
-  woerterbuch-duden.el:11: You should have a section marked ";;; Code:"
-  woerterbuch-duden.el:560: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-  woerterbuch-duden.el:607: Argument ‘input’ should appear (as INPUT) in the doc string
-  woerterbuch-duden.el:678: Argument ‘input’ should appear (as INPUT) in the doc string
-  woerterbuch-duden.el:716: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-  woerterbuch-duden.el:742: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-
-  `lisp/woerterbuch-dwds.el` with checkdoc (0.6.2)
-  woerterbuch-dwds.el:0: You should have a section marked ";;; Commentary:"
-  woerterbuch-dwds.el:11: You should have a section marked ";;; Code:"
-  woerterbuch-dwds.el:453: Argument ‘dom’ should appear (as DOM) in the doc string
-  woerterbuch-dwds.el:602: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-  woerterbuch-dwds.el:652: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-  woerterbuch-dwds.el:686: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-
-  `lisp/woerterbuch-openthesaurus.el` with checkdoc (0.6.2)
-  woerterbuch-openthesaurus.el:0: You should have a section marked ";;; Commentary:"
-  woerterbuch-openthesaurus.el:8: You should have a section marked ";;; Code:"
-  woerterbuch-openthesaurus.el:28: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-
-  `lisp/woerterbuch-wiktionary.el` with checkdoc (0.6.2)
-  woerterbuch-wiktionary.el:0: You should have a section marked ";;; Commentary:"
-  woerterbuch-wiktionary.el:11: You should have a section marked ";;; Code:"
-  woerterbuch-wiktionary.el:490: Argument ‘lemma’ should appear (as LEMMA) in the doc string
-  woerterbuch-wiktionary.el:608: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-  woerterbuch-wiktionary.el:652: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-  woerterbuch-wiktionary.el:684: Argument ‘sections’ should appear (as SECTIONS) in the doc string
-#+END_SRC
-
+[2026-05-21 Thu 23:39] Update: Noch Checkdoc Warnungen beheben.
 
 Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources neu aufsetzen. Kann man wohl einfach leeren.
 
@@ -232,6 +188,25 @@ Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources ne
 - Dann prüfen ob die Objekte jeweils gleich sind. Keine weitere Tests sind notwendig.
 
 Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was sich verändert hat. Mache ich manuell. Da ich aber das Package viel brauche, werde ich Fehler sowieso rasch entdecken.
+
+* REVIEW Tests gruppieren
+
+Unter Gruppierung nach Source auch noch eine nach Wort einfügen:
+
+OpenThesaurus backend
+  matches expected :definitions output for Bank (0.40ms)
+  matches expected :examples output for Bank (0.30ms)
+  matches expected :origin output for Bank (0.38ms)
+  matches expected :synonyms output for Bank (0.61ms)
+  matches expected :idioms output for Bank (0.33ms)
+  matches expected :definitions output for Haus (0.41ms)
+  matches expected :examples output for Haus (0.23ms)
+  matches expected :origin output for Haus (0.38ms)
+  matches expected :synonyms output for Haus (0.81ms)
+  matches expected :idioms output for Haus (0.45ms)
+
+Erledigt [2026-05-22 Fri].
+
 
 * TODO Output definieren
 
