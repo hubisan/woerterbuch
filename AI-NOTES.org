@@ -1,5 +1,21 @@
 #+TITLE: AI Notes
 
+* 2026-05-22 Duden Parser gem. Python-Repo
+
+** Änderungen
+
+- Der Duden-Synonym-Parser trennt Einträge nun wie in =docs/word.py= auch an Semikolons und Kommas, aber nur ausserhalb von Klammern.
+- Dadurch werden qualifizierte Synonym-Listen wie bei =verlieben= korrekt in einzelne Einträge zerlegt, statt mehrere Bedeutungen in einem String zusammenzukleben.
+- Die zugehörige Fixture-Datei für =tests/files/duden/verlieben/duden-verlieben-synonyms-expected.el= wurde an den korrigierten Output angepasst.
+
+** Checks
+
+- Gezielter Fixture-Check per Batch-Emacs für Duden-Synonyme:
+  - =verlieben= zeigt nun vier getrennte Synonyme
+  - =Haus= und =Bank= bleiben unverändert
+- =make test=
+  - Ergebnis: 140 Specs, 0 Fehler
+
 * 2026-05-20 Manueller Vergleich
 
 ** Änderungen

@@ -401,12 +401,29 @@ LABEL is the human-visible numbering label."
           (string-join parts " "))))))
 
 (defun woerterbuch-duden--split-synonym-text (string)
-  "Split comma-separated synonym STRING conservatively."
-  (delq nil
-        (mapcar (lambda (part)
-                  (let ((txt (woerterbuch-duden--clean-text part)))
-                    (unless (string-empty-p txt) txt)))
-                (split-string (or string "") "," t))))
+  "Split synonym STRING on commas and semicolons outside parentheses."
+  (let ((parts nil)
+        (current "")
+        (depth 0))
+    (dolist (char (string-to-list (or string "")))
+      (cond
+       ((eq char ?\()
+        (setq depth (1+ depth))
+        (setq current (concat current (string char))))
+       ((eq char ?\))
+        (setq depth (max 0 (1- depth)))
+        (setq current (concat current (string char))))
+       ((and (= depth 0) (memq char '(?, ?\;)))
+        (push current parts)
+        (setq current ""))
+       (t
+        (setq current (concat current (string char))))))
+    (push current parts)
+    (delq nil
+          (mapcar (lambda (part)
+                    (let ((txt (woerterbuch-duden--clean-text part)))
+                      (unless (string-empty-p txt) txt)))
+                  (nreverse parts)))))
 
 (defun woerterbuch-duden--extract-synonyms (dom)
   "Extract synonyms from DOM."

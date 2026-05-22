@@ -9,6 +9,7 @@ Complete rewrite of the code. Added more sources and parsing additional sections
 - =ADDED= DWDS: idioms, origin
 - =ADDED= Wiktionary: definitions, idioms, origin, examples
 - =ADDED= Duden as source: definitions, idioms, origin, example, synonyms
+- =FIXED= Duden-Synonyme werden bei qualifizierten Listen wieder korrekt in einzelne Einträge getrennt.
 - =CHANGED= Fixture-based backend tests are now grouped by source and word in Buttercup output.
 - =CHANGED= Changed headers to mimick Tor browser for better privacy.
 - =CHANGED= Using if-let* and when-let* to be future proof.

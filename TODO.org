@@ -10,6 +10,38 @@ Important files:
 - TODO.org: tasks and statuses
 - AI-NOTES.org: blockers, open questions, decisions, test results
 - CHANGELOG.org: approved and completed changes
+  
+* DONE Duden Parsen verbessern gem. Python-Repo
+
+Habe ein Repo gefunden, zu blöd habe ich nich am Anfang dran gedacht, welches Duden parst. Ist in Python https://github.com/radomirbosak/duden
+
+Dies ist die relevante Datei: [[file:docs/word.py]]
+
+Duden parser aufgrund dieser Datei verbessern. Aber ich will nicht alles auf den Kopf stellen, es funktioniert ja.
+
+AI-Notes: [[file:AI-NOTES.org::*2026-05-22 Duden Parser gem. Python-Repo][2026-05-22 Duden Parser gem. Python-Repo]]
+
+* TODO Wiktionary Parsen verbessern gem. Python-Repo
+
+Da hat es auch ein Repo, sogar 2:
+- [[https://github.com/suyashb95/WiktionaryParser][https://github.com/suyashb95/WiktionaryParser]]
+- [[https://github.com/tatuylonen/wiktextract][https://github.com/tatuylonen/wiktextract]]. 
+
+* TODO Lemma verbessern
+
+Damit kann man das Lemma initial prüfen. Aktuell liefert nämlich verliebt > verlieben anstatt einfach verliebt. Mit dieser Abfrage kriegt man eine leere Abfrage zurück, wenn es sich nicht um eine Grundform handelt und sonst kriegt man Daten zurück:
+
+- https://www.dwds.de/api/wb/snippet/?q=springt
+  #+BEGIN_SRC js
+    []
+  #+END_SRC
+
+- https://www.dwds.de/api/wb/snippet/?q=verliebt
+  #+BEGIN_SRC js
+    [{"wortart":"partizipiales Adjektiv","url":"https://www.dwds.de/wb/verliebt","lemma":"verliebt","input":"verliebt"}]
+  #+END_SRC
+
+Dabei sollte man auch gleich noch prüfen, was passiert, wenn man nach einer Redewendung sucht. Bei einigen ist dies möglich, aber Lemma suchen ist dann nicht angebracht. Sobald nach mehreren Wörtern gesucht wird, kann man dies mit dem Lemma gleich auslassen.
 
 * TODO Output definieren
 
@@ -326,4 +358,3 @@ Wieso auch immer, das Lemma wird verlieben. Habe es mit verschiedenen Lemmatizer
    :sections  '(:definitions :examples :origin :synonyms :idioms)
    :timeout 10)
 #+END_SRC
-
