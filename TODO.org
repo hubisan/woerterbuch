@@ -1,8 +1,166 @@
 #+TITLE: Wörterbuch - TODOs
 #+STARTUP: showall
-#+TODO: TODO(t) NEXT(n) WAIT(w) REVIEW(r) | DONE(d) CANCEL(c)
+#+TODO: TODO(t) NEXT(n) WAIT(w) REVIEW(r) CONTINUE(C) | DONE (d) CANCEL (c)
 
-Instruktionen für AI-Agents sind in AGENTS.md.
+This repository uses AI agents to assist with development.
+
+Important files:
+
+- AGENTS.org: AI agent instructions and workflow rules
+- TODO.org: tasks and statuses
+- AI-NOTES.org: blockers, open questions, decisions, test results
+- CHANGELOG.org: approved and completed changes
+
+* TODO Output definieren
+
+Am Schluss will ich das Ganze als Org ausgeben.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-list-allow-alphabetical t)
+#+END_SRC
+
+#+BEGIN_SRC org
+  ,#+TITLE: Haus
+  allenfalls weitere Properties wie Time
+
+  ,* Bedeutungen
+
+  ,** *DWDS Bedeutungen*
+
+  1. *aus Wänden und Dach errichtetes Gebäude für Menschen*
+     a) *zum Wohnen, Wohnhaus*
+     - Beispiele
+       - ein großes, mehrstöckiges, neues, stattliches, modernes, ruhiges, wohnliches, hässliches, baufälliges, abgewohntes, leeres, verlassenes, zerbombtes, abgebranntes Haus
+       - sein elterliches Haus
+     - *das eigene Heim*
+       - Beispiele
+         - im Haus des Freundes ein- und ausgehen
+         - eine Einladung, ein Brief flattert ins Haus
+     b) ...
+
+  ,** *Duden Bedeutungen*
+
+  Bedeutungen
+  1. *aus Wänden und Dach errichtetes Gebäude für Menschen*
+     a) *zum Wohnen, Wohnhaus*
+
+  ,** *Wiktionary Bedeutungen*
+
+  ...
+
+  ,* Synonyme
+
+  ,** *Openthesaurus Synonyme*
+
+  ...
+
+  ,** *Duden Synonyme*
+
+  ...
+
+  ,** *Wiktionary Synonyme*
+
+  ...
+
+  ,* Redewendungen
+
+  ,* Herkunft
+#+END_SRC
+
+* Allgemeines
+
+** Ziel
+
+Für mehrere Dictionary-Sources (z. B. Duden, DWDS, OpenThesaurus, Wiktionary) sollen Requests *asynchron gleichzeitig gestartet* werden.
+
+Jede Source implementiert dieselbe öffentliche API und liefert das Resultat in einem gemeinsamen plist-Format zurück.
+
+Die Argumente und internen Bezeichner bleiben auf Englisch, auch wenn das Package sonst deutsch ist.
+
+** Korrigierte Architektur
+
+Der Aggregator sollte direkt in =woerterbuch-core.el= liegen.
+
+Begründung:
+
+- dort liegen bereits die gemeinsamen Datenstrukturen und Hilfsfunktionen
+- der Aggregator ist keine UI-Schicht, sondern gemeinsame Infrastruktur
+- =woerterbuch.el= kann dadurch bewusst dünn bleiben
+- so verhindert man, dass Logik versehentlich zwischen =core= und =woerterbuch.el= auseinanderläuft
+
+*** Dateien
+
+- =woerterbuch-core.el=
+- =woerterbuch.el=
+- =woerterbuch-duden.el=
+- =woerterbuch-dwds.el=
+- =woerterbuch-openthesaurus.el=
+- =woerterbuch-wiktionary.el=
+
+*** Verantwortlichkeiten
+
+**** =woerterbuch-core.el=
+Gemeinsame Infrastruktur:
+- section handling
+- common result helpers
+- error/result constructors
+- buffer/header helpers
+- gemeinsame Request-Helfer
+- *Aggregator für alle Sources*
+- ggf. zentrale Source-Reihenfolge oder Source-Registry
+
+**** =woerterbuch-<source>.el=
+Jeweils source-spezifisch:
+- URL building
+- HTTP request via =url-retrieve=
+- parsing of HTML or JSON
+- extraction of requested sections
+- returning a normalized plist result
+
+**** =woerterbuch.el=
+Nur öffentliche Hülle:
+- =require= von =woerterbuch-core.el=
+- =require= der einzelnen Sources
+- ggf. sehr kleine öffentliche Einstiegspunkte
+- keine eigentliche Aggregator- oder Parsing-Logik
+
+* DONE Tests gruppieren
+
+Unter Gruppierung nach Source auch noch eine nach Wort einfügen:
+
+OpenThesaurus backend
+  matches expected :definitions output for Bank (0.40ms)
+  matches expected :examples output for Bank (0.30ms)
+  matches expected :origin output for Bank (0.38ms)
+  matches expected :synonyms output for Bank (0.61ms)
+  matches expected :idioms output for Bank (0.33ms)
+  matches expected :definitions output for Haus (0.41ms)
+  matches expected :examples output for Haus (0.23ms)
+  matches expected :origin output for Haus (0.38ms)
+  matches expected :synonyms output for Haus (0.81ms)
+  matches expected :idioms output for Haus (0.45ms)
+
+Erledigt [2026-05-22 Fri].
+
+* DONE Testing
+
+[2026-05-21 Thu 23:39] Update: Noch Checkdoc Warnungen beheben.
+
+Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources neu aufsetzen. Kann man wohl einfach leeren.
+
+- Die HTML lade ich fix runter und speichere sie.
+  Habe eine Funktion in test-woerterbuch.el gemacht, welche mir die html runterlädt und dann den erwarteten Output generiert. Habe es ausgeführt. Ist alles im Testordner im Ordner Files bereit = musst du nicht mehr machen.
+- Der erwartete Output ist pro Source und Section einzeln.
+- Bei Duden hat es auch das Search HTML für Bank, wo es 2 Homographen hat.
+- Jetzt einfach mit Buttercup die Tests schreiben und den Output generieren, dabei die gespeicherten Html/Json als Mockup (oder wie dies heisst) verwenden.
+- Natürlich pro Source und Section wie der erwartete Output. Von der Test-Funktion kopieren, wie dieser in die Datei eingefügt wird (mit pp und newline am ende)
+- Dann prüfen ob die Objekte jeweils gleich sind. Keine weitere Tests sind notwendig.
+
+Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was sich verändert hat. Mache ich manuell. Da ich aber das Package viel brauche, werde ich Fehler sowieso rasch entdecken.
+
+* CANCEL Spezifikation aktualisieren oder erstellen
+
+In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
 * DONE Manueller Vergleich
 
@@ -169,154 +327,3 @@ Wieso auch immer, das Lemma wird verlieben. Habe es mit verschiedenen Lemmatizer
    :timeout 10)
 #+END_SRC
 
-* CANCEL Spezifikation aktualisieren oder erstellen
-
-In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
-
-* DONE Testing
-
-[2026-05-21 Thu 23:39] Update: Noch Checkdoc Warnungen beheben.
-
-Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources neu aufsetzen. Kann man wohl einfach leeren.
-
-- Die HTML lade ich fix runter und speichere sie.
-  Habe eine Funktion in test-woerterbuch.el gemacht, welche mir die html runterlädt und dann den erwarteten Output generiert. Habe es ausgeführt. Ist alles im Testordner im Ordner Files bereit = musst du nicht mehr machen.
-- Der erwartete Output ist pro Source und Section einzeln.
-- Bei Duden hat es auch das Search HTML für Bank, wo es 2 Homographen hat.
-- Jetzt einfach mit Buttercup die Tests schreiben und den Output generieren, dabei die gespeicherten Html/Json als Mockup (oder wie dies heisst) verwenden.
-- Natürlich pro Source und Section wie der erwartete Output. Von der Test-Funktion kopieren, wie dieser in die Datei eingefügt wird (mit pp und newline am ende)
-- Dann prüfen ob die Objekte jeweils gleich sind. Keine weitere Tests sind notwendig.
-
-Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was sich verändert hat. Mache ich manuell. Da ich aber das Package viel brauche, werde ich Fehler sowieso rasch entdecken.
-
-* DONE Tests gruppieren
-
-Unter Gruppierung nach Source auch noch eine nach Wort einfügen:
-
-OpenThesaurus backend
-  matches expected :definitions output for Bank (0.40ms)
-  matches expected :examples output for Bank (0.30ms)
-  matches expected :origin output for Bank (0.38ms)
-  matches expected :synonyms output for Bank (0.61ms)
-  matches expected :idioms output for Bank (0.33ms)
-  matches expected :definitions output for Haus (0.41ms)
-  matches expected :examples output for Haus (0.23ms)
-  matches expected :origin output for Haus (0.38ms)
-  matches expected :synonyms output for Haus (0.81ms)
-  matches expected :idioms output for Haus (0.45ms)
-
-Erledigt [2026-05-22 Fri].
-
-
-* TODO Output definieren
-
-Am Schluss will ich das Ganze als Org ausgeben.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-list-allow-alphabetical t)
-#+END_SRC
-
-#+BEGIN_SRC org
-  ,#+TITLE: Haus
-  allenfalls weitere Properties wie Time
-
-  ,* Bedeutungen
-
-  ,** *DWDS Bedeutungen*
-
-  1. *aus Wänden und Dach errichtetes Gebäude für Menschen*
-     a) *zum Wohnen, Wohnhaus*
-     - Beispiele
-       - ein großes, mehrstöckiges, neues, stattliches, modernes, ruhiges, wohnliches, hässliches, baufälliges, abgewohntes, leeres, verlassenes, zerbombtes, abgebranntes Haus
-       - sein elterliches Haus
-     - *das eigene Heim*
-       - Beispiele
-         - im Haus des Freundes ein- und ausgehen
-         - eine Einladung, ein Brief flattert ins Haus
-     b) ...
-
-  ,** *Duden Bedeutungen*
-
-  Bedeutungen
-  1. *aus Wänden und Dach errichtetes Gebäude für Menschen*
-     a) *zum Wohnen, Wohnhaus*
-
-  ,** *Wiktionary Bedeutungen*
-
-  ...
-
-  ,* Synonyme
-
-  ,** *Openthesaurus Synonyme*
-
-  ...
-
-  ,** *Duden Synonyme*
-
-  ...
-
-  ,** *Wiktionary Synonyme*
-
-  ...
-
-  ,* Redewendungen
-
-  ,* Herkunft
-#+END_SRC
-
-* Allgemeines
-
-** Ziel
-
-Für mehrere Dictionary-Sources (z. B. Duden, DWDS, OpenThesaurus, Wiktionary) sollen Requests *asynchron gleichzeitig gestartet* werden.
-
-Jede Source implementiert dieselbe öffentliche API und liefert das Resultat in einem gemeinsamen plist-Format zurück.
-
-Die Argumente und internen Bezeichner bleiben auf Englisch, auch wenn das Package sonst deutsch ist.
-
-** Korrigierte Architektur
-
-Der Aggregator sollte direkt in =woerterbuch-core.el= liegen.
-
-Begründung:
-
-- dort liegen bereits die gemeinsamen Datenstrukturen und Hilfsfunktionen
-- der Aggregator ist keine UI-Schicht, sondern gemeinsame Infrastruktur
-- =woerterbuch.el= kann dadurch bewusst dünn bleiben
-- so verhindert man, dass Logik versehentlich zwischen =core= und =woerterbuch.el= auseinanderläuft
-
-*** Dateien
-
-- =woerterbuch-core.el=
-- =woerterbuch.el=
-- =woerterbuch-duden.el=
-- =woerterbuch-dwds.el=
-- =woerterbuch-openthesaurus.el=
-- =woerterbuch-wiktionary.el=
-
-*** Verantwortlichkeiten
-
-**** =woerterbuch-core.el=
-Gemeinsame Infrastruktur:
-- section handling
-- common result helpers
-- error/result constructors
-- buffer/header helpers
-- gemeinsame Request-Helfer
-- *Aggregator für alle Sources*
-- ggf. zentrale Source-Reihenfolge oder Source-Registry
-
-**** =woerterbuch-<source>.el=
-Jeweils source-spezifisch:
-- URL building
-- HTTP request via =url-retrieve=
-- parsing of HTML or JSON
-- extraction of requested sections
-- returning a normalized plist result
-
-**** =woerterbuch.el=
-Nur öffentliche Hülle:
-- =require= von =woerterbuch-core.el=
-- =require= der einzelnen Sources
-- ggf. sehr kleine öffentliche Einstiegspunkte
-- keine eigentliche Aggregator- oder Parsing-Logik

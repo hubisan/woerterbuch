@@ -9,6 +9,10 @@ Retrieve definitions (meanings) and synonyms for German words with Emacs.
 #+attr_org: :width 300px
 [[file:woerterbuch.webp]]
 
+** AI Agent Instructions                                        :noexport_0:
+
+This repository contains AI-specific development instructions in =AGENTS.org=. AI agents must read =AGENTS.org= before making changes.
+
 ** Main features                                                :noexport_0:
 
 Retrieve definitions (meanings) or synonyms for a German word and
