@@ -1,137 +1,81 @@
 #+TITLE: AI Agent Instructions
 #+STARTUP: showall
 
-AI agents must read this file before making changes in this repository!
+AI agents must read this file before changing this repository.
 
-This repository uses AI agents to assist with development. This file contains
-the instructions for how AI should work in this repository.
+This file defines the repository workflow for AI agents.
 
-Important files:
+Important files and directories:
 
-- =TODO.org=: tasks and statuses
-- =AI-NOTES.org=: blockers, open questions, decisions, and test results
-- =CHANGELOG.org=: approved and completed changes
+- [[./TODO.org]]: task index and statuses
+- [[./tasks/]]: task-specific files
+- [[./archive/]]: directory for archived task files and todos
+- [[./AI-NOTES.org]]: repository-wide blockers, questions, decisions
+- [[./CHANGELOG.org]]: approved/completed user-visible changes
 
-Before making changes, always read =AGENTS.md= and =TODO.org=.
+Before changes, read [[./AGENTS.org]] and [[./TODO.org]].
 
-+----------+-------------+--------------------------------------------------+
-| Status   | Responsible | Meaning                                          |
-+----------+-------------+--------------------------------------------------+
-| TODO     | User        | Task exists but is not ready for implementation. |
-|          |             | Do not work on it.                               |
-+----------+-------------+--------------------------------------------------+
-| NEXT     | User        | Start signal for AI. Only work on tasks with     |
-|          |             | this status unless explicitly instructed.        |
-+----------+-------------+--------------------------------------------------+
-| WAIT     | User/AI     | Blocked. Document the reason in AI-NOTES.org.    |
-+----------+-------------+--------------------------------------------------+
-| REVIEW   | AI          | Implementation finished, waiting for user        |
-|          |             | review.                                          |
-+----------+-------------+--------------------------------------------------+
-| CONTINUE | User        | Review done. Continue work on the same task      |
-|          |             | using the user's comments or next instructions.  |
-+----------+-------------+--------------------------------------------------+
-| DONE     | User/AI     | Approved by the user, completed, and added to    |
-|          |             | the changelog if needed.                         |
-+----------+-------------+--------------------------------------------------+
-| CANCEL   | User        | Abandoned. Do not work on it.                    |
-+----------+-------------+--------------------------------------------------+
+| Status   | Owner   | Meaning                                      |
+|----------+---------+----------------------------------------------|
+| TODO     | User    | Not ready. Do not work on it.                |
+| NEXT     | User    | Ready for AI. Work only on these tasks.      |
+| WAIT     | User/AI | Blocked. Document reason in the task file.   |
+| REVIEW   | AI      | Done by AI, waiting for user review.         |
+| CONTINUE | User    | Continue using the user's review comments.   |
+| DONE     | User/AI | Approved and completed. Changelog if needed. |
+| CANCEL   | User    | Abandoned. Do not work on it.                |
+
+* Org-mode syntax
+
+[[./TODO.org]], [[./AI-NOTES.org]], and [[./CHANGELOG.org]] use Org-mode, not Markdown.
+
+Common AI errors to avoid:
+
+- Bold: *bold*, not **bold**
+- Inline code, variables, commands, filenames, symbols: ~name~, not `name`
+- Use bold for short inline emphasis, not as a heading substitute.
+- Prefer headings/subheadings for structure.
+- Do not insert manual line breaks in normal prose just for visual wrapping.
 
 * Workflow
 
-1. The user sets a task in =TODO.org= to =NEXT=.
-2. AI only works on tasks with status =NEXT= or =CONTINUE= unless the user
-   explicitly instructs otherwise.
-3. If currently on the main branch, AI creates a new branch:
-   - =feature/task-description=
-   - =fix/task-name=
+1. User marks a task in [[./TODO.org]] as =NEXT=.
+2. AI only works on =NEXT= or =CONTINUE= tasks unless explicitly instructed.
+3. For each AI task, AI creates/uses a task file in [[./tasks/]]: =tasks/YYYY-MM-DD--slug.org=
+4. AI links the task in [[./TODO.org]] to its task file. Example: =[[./tasks/2026-05-24--anki-export-fix.org]]=
+5. On =main=, create a focused branch, e.g. =feature/task-name= or =fix/task-name=; otherwise continue on the current branch and report suspicious branch/repo state.
+6. AI implements the requested task.
+7. If blocked, AI sets the task to =WAIT=, records the reason in the task file, notifies the user, and stops until the task is set back to =NEXT= or =CONTINUE=.
+7. AI updates docs/links, runs relevant checks.
+8. AI documents results, checks, blockers, questions, follow-ups in the task file.
+9. AI sets finished tasks to =REVIEW=.
+10. User reviews =REVIEW= tasks. If more work is needed, user sets the task to =CONTINUE=.
+11. After approval by the user
+    1. AI sets the task to =DONE=.
+    2. AI updates [[./CHANGELOG.org]]
+    3. AI may create [[./archive/]] if needed, moves the task file there, and updates the link in [[./TODO.org]].
+    4. AI must not remove or archive the task entry in [[./TODO.org]] unless explicitly instructed.
+12. AI commits only when explicitly asked.
+13. Commits must be focused and have clear messages.
+14. If asked to squash, AI reviews the branch diff, updates [[./CHANGELOG.org]] if needed, and creates one clear commit.
+15. User merges or requests merge into =main=.
 
-   If not on the main branch, AI can assume that work is already happening on a
-   feature or fix branch. AI should notify the user if the branch name, status,
-   or repository state looks suspicious.
+* Commit rule
 
-4. AI implements the requested task.
-5. AI documents relevant information in =AI-NOTES.org=:
-   - changes made
-   - tests/checks performed
-   - failed checks
-   - blockers
-   - open questions
-   - follow-up work
-6. When AI creates notes for a task in =AI-NOTES.org=, the heading must be
-   unique and descriptive.
-7. AI links the task in =TODO.org= to the related heading in =AI-NOTES.org=
-   using an Org file link.
-   Example:
-   #+begin_src org
-     AI-Notes: [[file:AI-NOTES.org::*CrowdAnki vs. AnkiConnect (Evaluation)][CrowdAnki vs. AnkiConnect (Evaluation)]]
-   #+end_src
-8. AI updates =CHANGELOG.org= if the task changes user-visible behavior, fixes
-   a bug, adds a feature, or otherwise belongs in the changelog.
-9. AI sets completed tasks to =REVIEW=.
-10. The user reviews tasks in =REVIEW=.
-11. If more work is required, the user comments on the task and sets it to
-    =CONTINUE=.
-12. AI continues work on tasks with status =CONTINUE=, then sets them back to
-    =REVIEW= when finished.
-13. After user approval, AI sets the task to =DONE=.
-14. AI only commits when the user explicitly asks for a commit.
-15. Before committing, AI must:
-    - review the diff
-    - ensure =TODO.org=, =AI-NOTES.org=, and =CHANGELOG.org= are updated if needed
-    - ensure task-related notes are linked from =TODO.org= to =AI-NOTES.org=
-    - run relevant tests/checks when possible
-    - mention any skipped or failed checks
-16. AI creates a focused commit with a clear commit message.
-17. The user may ask AI to squash all commits in the branch into one. In that
-    case, AI reviews the branch diff, updates =CHANGELOG.org= if needed, and
-    creates a single clear commit message.
-18. The user merges into or requests a merge into the main branch.
+AI may prepare commits, but may only create, amend, squash, or rewrite commits when explicitly asked.
 
-* WAIT-Rule
-
-If a task cannot continue:
-
-- Set the status to =WAIT=.
-- Document the reason in =AI-NOTES.org=.
-- Notify the user.
-- Do not continue until the user sets the task back to =NEXT= or =CONTINUE=.
-
-* Commit Rule
-
-AI must not commit automatically.
-
-AI may prepare a commit by reviewing the diff, checking the status, suggesting a
-commit message, and documenting what would be committed.
-
-AI may only create, amend, squash, or rewrite commits when the user explicitly
-asks for it.
-
-* Implementation Rules
-
-AI should:
+* Implementation rules
 
 - Make small, focused changes.
-- Respect the existing style and architecture.
-- Run tests, linters, type checks, or build checks when possible.
-- Document failed checks in =AI-NOTES.org=.
-- Avoid unnecessary refactoring.
-- Avoid changing unrelated files.
+- Respect existing style and architecture.
+- Run relevant checks when possible.
+- Record results, failed/skipped checks, blockers, and uncertainty in the task file.
+- Avoid unrelated changes, unnecessary refactoring, and whole-file formatting.
 
-* Do Not Change Without Explicit Instruction
+* Protected changes
 
-- secrets
-- tokens
-- =.env= files
-- production configurations
-- deployment credentials
-- large refactorings
-- dependency updates
-- formatting entire files
+Do not change without explicit instruction: secrets, tokens, =.env= files, production config, deployment credentials, large refactorings, dependency updates, or whole-file formatting.
 
-* When Unsure
+* When unsure
 
-- Do not invent assumptions.
-- Document uncertainty in =AI-NOTES.org=.
-- Notify the user.
-- Ask a question if needed.
+Do not invent assumptions. Record uncertainty in the task file, notify the user, and ask only if needed.
