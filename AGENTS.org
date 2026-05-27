@@ -25,6 +25,10 @@ Before changes, read [[./AGENTS.org]] and [[./TODO.org]].
 | DONE     | User/AI | Approved and completed. Changelog if needed. |
 | CANCEL   | User    | Abandoned. Do not work on it.                |
 
+* Language
+
+Match user's language for chat. Use English for code, comments, docs, commits, and files unless instructed otherwise.
+
 * Org-mode syntax
 
 [[./TODO.org]], [[./AI-NOTES.org]], and [[./CHANGELOG.org]] use Org-mode, not Markdown.
