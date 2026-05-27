@@ -41,24 +41,24 @@ Common AI errors to avoid:
 
 1. User marks a task in [[./TODO.org]] as =NEXT=.
 2. AI only works on =NEXT= or =CONTINUE= tasks unless explicitly instructed.
-3. For each AI task, AI creates/uses a task file in [[./tasks/]]: =tasks/YYYY-MM-DD--slug.org=
+3. For each AI task, AI creates/uses a task file in [[./tasks/]] based on [[./tasks/TEMPLATE.org]]: =tasks/YYYY-MM-DD--slug.org=
 4. AI links the task in [[./TODO.org]] to its task file. Example: =[[./tasks/2026-05-24--anki-export-fix.org]]=
 5. On =main=, create a focused branch, e.g. =feature/task-name= or =fix/task-name=; otherwise continue on the current branch and report suspicious branch/repo state.
 6. AI implements the requested task.
 7. If blocked, AI sets the task to =WAIT=, records the reason in the task file, notifies the user, and stops until the task is set back to =NEXT= or =CONTINUE=.
-7. AI updates docs/links, runs relevant checks.
-8. AI documents results, checks, blockers, questions, follow-ups in the task file.
-9. AI sets finished tasks to =REVIEW=.
-10. User reviews =REVIEW= tasks. If more work is needed, user sets the task to =CONTINUE=.
-11. After approval by the user
+8. AI updates docs/links, runs relevant checks.
+9. AI documents results, checks, blockers, questions, follow-ups in the task file.
+10. AI sets finished tasks to =REVIEW=.
+11. User reviews =REVIEW= tasks. If more work is needed, user sets the task to =CONTINUE=.
+12. After approval by the user
     1. AI sets the task to =DONE=.
     2. AI updates [[./CHANGELOG.org]]
-    3. AI may create [[./archive/]] if needed, moves the task file there, and updates the link in [[./TODO.org]].
+    3. AI may create [[./archive/tasks/]] if needed, moves the task file there, and updates the link in [[./TODO.org]].
     4. AI must not remove or archive the task entry in [[./TODO.org]] unless explicitly instructed.
-12. AI commits only when explicitly asked.
-13. Commits must be focused and have clear messages.
-14. If asked to squash, AI reviews the branch diff, updates [[./CHANGELOG.org]] if needed, and creates one clear commit.
-15. User merges or requests merge into =main=.
+13. AI commits only when explicitly asked.
+14. Commits must be focused and have clear messages.
+15. If asked to squash, AI reviews the branch diff, updates [[./CHANGELOG.org]] if needed, and creates one clear commit.
+16. User merges or requests merge into =main=.
 
 * Commit rule
 

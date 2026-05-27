@@ -1,4 +1,5 @@
 #+TITLE: Wiktionary Parser gem. Python-Repo verbessern
+#+STARTUP: showall
 
 * Kontext
 

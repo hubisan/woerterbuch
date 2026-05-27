@@ -1,0 +1,33 @@
+#+TITLE: ...
+#+STARTUP: showall
+
+* Context
+
+- Branch: =...=
+- Focus: =...=
+
+...
+
+* Goal
+
+...
+
+* Requirements
+
+...
+
+* Out of scope
+
+...
+
+* Changes
+
+...
+
+* Checks
+
+...
+
+* Open points
+
+- None.

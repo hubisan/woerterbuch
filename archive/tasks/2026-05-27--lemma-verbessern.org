@@ -1,4 +1,5 @@
 #+TITLE: Lemma verbessern
+#+STARTUP: showall
 
 * Kontext
 
