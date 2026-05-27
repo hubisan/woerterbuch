@@ -7,11 +7,11 @@ This file defines the repository workflow for AI agents.
 
 Important files and directories:
 
-- [[./TODO.org]]: task index and statuses
-- [[./tasks/]]: task-specific files
-- [[./archive/]]: directory for archived task files and todos
-- [[./AI-NOTES.org]]: repository-wide blockers, questions, decisions
-- [[./CHANGELOG.org]]: approved/completed user-visible changes
+- [[./TODO.org]]: Active task index & statuses.
+- [[./tasks/]]: Active task-specific files.
+- [[./AI-NOTES.org]]: Cross-task context (notes, blockers, decisions). Keep task-local details inside task files.
+- [[./CHANGELOG.org]]: Approved/completed user-visible changes.
+- [[./archive/]]: Dead zone (archived files & old todos). Exclude from AI context.
 
 Before changes, read [[./AGENTS.org]] and [[./TODO.org]].
 
@@ -78,4 +78,13 @@ Do not change without explicit instruction: secrets, tokens, =.env= files, produ
 
 * When unsure
 
-Do not invent assumptions. Record uncertainty in the task file, notify the user, and ask only if needed.
+Do not invent assumptions. Record task-specific uncertainty in the task file.  Record only repository-wide uncertainty in [[./AI-NOTES.org]].  Notify the user and ask only if needed.
+
+* Repository instructions
+
+** Preferred checks
+
+- Run ~make test~ for the normal test suite.
+- If relevant, run ~make compile~ and/or ~make lint~.
+- For broader local verification, run ~make test-local~.
+- If a full test run is not possible, record the reason in the task file and run the closest relevant partial check.
