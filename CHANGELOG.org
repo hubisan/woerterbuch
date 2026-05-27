@@ -6,6 +6,9 @@
 
 Complete rewrite of the code. Added more sources and parsing additional sections depending on the source. 
 
+- =CHANGED= Lemma normalization now first checks DWDS snippets for direct matches and falls back to DWDS frequency lookup only when needed.
+- =CHANGED= Multi-word expressions are no longer lemma-normalized.
+- =FIXED= Multi-word URL paths are now built correctly for Duden and Wiktionary.
 - =ADDED= DWDS: idioms, origin
 - =ADDED= Wiktionary: definitions, idioms, origin, examples
 - =ADDED= Duden as source: definitions, idioms, origin, example, synonyms

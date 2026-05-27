@@ -6,37 +6,11 @@ This repository uses AI agents to assist with development.
 
 Important files:
 
-- AGENTS.org: AI agent instructions and workflow rules
-- TODO.org: tasks and statuses
-- AI-NOTES.org: blockers, open questions, decisions, test results
-- CHANGELOG.org: approved and completed changes
+- [[./AGENTS.org]]: AI agent instructions and workflow rules
+- [[./TODO.org]]: Active task index & statuses.
+- [[./AI-NOTES.org]]: Cross-task context (notes, blockers, decisions). 
+- [[./CHANGELOG.org]]: Approved/completed user-visible changes.
   
-* DONE [[./archive/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
-
-Da hat es auch ein Repo, sogar 2:
-- [[https://github.com/suyashb95/WiktionaryParser][https://github.com/suyashb95/WiktionaryParser]]
-- [[https://github.com/tatuylonen/wiktextract][https://github.com/tatuylonen/wiktextract]]. 
-
-Habe die Dateien runtergeladen und abgelegt in [[./tmp]].
-
-Damit [[./lisp/woerterbuch-wiktionary.el]] woerterbuch-wiktionary.el verbessern.
-
-* TODO Lemma verbessern
-
-Damit kann man das Lemma initial prüfen. Aktuell liefert nämlich verliebt > verlieben anstatt einfach verliebt. Mit dieser Abfrage kriegt man eine leere Abfrage zurück, wenn es sich nicht um eine Grundform handelt und sonst kriegt man Daten zurück:
-
-- https://www.dwds.de/api/wb/snippet/?q=springt
-  #+BEGIN_SRC js
-    []
-  #+END_SRC
-
-- https://www.dwds.de/api/wb/snippet/?q=verliebt
-  #+BEGIN_SRC js
-    [{"wortart":"partizipiales Adjektiv","url":"https://www.dwds.de/wb/verliebt","lemma":"verliebt","input":"verliebt"}]
-  #+END_SRC
-
-Dabei sollte man auch gleich noch prüfen, was passiert, wenn man nach einer Redewendung sucht. Bei einigen ist dies möglich, aber Lemma suchen ist dann nicht angebracht. Sobald nach mehreren Wörtern gesucht wird, kann man dies mit dem Lemma gleich auslassen.
-
 * TODO Output definieren
 
 Am Schluss will ich das Ganze als Org ausgeben.
@@ -92,6 +66,44 @@ Am Schluss will ich das Ganze als Org ausgeben.
 
   ,* Herkunft
 #+END_SRC
+
+* DONE [[./archive/tasks/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
+
+[2026-05-27 Wed 10:59] Update
+
+Sorry, dies mit dem Lemma war nicht gut definiert. Im Vergleich zu vorher, soll Folgendes passieren:
+- Über die snippet url prüfen, ob ein direkter Treffern zurückgegeben wird
+  - Falls ja: dies als Lemma verwenden. So bleibt verliebt > verliebt, da ein direkter Treffer zurückgegeben wird.
+  - Falls Nein: Lemma mit der anderen URL (https://www.dwds.de/api/frequency/) suchen und verwenden. So wird aus springt > springen etc.
+
+Im Code in Core werden Teils die Parameter im Docstring nicht so gut beschrieben. Inbesondere CALLBACK. Bitte auch verbessern. Bei jedem Parameter muss klar sein, was dies ist.
+ 
+------
+
+Damit kann man das Lemma initial prüfen. Aktuell liefert nämlich verliebt > verlieben anstatt einfach verliebt. Mit dieser Abfrage kriegt man eine leere Abfrage zurück, wenn es sich nicht um eine Grundform handelt und sonst kriegt man Daten zurück:
+
+- https://www.dwds.de/api/wb/snippet/?q=springt
+  #+BEGIN_SRC js
+    []
+  #+END_SRC
+
+- https://www.dwds.de/api/wb/snippet/?q=verliebt
+  #+BEGIN_SRC js
+    [{"wortart":"partizipiales Adjektiv","url":"https://www.dwds.de/wb/verliebt","lemma":"verliebt","input":"verliebt"}]
+  #+END_SRC
+
+Dabei sollte man auch gleich noch prüfen, was passiert, wenn man nach einer Redewendung sucht. Bei einigen ist dies möglich (d. h. mit einer Redewendung gibt es ein Seite, welche die Definition liefert), aber Lemma suchen ist dann nicht angebracht. Sobald nach mehreren Wörtern gesucht wird, kann man dies mit dem Lemma gleich auslassen. Beispiele:
+- https://www.dwds.de/wb/sein%20B%C3%BCndel%20schn%C3%BCren
+- https://www.dwds.de/wb/die%20Katze%20aus%20dem%20Sack%20lassen
+
+- https://www.openthesaurus.de/synonyme/sein%20B%C3%BCndel%20schn%C3%BCren
+- https://www.openthesaurus.de/synonyme/die%20Katze%20aus%20dem%20Sack%20lassen
+
+- https://de.wiktionary.org/wiki/die_Katze_aus_dem_Sack_lassen (ohne _ erfolgt ein automatischer Redirekt zu mit _)
+
+Bei Duden scheinen MWA nicht unterstützt zu werden. Obacht, mehrere Wörter, können auch funktionieren. Aber lemma ergibt auch in dem Fall kein Sinn:
+- https://www.duden.de/rechtschreibung/sich_spiegeln
+Haben wir dies bereits sauber abgebildet, bei merheren Wörtern? damit die URLS, welches es ausprobiert, richtig sind? Auch gleich mitbehandeln in dem Task.
 
 * Allgemeines
 
@@ -150,7 +162,19 @@ Nur öffentliche Hülle:
 - ggf. sehr kleine öffentliche Einstiegspunkte
 - keine eigentliche Aggregator- oder Parsing-Logik
 
-* DONE Duden Parsen verbessern gem. Python-Repo
+* Abgeschlossen         
+
+** DONE [[./archive/tasks/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
+
+Da hat es auch ein Repo, sogar 2:
+- [[https://github.com/suyashb95/WiktionaryParser][https://github.com/suyashb95/WiktionaryParser]]
+- [[https://github.com/tatuylonen/wiktextract][https://github.com/tatuylonen/wiktextract]]. 
+
+Habe die Dateien runtergeladen und abgelegt in [[./tmp]].
+
+Damit [[./lisp/woerterbuch-wiktionary.el]] woerterbuch-wiktionary.el verbessern.
+
+** DONE Duden Parsen verbessern gem. Python-Repo
 
 Habe ein Repo gefunden, zu blöd habe ich nich am Anfang dran gedacht, welches Duden parst. Ist in Python https://github.com/radomirbosak/duden
 
@@ -160,7 +184,7 @@ Duden parser aufgrund dieser Datei verbessern. Aber ich will nicht alles auf den
 
 AI-Notes: [[file:AI-NOTES.org::*2026-05-22 Duden Parser gem. Python-Repo][2026-05-22 Duden Parser gem. Python-Repo]]
 
-* DONE Tests gruppieren
+** DONE Tests gruppieren
 
 Unter Gruppierung nach Source auch noch eine nach Wort einfügen:
 
@@ -178,7 +202,7 @@ OpenThesaurus backend
 
 Erledigt [2026-05-22 Fri].
 
-* DONE Testing
+** DONE Testing
 
 [2026-05-21 Thu 23:39] Update: Noch Checkdoc Warnungen beheben.
 
@@ -194,17 +218,17 @@ Es soll nur dies getestet werden, bitte bisherige Testsfiles für die Sources ne
 
 Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was sich verändert hat. Mache ich manuell. Da ich aber das Package viel brauche, werde ich Fehler sowieso rasch entdecken.
 
-* CANCEL Spezifikation aktualisieren oder erstellen
+** CANCEL Spezifikation aktualisieren oder erstellen
 
 In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
-* DONE Manueller Vergleich
+** DONE Manueller Vergleich
 
 Habe einige Wörter ausgewertet mit der aktuellen Funktion und manuell mit der Webseite abgeglichen.
 
 Bitte Tasks markiert mit NEXT in dem File lösen und in dem File dann auf REVIEW setzen. Bitte prüfe den Output nach Anpassungen und vergleiche ihn mit dem alten Output. Nur die Fehler sollten gelöst werden, der Rest darf sich nicht verändern. Speichere den neuen Output in tmp/woerterbuch-export-JJJJ-MM-TT, speichere auch gleich jeweils das Html in diesem Ordner. Vergleiche doch auch gleich das Html mit dem Output, allenfalls erkennst du ja Unstimmmigkeiten. Falls ja mir mitteilen.
 
-** DONE Neuer Fehler - Redewendungen Wiktionary [2026-05-21 Thu]
+*** DONE Neuer Fehler - Redewendungen Wiktionary [2026-05-21 Thu]
 
 Da haben wir etwas verschlimmbessert. Hier bei einer Redewendung mehrere Einträge (ist die gleiche Redewendung, aber anders formuliert):
 
@@ -224,9 +248,9 @@ Neu ist es so:
   "etwas steht auf dem kurzen Weg ins Haus"
 #+END_SRC
 
-** DONE Vergleich Diff Neu mit Alt
+*** DONE Vergleich Diff Neu mit Alt
 
-** DONE Tests ausführen
+*** DONE Tests ausführen
 
 Diese Tests kann ich gleich hier ausführen, für den Vergleich.
 
@@ -241,7 +265,7 @@ Gute Tests:
 - Wolke - einfach noch, damit mehr Tests
 - verliebt - einfach noch, damit mehr Tests
 
-*** Alle ausführen und speichern
+**** Alle ausführen und speichern
 
 #+NAME: fetch-words
 - Bank
@@ -289,7 +313,7 @@ Gute Tests:
             (terpri))))))
 #+END_SRC
 
-*** Bank
+**** Bank
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -298,7 +322,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** Haus
+**** Haus
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -307,7 +331,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** Zaun
+**** Zaun
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -316,7 +340,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** das Gras ist grüner auf der anderen Seite
+**** das Gras ist grüner auf der anderen Seite
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -325,7 +349,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** Nixdaexistiert
+**** Nixdaexistiert
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -334,7 +358,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** springt
+**** springt
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -343,7 +367,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** Wolke
+**** Wolke
 
 #+BEGIN_SRC emacs-lisp :results value code replace
   (woerterbuch-fetch-all-sync
@@ -352,7 +376,7 @@ Gute Tests:
    :timeout 10)
 #+END_SRC
 
-*** verliebt
+**** verliebt
 
 Wieso auch immer, das Lemma wird verlieben. Habe es mit verschiedenen Lemmatizer ausprobiert.
 

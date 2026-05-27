@@ -76,9 +76,13 @@ Used by `woerterbuch-fetch-all' when :sections is not provided."
 
 ;;; Constants
 
-(defconst woerterbuch-core-lemma-url
+(defconst woerterbuch-core-lemma-snippet-url
+  "https://www.dwds.de/api/wb/snippet/"
+  "DWDS snippet endpoint used to detect direct lemma matches.")
+
+(defconst woerterbuch-core-lemma-frequency-url
   "https://www.dwds.de/api/frequency/"
-  "DWDS endpoint used for lemma normalization.")
+  "DWDS frequency endpoint used as fallback for lemma normalization.")
 
 ;;; Result constructors
 
@@ -184,11 +188,43 @@ error result."
 
 ;;; Lemma normalization
 
-(defun woerterbuch-core--build-lemma-url (input)
-  "Build DWDS lemma lookup URL for INPUT."
-  (concat woerterbuch-core-lemma-url
+(defun woerterbuch-core--build-lemma-snippet-url (input)
+  "Build DWDS snippet lookup URL for INPUT."
+  (concat woerterbuch-core-lemma-snippet-url
           "?q="
           (url-hexify-string input)))
+
+(defun woerterbuch-core--build-lemma-frequency-url (input)
+  "Build DWDS frequency lookup URL for INPUT."
+  (concat woerterbuch-core-lemma-frequency-url
+          "?q="
+          (url-hexify-string input)))
+
+(defun woerterbuch-core--single-word-input-p (input)
+  "Return non-nil when INPUT should be lemma-normalized as a single word."
+  (not (string-match-p "[[:space:]]" (string-trim (or input "")))))
+
+(defun woerterbuch-core--lemma-result (input lemma)
+  "Return normalized DWDS lemma result for INPUT and LEMMA."
+  (list :ok t
+        :input input
+        :lemma lemma
+        :source 'dwds))
+
+(defun woerterbuch-core--extract-lemma-from-snippet-data (data)
+  "Return lemma string extracted from DWDS snippet DATA, or nil."
+  (let ((entry
+         (cond
+          ((and (listp data) (listp (car data)))
+           (car data))
+          ((and (listp data)
+                (assq 'lemma data))
+           data)
+          (t nil))))
+    (let ((lemma (and entry (alist-get 'lemma entry))))
+      (when (and (stringp lemma)
+                 (not (string-empty-p lemma)))
+        lemma))))
 
 (defun woerterbuch-core-normalize-lemma (input callback)
   "Normalize INPUT to a lemma via DWDS and call CALLBACK once.
@@ -197,28 +233,34 @@ INPUT is the original user input. Some sources may support not only
 single words, but also multi-word expressions or idioms (for example
 DWDS).
 
-CALLBACK receives a plist:
+CALLBACK is a function that receives one normalization-result plist:
 
 Success:
   (:ok t :input INPUT :lemma LEMMA :source dwds)
 
 Failure:
   (:ok nil :input INPUT :lemma INPUT :source dwds :error MESSAGE)"
-  (woerterbuch-core--with-timeout
-   'dwds input
-   (lambda (done)
-     (let ((url-request-extra-headers
-            '(("User-Agent" . "woerterbuch/0.1"))))
-       (url-retrieve
-        (woerterbuch-core--build-lemma-url input)
-        #'woerterbuch-core--normalize-lemma-callback
-        (list input done)
-        t
-        t)))
-   callback))
+  (if (not (woerterbuch-core--single-word-input-p input))
+      (funcall callback (woerterbuch-core--lemma-result input input))
+    (woerterbuch-core--with-timeout
+     'dwds input
+     (lambda (done)
+       (let ((url-request-extra-headers
+              '(("User-Agent" . "woerterbuch/0.1"))))
+         (url-retrieve
+          (woerterbuch-core--build-lemma-snippet-url input)
+          #'woerterbuch-core--normalize-lemma-snippet-callback
+          (list input done)
+          t
+          t)))
+     callback)))
 
-(defun woerterbuch-core--normalize-lemma-callback (status input callback)
-  "Handle DWDS lemma response STATUS for INPUT and CALLBACK."
+(defun woerterbuch-core--normalize-lemma-snippet-callback (status input callback)
+  "Handle DWDS snippet response STATUS for INPUT and CALLBACK.
+
+STATUS is the plist returned by `url-retrieve'. INPUT is the original
+query string. CALLBACK is the continuation that receives the final
+normalization result plist."
   (let ((result nil))
     (unwind-protect
         (setq result
@@ -243,7 +285,81 @@ Failure:
                                          url-http-response-status)))
 
                    (t
-                    (woerterbuch-core--parse-lemma-response input)))
+                    (let ((lemma (woerterbuch-core--parse-snippet-lemma-response)))
+                      (if lemma
+                          (woerterbuch-core--lemma-result input lemma)
+                        (woerterbuch-core--normalize-lemma-via-frequency
+                         input callback)
+                        :async))))
+                (error
+                 (list :ok nil
+                       :input input
+                       :lemma input
+                       :source 'dwds
+                       :error (error-message-string err)))))
+      (when (buffer-live-p (current-buffer))
+        (kill-buffer (current-buffer))))
+    (unless (eq result :async)
+      (funcall callback result))))
+
+(defun woerterbuch-core--parse-snippet-lemma-response ()
+  "Parse current DWDS snippet response buffer and return a lemma or nil."
+  (goto-char (point-min))
+  (if (and (boundp 'url-http-end-of-headers)
+           (integerp url-http-end-of-headers))
+      (goto-char url-http-end-of-headers)
+    (re-search-forward "\r?\n\r?\n" nil t))
+  (skip-chars-forward "\r\n")
+  (let* ((json-object-type 'alist)
+         (json-array-type 'list)
+         (json-key-type 'symbol)
+         (data (json-read))
+         (lemma (woerterbuch-core--extract-lemma-from-snippet-data data)))
+    lemma))
+
+(defun woerterbuch-core--normalize-lemma-via-frequency (input callback)
+  "Normalize INPUT via the DWDS frequency endpoint and call CALLBACK.
+
+INPUT is the original single-word query string. CALLBACK is the
+continuation that receives the final normalization result plist."
+  (let ((url-request-extra-headers
+         '(("User-Agent" . "woerterbuch/0.1"))))
+    (url-retrieve
+     (woerterbuch-core--build-lemma-frequency-url input)
+     #'woerterbuch-core--normalize-lemma-frequency-callback
+     (list input callback)
+     t
+     t)))
+
+(defun woerterbuch-core--normalize-lemma-frequency-callback (status input callback)
+  "Handle DWDS frequency response STATUS for INPUT and CALLBACK.
+
+STATUS is the plist returned by `url-retrieve'. INPUT is the original
+query string. CALLBACK is the continuation that receives the final
+normalization result plist."
+  (let ((result nil))
+    (unwind-protect
+        (setq result
+              (condition-case err
+                  (cond
+                   ((plist-get status :error)
+                    (list :ok nil
+                          :input input
+                          :lemma input
+                          :source 'dwds
+                          :error (format "Network error: %S"
+                                         (plist-get status :error))))
+                   ((and (boundp 'url-http-response-status)
+                         (numberp url-http-response-status)
+                         (>= url-http-response-status 400))
+                    (list :ok nil
+                          :input input
+                          :lemma input
+                          :source 'dwds
+                          :error (format "HTTP error: %s"
+                                         url-http-response-status)))
+                   (t
+                    (woerterbuch-core--parse-frequency-lemma-response input)))
                 (error
                  (list :ok nil
                        :input input
@@ -254,8 +370,11 @@ Failure:
         (kill-buffer (current-buffer))))
     (funcall callback result)))
 
-(defun woerterbuch-core--parse-lemma-response (input)
-  "Parse current DWDS lemma response buffer for INPUT."
+(defun woerterbuch-core--parse-frequency-lemma-response (input)
+  "Parse current DWDS frequency response buffer for INPUT.
+
+INPUT is the original single-word query string used as fallback if the
+response does not contain a usable lemma."
   (goto-char (point-min))
   (if (and (boundp 'url-http-end-of-headers)
            (integerp url-http-end-of-headers))
@@ -267,13 +386,12 @@ Failure:
          (json-key-type 'symbol)
          (data (json-read))
          (lemma (alist-get 'lemma data)))
-    (list :ok t
-          :input input
-          :lemma (if (and (stringp lemma)
-                          (not (string-empty-p lemma)))
-                     lemma
-                   input)
-          :source 'dwds)))
+    (woerterbuch-core--lemma-result
+     input
+     (if (and (stringp lemma)
+              (not (string-empty-p lemma)))
+         lemma
+       input))))
 
 ;;; Fetching
 
@@ -285,6 +403,8 @@ Failure:
 (defun woerterbuch-core--fetch-all-with-lemma
     (input lemma sections final-callback)
   "Fetch SECTIONS for INPUT using LEMMA as backend query.
+INPUT is the original query string. LEMMA is the normalized query sent
+to all backends. SECTIONS is the requested section list.
 FINAL-CALLBACK is called exactly once with a wrapper plist of the form:
   (:input INPUT :lemma LEMMA :sources SOURCES)
 where SOURCES is a list of normalized source results in stable source
@@ -328,12 +448,12 @@ order."
            (sections woerterbuch-default-sections)
            (normalize-lemma woerterbuch-normalize-lemma))
   "Fetch dictionary data for INPUT from all configured sources.
-Call FINAL-CALLBACK once with a wrapper plist:
+INPUT is the original user query string. FINAL-CALLBACK is a function
+that is called once with a wrapper plist:
   (:input INPUT :lemma LEMMA :sources SOURCES)
 where SOURCES is a list of normalized source results in stable source
 order.
-INPUT is the original query string and may be a word, phrase, or
-idiom, depending on backend support.
+INPUT may be a word, phrase, or idiom, depending on backend support.
 SECTIONS limits requested data to keys such as `:definitions',
 `:examples', `:origin', `:synonyms' or `:idioms'.  When nil or
 omitted, use `woerterbuch-default-sections'.
@@ -362,8 +482,8 @@ INPUT."
            (normalize-lemma woerterbuch-normalize-lemma)
            timeout)
   "Synchronously fetch dictionary data for INPUT.
-Return the same wrapper plist that `woerterbuch-fetch-all' passes to
-its callback:
+INPUT is the original user query string. Return the same wrapper plist
+that `woerterbuch-fetch-all' passes to its callback:
   (:input INPUT :lemma LEMMA :sources SOURCES)
 where SOURCES is a list of normalized source results in stable source
 order.

@@ -14,6 +14,81 @@
 
 ;;; Configuration
 
+(describe "Lemma normalization"
+  (it "keeps a base form when the DWDS snippet endpoint returns one"
+    (let (result)
+      (cl-letf (((symbol-function 'url-retrieve)
+                 (lambda (_url callback cbargs &rest _args)
+                   (let ((buffer (generate-new-buffer " *woerterbuch-lemma*")))
+                     (with-current-buffer buffer
+                       (insert "HTTP/1.1 200 OK\r\n\r\n")
+                       (setq-local url-http-response-status 200)
+                       (setq-local url-http-end-of-headers (point))
+                       (insert
+                        "[{\"wortart\":\"partizipiales Adjektiv\",\"url\":\"https://www.dwds.de/wb/verliebt\",\"lemma\":\"verliebt\",\"input\":\"verliebt\"}]")
+                       (goto-char (point-min))
+                       (apply callback (append (list nil) cbargs)))
+                     buffer))))
+        (woerterbuch-core-normalize-lemma
+         "verliebt"
+         (lambda (value)
+           (setq result value))))
+      (expect result
+              :to-equal
+              '(:ok t :input "verliebt" :lemma "verliebt" :source dwds))))
+
+  (it "falls back to the DWDS frequency endpoint when snippet has no direct match"
+    (let (result requests)
+      (cl-letf (((symbol-function 'url-retrieve)
+                 (lambda (url callback cbargs &rest _args)
+                   (push url requests)
+                   (let ((buffer (generate-new-buffer " *woerterbuch-lemma*")))
+                     (with-current-buffer buffer
+                       (insert "HTTP/1.1 200 OK\r\n\r\n")
+                       (setq-local url-http-response-status 200)
+                       (setq-local url-http-end-of-headers (point))
+                       (insert
+                        (if (string-match-p "/api/wb/snippet/" url)
+                            "[]"
+                          "{\"lemma\":\"springen\"}"))
+                       (goto-char (point-min))
+                       (apply callback (append (list nil) cbargs)))
+                     buffer))))
+        (woerterbuch-core-normalize-lemma
+         "springt"
+         (lambda (value)
+           (setq result value))))
+      (expect (length requests) :to-equal 2)
+      (expect result
+              :to-equal
+              '(:ok t :input "springt" :lemma "springen" :source dwds))))
+
+  (it "skips lemma normalization for multi-word expressions"
+    (let (result called)
+      (cl-letf (((symbol-function 'url-retrieve)
+                 (lambda (&rest _args)
+                   (setq called t)
+                   (error "Should not request lemma lookup for multi-word input"))))
+        (woerterbuch-core-normalize-lemma
+         "die Katze aus dem Sack lassen"
+         (lambda (value)
+           (setq result value))))
+      (expect called :to-be nil)
+      (expect result
+              :to-equal
+              '(:ok t :input "die Katze aus dem Sack lassen"
+                      :lemma "die Katze aus dem Sack lassen"
+                      :source dwds))))
+
+  (it "builds source URLs for multi-word expressions correctly"
+    (expect (woerterbuch-duden--build-url "sich spiegeln")
+            :to-equal
+            "https://www.duden.de/rechtschreibung/sich_spiegeln?amp")
+    (expect (woerterbuch-wiktionary--build-web-url
+             "die Katze aus dem Sack lassen")
+            :to-equal
+            "https://de.wiktionary.org/wiki/die_Katze_aus_dem_Sack_lassen")))
+
 ;;; Get exptected Output and fetch HTML/JSON
 
 ;; Both will be stored. And tests will compare the output to the expected,

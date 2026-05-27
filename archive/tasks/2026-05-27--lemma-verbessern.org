@@ -1,0 +1,35 @@
+#+TITLE: Lemma verbessern
+
+* Kontext
+
+- Task aus [[../TODO.org]]
+- Branch: =improvement/refactor-and-more-sources=
+- Fokus: Lemma-Normalisierung in =woerterbuch-core.el=
+
+* Änderungen
+
+- Die Lemma-Normalisierung läuft nun zweistufig:
+  - zuerst via DWDS =/api/wb/snippet/= auf direkte Treffer prüfen
+  - falls dort kein direkter Treffer vorliegt, via DWDS =/api/frequency/= das Lemma nachschlagen
+- Dadurch gilt nun:
+  - Grundformen wie =verliebt= bleiben =verliebt=
+  - flektierte Formen wie =springt= werden via Fallback zu =springen=
+- Mehrwortausdrücke werden nicht mehr lemma-normalisiert.
+- Für Mehrwortausdrücke werden die URL-Pfade bei den path-basierten Sources sauber gebaut:
+  - Duden verwendet Unterstriche im Rechtschreibungs-Pfad
+  - Wiktionary verwendet Unterstriche im Wiki-Pfad
+- Die Core-Docstrings beschreiben die Parameter nun präziser, insbesondere =CALLBACK=.
+
+* Checks
+
+- =make test=
+  - Ergebnis: 145 Specs, 0 Fehler
+- Die neuen Tests decken explizit ab:
+  - direkter Snippet-Treffer
+  - Frequency-Fallback
+  - Skip für Mehrwortausdrücke
+  - URL-Bildung für Mehrwortausdrücke
+
+* Offene Punkte
+
+- Keine.

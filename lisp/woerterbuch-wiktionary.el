@@ -41,7 +41,8 @@
 (defun woerterbuch-wiktionary--build-web-url (lemma)
   "Build human-facing Wiktionary URL for LEMMA."
   (concat woerterbuch-wiktionary-web-url
-          (url-hexify-string lemma)))
+          (url-hexify-string
+           (replace-regexp-in-string "[[:space:]]+" "_" lemma))))
 
 (defun woerterbuch-wiktionary--clean-text (string)
   "Normalize whitespace and punctuation spacing in STRING."

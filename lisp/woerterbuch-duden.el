@@ -36,7 +36,8 @@
 (defun woerterbuch-duden--build-url (lemma)
   "Build Duden AMP page URL for LEMMA."
   (concat woerterbuch-duden-base-url
-          (url-hexify-string lemma)
+          (url-hexify-string
+           (replace-regexp-in-string "[[:space:]]+" "_" lemma))
           "?amp"))
 
 (defun woerterbuch-duden--build-search-url (lemma)
