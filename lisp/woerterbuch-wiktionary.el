@@ -253,16 +253,32 @@
         (setq out (nconc out (copy-sequence (cdr entry))))))
     out))
 
-(defun woerterbuch-wiktionary--dd-texts (nodes)
-  "Return full readable texts from all `dd' descendants in NODES.
+(defun woerterbuch-wiktionary--descendants-by-tags (node tags)
+  "Return all descendants of NODE whose tag is contained in TAGS."
+  (let (out)
+    (dolist (tag tags)
+      (setq out (nconc out (woerterbuch-wiktionary--descendants-by-tag node tag))))
+    out))
+
+(defun woerterbuch-wiktionary--item-nodes (nodes)
+  "Return meaningful list-item nodes from NODES.
+Prefer `dd' descendants, but fall back to `li' descendants for entries whose
+rendered blocks are plain ordered or unordered lists."
+  (let (dds lis)
+    (dolist (node nodes)
+      (setq dds (nconc dds (woerterbuch-wiktionary--descendants-by-tag node 'dd)))
+      (setq lis (nconc lis (woerterbuch-wiktionary--descendants-by-tag node 'li))))
+    (or dds lis)))
+
+(defun woerterbuch-wiktionary--item-texts (nodes)
+  "Return full readable texts from meaningful list items in NODES.
 This preserves inline qualifier text such as register, domain, or style
 markers because it is used for definitions and examples."
   (let (out)
-    (dolist (node nodes)
-      (dolist (dd (woerterbuch-wiktionary--descendants-by-tag node 'dd))
-        (let ((text (woerterbuch-wiktionary--text dd)))
-          (unless (string-empty-p text)
-            (push text out)))))
+    (dolist (item (woerterbuch-wiktionary--item-nodes nodes))
+      (let ((text (woerterbuch-wiktionary--text item)))
+        (unless (string-empty-p text)
+          (push text out))))
     (nreverse out)))
 
 (defun woerterbuch-wiktionary--plain-texts (nodes)
@@ -390,14 +406,14 @@ qualifiers are preserved."
   (let* ((definition-pairs
           (delq nil
                 (mapcar #'woerterbuch-wiktionary--parse-sense-text
-                        (woerterbuch-wiktionary--dd-texts
+                        (woerterbuch-wiktionary--item-texts
                          (woerterbuch-wiktionary--block-nodes
                           blocks :definitions)))))
          (example-pairs
           (and (woerterbuch-core-section-requested-p :examples sections)
                (delq nil
                      (mapcar #'woerterbuch-wiktionary--parse-sense-text
-                             (woerterbuch-wiktionary--dd-texts
+                             (woerterbuch-wiktionary--item-texts
                               (woerterbuch-wiktionary--block-nodes
                                blocks :examples))))))
          (example-table (make-hash-table :test #'equal)))
@@ -421,7 +437,7 @@ qualifiers are preserved."
 (defun woerterbuch-wiktionary--origin-text (blocks)
   "Return origin text parsed from BLOCKS."
   (let* ((nodes (woerterbuch-wiktionary--block-nodes blocks :origin))
-         (texts (or (woerterbuch-wiktionary--dd-texts nodes)
+         (texts (or (woerterbuch-wiktionary--item-texts nodes)
                     (woerterbuch-wiktionary--plain-texts nodes))))
     (when texts
       (woerterbuch-wiktionary--clean-origin-text
@@ -438,12 +454,11 @@ Rules:
 - In fallback text, discard explanations after a spaced dash separator.
 - Drop empty idioms and remove duplicates while preserving order."
   (let (idioms)
-    (dolist (dd (woerterbuch-wiktionary--descendants-by-tag-in-nodes
-                 (woerterbuch-wiktionary--block-nodes blocks :idioms)
-                 'dd))
-      (let* ((raw-text (woerterbuch-wiktionary--text dd))
+    (dolist (item (woerterbuch-wiktionary--item-nodes
+                   (woerterbuch-wiktionary--block-nodes blocks :idioms)))
+      (let* ((raw-text (woerterbuch-wiktionary--text item))
              (sense-pair (woerterbuch-wiktionary--parse-sense-text raw-text))
-             (link-texts (woerterbuch-wiktionary--extract-link-texts dd))
+             (link-texts (woerterbuch-wiktionary--extract-link-texts item))
              (fallback-text (woerterbuch-wiktionary--clean-content-text
                              (or (and sense-pair (cdr sense-pair))
                                  raw-text)))
@@ -463,16 +478,14 @@ Rules:
   "Return synonym groups parsed from BLOCKS."
   (let ((table (make-hash-table :test #'equal))
         order)
-    (dolist (dd (append
-                 (woerterbuch-wiktionary--descendants-by-tag-in-nodes
-                  (woerterbuch-wiktionary--block-nodes blocks :synonyms)
-                  'dd)
-                 (woerterbuch-wiktionary--descendants-by-tag-in-nodes
-                  (woerterbuch-wiktionary--block-nodes
-                   blocks
-                   :related-synonyms)
-                  'dd)))
-      (let ((parsed (woerterbuch-wiktionary--parse-sense-items-from-dd dd)))
+    (dolist (item (append
+                   (woerterbuch-wiktionary--item-nodes
+                    (woerterbuch-wiktionary--block-nodes blocks :synonyms))
+                   (woerterbuch-wiktionary--item-nodes
+                    (woerterbuch-wiktionary--block-nodes
+                     blocks
+                     :related-synonyms))))
+      (let ((parsed (woerterbuch-wiktionary--parse-sense-items-from-dd item)))
         (when parsed
           (dolist (sense (car parsed))
             (unless (member sense order)

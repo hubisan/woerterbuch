@@ -1,0 +1,26 @@
+#+TITLE: Wiktionary Parser gem. Python-Repo verbessern
+
+* Kontext
+
+- Task aus [[../TODO.org]]
+- Branch: =improvement/refactor-and-more-sources=
+- Fokus: =lisp/woerterbuch-wiktionary.el=
+
+* Änderungen
+
+- Wiktionary-Blöcke für Bedeutungen, Beispiele, Herkunft, Synonyme und Redewendungen verarbeiten nun nicht nur =dd=-Einträge, sondern fallen bei list-basiertem HTML auch auf =li=-Einträge zurück.
+- Die bestehende =dd=-Logik bleibt bevorzugt aktiv, damit vorhandene Parsoid-Fixtures unverändert bleiben.
+- Ein gezielter Test deckt nun list-basierte Wiktionary-Blöcke ohne =dl/dd=-Wrapper ab.
+
+* Checks
+
+- Batch-Regression gegen alle vorhandenen Wiktionary-Fixtures via =tests/test-helper.el=
+  - Ergebnis: keine Abweichungen
+- Gezielter Batch-Check des neuen list-basierten Falls
+  - Ergebnis: Herkunft, Redewendungen, Synonyme, Bedeutungen und Beispiele werden korrekt aus =ol/ul -> li= geparst
+- Voller Buttercup-Lauf in dieser Umgebung nicht möglich
+  - =buttercup= ist lokal nicht im Load-Path vorhanden
+
+* Offene Punkte
+
+- Der neue interne Test ist hinzugefügt, konnte hier aber nicht über =make test= ausgeführt werden, weil die lokale Testabhängigkeit fehlt.

@@ -11,21 +11,15 @@ Important files:
 - AI-NOTES.org: blockers, open questions, decisions, test results
 - CHANGELOG.org: approved and completed changes
   
-* DONE Duden Parsen verbessern gem. Python-Repo
-
-Habe ein Repo gefunden, zu blöd habe ich nich am Anfang dran gedacht, welches Duden parst. Ist in Python https://github.com/radomirbosak/duden
-
-Dies ist die relevante Datei: [[file:docs/word.py]]
-
-Duden parser aufgrund dieser Datei verbessern. Aber ich will nicht alles auf den Kopf stellen, es funktioniert ja.
-
-AI-Notes: [[file:AI-NOTES.org::*2026-05-22 Duden Parser gem. Python-Repo][2026-05-22 Duden Parser gem. Python-Repo]]
-
-* TODO Wiktionary Parsen verbessern gem. Python-Repo
+* DONE [[./archive/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
 
 Da hat es auch ein Repo, sogar 2:
 - [[https://github.com/suyashb95/WiktionaryParser][https://github.com/suyashb95/WiktionaryParser]]
 - [[https://github.com/tatuylonen/wiktextract][https://github.com/tatuylonen/wiktextract]]. 
+
+Habe die Dateien runtergeladen und abgelegt in [[./tmp]].
+
+Damit [[./lisp/woerterbuch-wiktionary.el]] woerterbuch-wiktionary.el verbessern.
 
 * TODO Lemma verbessern
 
@@ -155,6 +149,16 @@ Nur öffentliche Hülle:
 - =require= der einzelnen Sources
 - ggf. sehr kleine öffentliche Einstiegspunkte
 - keine eigentliche Aggregator- oder Parsing-Logik
+
+* DONE Duden Parsen verbessern gem. Python-Repo
+
+Habe ein Repo gefunden, zu blöd habe ich nich am Anfang dran gedacht, welches Duden parst. Ist in Python https://github.com/radomirbosak/duden
+
+Dies ist die relevante Datei: [[file:docs/word.py]]
+
+Duden parser aufgrund dieser Datei verbessern. Aber ich will nicht alles auf den Kopf stellen, es funktioniert ja.
+
+AI-Notes: [[file:AI-NOTES.org::*2026-05-22 Duden Parser gem. Python-Repo][2026-05-22 Duden Parser gem. Python-Repo]]
 
 * DONE Tests gruppieren
 

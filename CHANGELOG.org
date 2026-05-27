@@ -10,6 +10,7 @@ Complete rewrite of the code. Added more sources and parsing additional sections
 - =ADDED= Wiktionary: definitions, idioms, origin, examples
 - =ADDED= Duden as source: definitions, idioms, origin, example, synonyms
 - =FIXED= Duden-Synonyme werden bei qualifizierten Listen wieder korrekt in einzelne Einträge getrennt.
+- =FIXED= Wiktionary verarbeitet Bedeutungen, Beispiele, Herkunft, Synonyme und Redewendungen nun robuster auch aus list-basiertem HTML ohne =dl/dd=-Wrapper.
 - =CHANGED= Fixture-based backend tests are now grouped by source and word in Buttercup output.
 - =CHANGED= Changed headers to mimick Tor browser for better privacy.
 - =CHANGED= Using if-let* and when-let* to be future proof.
