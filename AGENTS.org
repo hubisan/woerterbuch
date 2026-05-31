@@ -1,5 +1,6 @@
 #+TITLE: AI Agent Instructions
 #+STARTUP: showall
+#+VERSION: 0.1.0
 
 AI agents must read this file before changing this repository.
 
@@ -86,9 +87,4 @@ Do not invent assumptions. Record task-specific uncertainty in the task file.  R
 
 * Repository instructions
 
-** Preferred checks
-
-- Run ~make test~ for the normal test suite.
-- If relevant, run ~make compile~ and/or ~make lint~.
-- For broader local verification, run ~make test-local~.
-- If a full test run is not possible, record the reason in the task file and run the closest relevant partial check.
+** Preferred checks (testing)
