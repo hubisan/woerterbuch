@@ -1,6 +1,6 @@
 #+TITLE: AI Agent Instructions
 #+STARTUP: showall
-#+VERSION: 0.1.0
+#+VERSION: 0.2.0
 
 AI agents must read this file before changing this repository.
 
@@ -46,7 +46,7 @@ Common AI errors to avoid:
 
 1. User marks a task in [[./TODO.org]] as =NEXT=.
 2. AI only works on =NEXT= or =CONTINUE= tasks unless explicitly instructed.
-3. For each AI task, AI creates/uses a task file in [[./tasks/]] based on [[./tasks/TEMPLATE.org]]: =tasks/YYYY-MM-DD--slug.org=
+3. For each AI task, AI creates/uses a task file in [[./tasks/]] based on [[./tasks/TEMPLATE.org]]: =tasks/YYYY-MM-DD--slug.org=. Remove sections in the template if not relevant.
 4. AI links the task in [[./TODO.org]] to its task file. Example: =[[./tasks/2026-05-24--anki-export-fix.org]]=
 5. On =main=, create a focused branch, e.g. =feature/task-name= or =fix/task-name=; otherwise continue on the current branch and report suspicious branch/repo state.
 6. AI implements the requested task.
