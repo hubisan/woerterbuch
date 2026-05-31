@@ -1,6 +1,6 @@
 #+TITLE: Wörterbuch - TODOs
 #+STARTUP: showall
-#+TODO: TODO(t) NEXT(n) WAIT(w) REVIEW(r) CONTINUE(C) | DONE (d) CANCEL (c)
+#+TODO: TODO(t) NEXT(n) WAIT(w) REVIEW(r) CONTINUE(C) | DONE(d) CANCEL (c)
 
 This repository uses AI agents to assist with development.
 
