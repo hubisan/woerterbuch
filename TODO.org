@@ -67,7 +67,7 @@ Am Schluss will ich das Ganze als Org ausgeben.
   ,* Herkunft
 #+END_SRC
 
-* DONE [[./archive/tasks/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
+* DONE [[./.tasks/archive/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
 
 [2026-05-27 Wed 10:59] Update
 
@@ -164,7 +164,7 @@ Nur öffentliche Hülle:
 
 * Abgeschlossen         
 
-** DONE [[./archive/tasks/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
+** DONE [[./.tasks/archive/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
 
 Da hat es auch ein Repo, sogar 2:
 - [[https://github.com/suyashb95/WiktionaryParser][https://github.com/suyashb95/WiktionaryParser]]

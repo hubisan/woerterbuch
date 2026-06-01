@@ -1,6 +1,6 @@
 #+TITLE: AI Agent Instructions
 #+STARTUP: showall
-#+VERSION: 0.2.0
+#+VERSION: 0.3.0
 
 AI agents must read this file before changing this repository.
 
@@ -9,10 +9,10 @@ This file defines the repository workflow for AI agents.
 Important files and directories:
 
 - [[./TODO.org]]: Active task index & statuses.
-- [[./tasks/]]: Active task-specific files.
+- [[./.tasks/]]: Active task-specific files.
+- [[./.tasks/archive/]]: Dead zone (archived tasks/todos). Exclude from AI context.
 - [[./AI-NOTES.org]]: Cross-task context (notes, blockers, decisions). Keep task-local details inside task files.
 - [[./CHANGELOG.org]]: Approved/completed user-visible changes.
-- [[./archive/]]: Dead zone (archived files & old todos). Exclude from AI context.
 
 Before changes, read [[./AGENTS.org]] and [[./TODO.org]].
 
@@ -46,8 +46,8 @@ Common AI errors to avoid:
 
 1. User marks a task in [[./TODO.org]] as =NEXT=.
 2. AI only works on =NEXT= or =CONTINUE= tasks unless explicitly instructed.
-3. For each AI task, AI creates/uses a task file in [[./tasks/]] based on [[./tasks/TEMPLATE.org]]: =tasks/YYYY-MM-DD--slug.org=. Remove sections in the template if not relevant.
-4. AI links the task in [[./TODO.org]] to its task file. Example: =[[./tasks/2026-05-24--anki-export-fix.org]]=
+3. For each AI task, AI creates/uses a task file in [[./.tasks/]] based on [[./.tasks/TEMPLATE.org]]: =.tasks/YYYY-MM-DD--slug.org=. Remove sections in the template if not relevant. Add other sections if it makes sense.
+4. AI links the task in [[./TODO.org]] to its task file. Example: =[[./.tasks/2026-05-24--anki-export-fix.org]]=
 5. On =main=, create a focused branch, e.g. =feature/task-name= or =fix/task-name=; otherwise continue on the current branch and report suspicious branch/repo state.
 6. AI implements the requested task.
 7. If blocked, AI sets the task to =WAIT=, records the reason in the task file, notifies the user, and stops until the task is set back to =NEXT= or =CONTINUE=.
@@ -58,7 +58,7 @@ Common AI errors to avoid:
 12. After approval by the user
     1. AI sets the task to =DONE=.
     2. AI updates [[./CHANGELOG.org]]
-    3. AI may create [[./archive/tasks/]] if needed, moves the task file there, and updates the link in [[./TODO.org]].
+    3. AI may create [[./.tasks/archive/]] if needed, moves the task file there, and updates the link in [[./TODO.org]].
     4. AI must not remove or archive the task entry in [[./TODO.org]] unless explicitly instructed.
 13. AI commits only when explicitly asked.
 14. Commits must be focused and have clear messages.
