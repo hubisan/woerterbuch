@@ -401,16 +401,22 @@ response does not contain a usable lemma."
     (plist-put wrapper :sources source-results)))
 
 (defun woerterbuch-core--fetch-all-with-lemma
-    (input lemma sections final-callback)
-  "Fetch SECTIONS for INPUT using LEMMA as backend query.
+    (input lemma sources sections final-callback)
+  "Fetch SECTIONS from SOURCES for INPUT using LEMMA as backend query.
+
 INPUT is the original query string. LEMMA is the normalized query sent
 to all backends. SECTIONS is the requested section list.
+
+SOURCES is the ordered list of backends to query.  Each element must be
+a source symbol such as `dwds', `duden', `openthesaurus' or
+`wiktionary'.  The order determines the order of source results in the
+returned wrapper plist.
+
 FINAL-CALLBACK is called exactly once with a wrapper plist of the form:
   (:input INPUT :lemma LEMMA :sources SOURCES)
-where SOURCES is a list of normalized source results in stable source
-order."
-  (let* ((sources woerterbuch-sources)
-         (pending (length sources))
+where SOURCES in the returned plist is a list of normalized source
+results in stable source order."
+  (let* ((pending (length sources))
          (results (make-hash-table :test #'eq))
          (finished nil))
     (if (zerop pending)
@@ -445,18 +451,27 @@ order."
 (cl-defun woerterbuch-fetch-all
     (input final-callback
            &key
+           (sources woerterbuch-sources)
            (sections woerterbuch-default-sections)
            (normalize-lemma woerterbuch-normalize-lemma))
-  "Fetch dictionary data for INPUT from all configured sources.
+  "Fetch dictionary data for INPUT from configured SOURCES.
+
 INPUT is the original user query string. FINAL-CALLBACK is a function
 that is called once with a wrapper plist:
   (:input INPUT :lemma LEMMA :sources SOURCES)
-where SOURCES is a list of normalized source results in stable source
-order.
+where SOURCES in the returned plist is a list of normalized source
+results in stable source order.
+
 INPUT may be a word, phrase, or idiom, depending on backend support.
+
+SOURCES is the ordered list of backends to query.  Each element must be
+a source symbol such as `dwds', `duden', `openthesaurus' or
+`wiktionary'.  When nil or omitted, use `woerterbuch-sources'.
+
 SECTIONS limits requested data to keys such as `:definitions',
 `:examples', `:origin', `:synonyms' or `:idioms'.  When nil or
 omitted, use `woerterbuch-default-sections'.
+
 When NORMALIZE-LEMMA is non-nil, normalize INPUT through DWDS before
 querying the backends.  The normalized form becomes LEMMA in the
 wrapper plist.  When normalization fails or is disabled, LEMMA is
@@ -468,31 +483,70 @@ INPUT."
          (woerterbuch-core--fetch-all-with-lemma
           input
           (or (plist-get lemma-result :lemma) input)
+          sources
           sections
           final-callback)))
     (woerterbuch-core--fetch-all-with-lemma
      input
      input
+     sources
      sections
      final-callback)))
 
 (cl-defun woerterbuch-fetch-all-sync
     (input &key
+           (sources woerterbuch-sources)
            (sections woerterbuch-default-sections)
            (normalize-lemma woerterbuch-normalize-lemma)
            timeout)
-  "Synchronously fetch dictionary data for INPUT.
-INPUT is the original user query string. Return the same wrapper plist
-that `woerterbuch-fetch-all' passes to its callback:
-  (:input INPUT :lemma LEMMA :sources SOURCES)
-where SOURCES is a list of normalized source results in stable source
-order.
-SECTIONS and NORMALIZE-LEMMA have the same meaning as in
-`woerterbuch-fetch-all'.
-TIMEOUT is the maximum total wait time in seconds.  When nil, use the
-largest configured source timeout plus one second."
+  "Synchronously fetch dictionary data for INPUT from configured SOURCES.
+
+This function blocks until all requested source results have been
+collected, or until TIMEOUT is reached. Unlike `woerterbuch-fetch-all',
+the caller does not receive results later through a callback.
+
+Fetch the requested SECTIONS from each selected source and return a
+wrapper plist with the original INPUT, the lemma used for backend
+lookups, and the collected per-source results:
+  (:input input :lemma lemma :sources source-results)
+Source-results is a list of result plists, one for each requested
+source, in the same order as SOURCES. Each result contains the data
+returned by that source for the requested SECTIONS, or an error entry
+if the source failed or timed out.
+
+INPUT is the original user query string.
+
+SOURCES is the ordered list of backends to query. For allowed sources
+see `woerterbuch-sources'. When nil, use `woerterbuch-sources'.
+
+SECTIONS is a list limiting requested data to sections keys such as
+`:definitions', `:examples', `:origin', `:synonyms' or `:idioms'. When nil, use
+`woerterbuch-default-sections'.
+
+When NORMALIZE-LEMMA is non-nil, normalize INPUT through DWDS before
+querying the backends. The normalized form becomes LEMMA in the
+wrapper plist. When normalization fails or is disabled, LEMMA is
+INPUT.
+
+TIMEOUT is the maximum total wait time in seconds. When nil, use the
+largest configured timeout for the requested SOURCES plus one second.
+This is sufficient because the individual source requests are started
+concurrently, even though this function waits synchronously for their
+combined result."
   (let* ((done nil)
          (result nil)
+         (timeout
+          (or timeout
+              (let
+                  ((timeouts
+                    (delq nil
+                          (mapcar
+                           (lambda (s)
+                             (cdr (assq s woerterbuch-source-timeouts)))
+                           sources))))
+                (if timeouts
+                    (apply #'max timeouts)
+                  woerterbuch-default-source-timeout))))
          (timeout (or timeout
                       (1+ (apply #'max
                                  woerterbuch-default-source-timeout
@@ -503,6 +557,7 @@ largest configured source timeout plus one second."
      (lambda (res)
        (setq result res)
        (setq done t))
+     :sources sources
      :sections sections
      :normalize-lemma normalize-lemma)
     (while (and (not done)

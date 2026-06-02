@@ -1,6 +1,6 @@
 #+TITLE: AI Agent Instructions
 #+STARTUP: showall
-#+VERSION: 0.3.0
+#+VERSION: 0.4.0
 
 AI agents must read this file before changing this repository.
 
@@ -46,24 +46,25 @@ Common AI errors to avoid:
 
 1. User marks a task in [[./TODO.org]] as =NEXT=.
 2. AI only works on =NEXT= or =CONTINUE= tasks unless explicitly instructed.
-3. For each AI task, AI creates/uses a task file in [[./.tasks/]] based on [[./.tasks/TEMPLATE.org]]: =.tasks/YYYY-MM-DD--slug.org=. Remove sections in the template if not relevant. Add other sections if it makes sense.
-4. AI links the task in [[./TODO.org]] to its task file. Example: =[[./.tasks/2026-05-24--anki-export-fix.org]]=
-5. On =main=, create a focused branch, e.g. =feature/task-name= or =fix/task-name=; otherwise continue on the current branch and report suspicious branch/repo state.
-6. AI implements the requested task.
-7. If blocked, AI sets the task to =WAIT=, records the reason in the task file, notifies the user, and stops until the task is set back to =NEXT= or =CONTINUE=.
-8. AI updates docs/links, runs relevant checks.
-9. AI documents results, checks, blockers, questions, follow-ups in the task file.
-10. AI sets finished tasks to =REVIEW=.
-11. User reviews =REVIEW= tasks. If more work is needed, user sets the task to =CONTINUE=.
-12. After approval by the user
+3. For each AI task, AI creates/uses a task file in [[./.tasks/]] based on [[./.tasks/TEMPLATE.org]]: =.tasks/YYYY-MM-DD--slug.org=. Remove sections in the template if not relevant. Add other sections if it makes sense. Add the task start date at the top at ~#+TASK_STARTED:~ like [2026-06-02 Di]
+5. AI links the task in [[./TODO.org]] to its task file. Example: =[[./.tasks/2026-05-24--anki-export-fix.org]]=
+6. On =main=, create a focused branch, e.g. =feature/task-name= or =fix/task-name=; otherwise continue on the current branch and report suspicious branch/repo state.
+7. AI implements the requested task.
+8. If blocked, AI sets the task to =WAIT=, records the reason in the task file, notifies the user, and stops until the task is set back to =NEXT= or =CONTINUE=.
+9. AI updates docs/links, runs relevant checks.
+10. AI documents results, checks, blockers, questions, follow-ups in the task file.
+11. AI sets finished tasks to =REVIEW=.
+12. User reviews =REVIEW= tasks. If more work is needed, user sets the task to =CONTINUE=.
+13. After approval by the user
     1. AI sets the task to =DONE=.
     2. AI updates [[./CHANGELOG.org]]
     3. AI may create [[./.tasks/archive/]] if needed, moves the task file there, and updates the link in [[./TODO.org]].
-    4. AI must not remove or archive the task entry in [[./TODO.org]] unless explicitly instructed.
-13. AI commits only when explicitly asked.
-14. Commits must be focused and have clear messages.
-15. If asked to squash, AI reviews the branch diff, updates [[./CHANGELOG.org]] if needed, and creates one clear commit.
-16. User merges or requests merge into =main=.
+    4. AI Adds completion date in task at top at ~#+TASK_COMPLETED:~ like [2026-06-02 Di].
+    5. AI must not remove or archive the task entry in [[./TODO.org]] unless explicitly instructed.
+14. AI commits only when explicitly asked.
+15. Commits must be focused and have clear messages.
+16. If asked to squash, AI reviews the branch diff, updates [[./CHANGELOG.org]] if needed, and creates one clear commit.
+17. User merges or requests merge into =main=.
 
 * Commit rule
 

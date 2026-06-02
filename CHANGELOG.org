@@ -6,6 +6,7 @@
 
 Complete rewrite of the code. Added more sources and parsing additional sections depending on the source. 
 
+- =CHANGED= Sources is an parameter now as well. Like this the customization variable can be easily overwritten.
 - =CHANGED= Lemma normalization now first checks DWDS snippets for direct matches and falls back to DWDS frequency lookup only when needed.
 - =CHANGED= Multi-word expressions are no longer lemma-normalized.
 - =FIXED= Multi-word URL paths are now built correctly for Duden and Wiktionary.

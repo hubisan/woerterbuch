@@ -67,7 +67,13 @@ Am Schluss will ich das Ganze als Org ausgeben.
   ,* Herkunft
 #+END_SRC
 
-* DONE [[./.tasks/archive/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
+* Abgeschlossen
+
+** DONE Sources auch als Argument
+
+Sources sollte wohl auch ein Argument sein.
+
+** DONE [[./.tasks/archive/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
 
 [2026-05-27 Wed 10:59] Update
 

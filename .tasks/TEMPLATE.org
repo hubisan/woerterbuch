@@ -1,6 +1,8 @@
 #+TITLE: <Short Task Title>
 #+STARTUP: showall
-#+TEMPLATE_VERSION: 0.1.0
+#+TEMPLATE_VERSION: 0.2.0
+#+TASK_STARTED: 
+#+TASK_COMPLETED: 
 
 * Context
 
