@@ -27,3 +27,6 @@ flycheck_*.el
 
 # VS Code Vorg
 .vorg.db
+
+# Project update temp folder
+.project-update-tmp/

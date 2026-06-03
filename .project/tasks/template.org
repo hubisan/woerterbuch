@@ -22,6 +22,7 @@
 - <Concrete change 1>
 - <Concrete change 2>
 - <Concrete change 3>
+- <Concrete change 4>
 
 * Checks
 
