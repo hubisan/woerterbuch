@@ -1,0 +1,39 @@
+#+TITLE: <Short Task Title>
+#+STARTUP: showall
+#+TEMPLATE_VERSION: 0.2.0
+#+TASK_STARTED: 
+#+TASK_COMPLETED: 
+
+* Context
+
+- Branch: =<branch-name>=
+- Focus: <file/module/topic>
+
+* Goal
+
+<What should be achieved by the end?>
+
+* Result
+
+<Summary of the main finding, outcome, or decision.>
+
+* Changes
+
+- <Concrete change 1>
+- <Concrete change 2>
+- <Concrete change 3>
+
+* Checks
+
+- <Check/test/review 1>
+- <Check/test/review 2>
+
+* Out of scope
+
+- <What was intentionally not done?>
+- <What belongs in a separate task?>
+
+* Open points
+
+- <Open point 1>
+- <Open point 2>
