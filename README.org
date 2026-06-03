@@ -9,9 +9,11 @@ Retrieve definitions (meanings) and synonyms for German words with Emacs.
 #+attr_org: :width 300px
 [[file:woerterbuch.webp]]
 
-** AI Agent Instructions                                        :noexport_0:
+** AI Agent Instructions
 
-This repository contains AI-specific development instructions in =AGENTS.org=. AI agents must read =AGENTS.org= before making changes.
+This repository contains AI-specific development instructions in
+[[./.project/agents/AGENTS.md][.project/agents/AGENTS.md]]. AI agents must read =.project/agents/AGENTS.md= before
+making changes.
 
 ** Main features                                                :noexport_0:
 
