@@ -1,4 +1,5 @@
 #+TITLE: AI Notes
+#+STARTUP: showall
 
 * 2026-05-22 Duden Parser gem. Python-Repo
 

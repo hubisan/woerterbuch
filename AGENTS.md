@@ -1,5 +1,5 @@
 # AI Agent Instructions
 
-This repository uses Org-mode instructions.
+IMPORTANT: Please read and strictly follow the workspace rules located in the configuration folder:
 
-Read and follow: [AGENTS.org](./AGENTS.org)
+👉 [Read local instructions](./.project/agents/AGENTS.md)

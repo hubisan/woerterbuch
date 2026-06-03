@@ -6,10 +6,10 @@ This repository uses AI agents to assist with development.
 
 Important files:
 
-- [[./AGENTS.org]]: AI agent instructions and workflow rules
-- [[./TODO.org]]: Active task index & statuses.
-- [[./AI-NOTES.org]]: Cross-task context (notes, blockers, decisions). 
-- [[./CHANGELOG.org]]: Approved/completed user-visible changes.
+- [[../agents/AGENTS.md]]: AI agent instructions and workflow rules
+- [[./todo.org]]: Active task index & statuses.
+- [[../agents/ai-notes.org]]: Cross-task context (notes, blockers, decisions). 
+- [[../../CHANGELOG.org]]: Approved/completed user-visible changes.
   
 * TODO Output definieren
 
@@ -73,7 +73,7 @@ Am Schluss will ich das Ganze als Org ausgeben.
 
 Sources sollte wohl auch ein Argument sein.
 
-** DONE [[./.tasks/archive/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
+** DONE [[./archive/2026-05-27--lemma-verbessern.org][Lemma verbessern]]
 
 [2026-05-27 Wed 10:59] Update
 
@@ -170,7 +170,7 @@ Nur öffentliche Hülle:
 
 * Abgeschlossen         
 
-** DONE [[./.tasks/archive/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
+** DONE [[./archive/2026-05-27--wiktionary-parser-python-repo.org][Wiktionary Parsen verbessern gem. Python-Repo]]
 
 Da hat es auch ein Repo, sogar 2:
 - [[https://github.com/suyashb95/WiktionaryParser][https://github.com/suyashb95/WiktionaryParser]]
@@ -178,7 +178,7 @@ Da hat es auch ein Repo, sogar 2:
 
 Habe die Dateien runtergeladen und abgelegt in [[./tmp]].
 
-Damit [[./lisp/woerterbuch-wiktionary.el]] woerterbuch-wiktionary.el verbessern.
+Damit [[../../lisp/woerterbuch-wiktionary.el]] woerterbuch-wiktionary.el verbessern.
 
 ** DONE Duden Parsen verbessern gem. Python-Repo
 
@@ -226,7 +226,7 @@ Periodisch werde ich dann den erwarteten Output aktualisieren und prüfen, was s
 
 ** CANCEL Spezifikation aktualisieren oder erstellen
 
-In [[file:docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
+In [[file:../../docs/]] die Spezifikationen updaten und nicht vorhandene erstellen.
 
 ** DONE Manueller Vergleich
 
