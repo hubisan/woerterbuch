@@ -1,8 +1,8 @@
 #+TITLE: Projektplan: Transformation Wörterbuch-Package (Schlankes Rust CLI)
-#+AUTHOR: Hubisan
-#+DATE: 2026-06-04
+#+STARTUP: showall
 
 * Ziel des Projektes
+
 Das bestehende Emacs-Lisp-Package, welches Wörterbuch-Daten von vier verschiedenen Quellen (Duden, DWDS, Wiktionary, Openthesaurus) via Scraping aggregiert, wird in ein performantes, asynchrones Rust-CLI-Tool umgewandelt. 
 
 ** Warum dieser Umstieg?
@@ -12,13 +12,22 @@ Das bestehende Emacs-Lisp-Package, welches Wörterbuch-Daten von vier verschiede
 3. *Schlanke Architektur:* Emacs dient am Ende nur noch als UI-Frontend, das die JSON-Ausgabe des Rust-CLI einliest und formatiert.
 4. *Neues lernen:* Ein perfektes Einstiegsprojekt, um Rusts modernste Konzepte (Ownership, Pattern Matching, Async) in einem realen Szenario anzuwenden.
 
-** Strategische Design-Entscheidung: Kein Lemmatizer zum Start
-Um das Projekt maximal schlank und stabil zu halten und eine Überkomplexität beim Einstieg zu vermeiden, wird *bewusst auf einen separaten Lemmatizer verzichtet*. Die Suchanfragen gehen direkt an die jeweiligen Backends, da moderne Wörterbuch-Websites intern meist ohnehin eine hohe Toleranz für verschiedene Wortformen besitzen. Eine lokale deutsche Lemmatisierung wäre in Rust ohne schwere ML-Modelle ohnehin fehleranfällig.
+** Strategische Design-Entscheidungen für Stabilität & Fairness
+
+- *Kein Lemmatizer zum Start:* Um das Projekt maximal schlank zu halten und eine Überkomplexität beim Einstieg zu vermeiden, wird bewusst auf einen separaten Lemmatizer verzichtet. Die Suchanfragen gehen direkt an die jeweiligen Backends.
+- *Unauffälliger User-Agent:* Ein Standard-Browser-Header verhindert Blockierungen und sorgt für stabilen Traffic bei den Live-Abfragen.
+- *Optimierte Datenquellen (Duden & Wiktionary):* Für den Duden wird die extrem schlanke AMP-Seite genutzt. Für Wiktionary wird auf die offizielle REST-HTML-API umgestellt.
+
+*** Architektur-Learning (Wiktionary REST-API)
+
+In der ursprünglichen Emacs-Lisp-Realisation bestand noch keine Kenntnis über die Existenz der offiziellen Wikimedia-REST-HTML-API (=/api/rest_v1/page/html/=). Damals wurde das gesamte, überladene Web-HTML gescraped. Der Wechsel auf den REST-Endpunkt liefert nun das nackte Inhalts-HTML komplett ohne Wikipedia-Design-Ballast (keine Sidebars, Navigationsleisten oder Skripte). 
+*Achtung bei Homonymen:* Da die API den gesamten Artikeltext liefert, sind bei Wörtern mit mehreren Bedeutungen (z. B. "Bank") auch mehrere Wortart-Blöcke (Substantiv, f, Bänke vs. Banken) untereinander auf derselben Seite enthalten. Der Parser muss darauf ausgelegt sein, alle Sektionen via Schleife/Vektor zu erfassen.
 
 * Vorbereitung in der Antigravity IDE
+
 Deine saubere Aufteilung in Core, Backend-Dateien und die Konfigurationen erleichtert der KI die Arbeit enorm. 
 1. Erstelle einen neuen, leeren Projektordner.
-2. Kopiere deine bestehenden Elisp-Dateien direkt in das Projektverzeichnis (z. B. in einen Unterordner =/elisp_source= oder direkt ins Root), damit Antigravity vollen Kontext darauf hat:
+2. Kopiere deine bestehenden Elisp-Dateien direkt in das Projektverzeichnis, damit Antigravity vollen Kontext darauf hat:
    - =woerterbuch-core.el=
    - =woerterbuch-duden.el=
    - =woerterbuch-dwds.el=
@@ -26,14 +35,16 @@ Deine saubere Aufteilung in Core, Backend-Dateien und die Konfigurationen erleic
    - =woerterbuch-wiktionary.el=
    - =woerterbuch.el=
 
-*Wichtig:* Geh unbedingt Schritt für Schritt vor und verlange nicht alles auf einmal von der KI. So bleibt der Code überschaubar, testbar und fehlerfrei. Durch dieses Vorgehen lernt die KI mit jedem Schritt dein Projekt besser kennen. Wenn du beim letzten Schritt angekommen bist, versteht Antigravity den gesamten Kontext so gut, dass das finale Zusammenführen meistens im ersten Versuch klappt.
+*Wichtig:* Geh unbedingt Schritt für Schritt vor und verlange nicht alles auf einmal von der KI. Durch dieses schrittweise Vorgehen lernt die KI mit jedem Prompt dein Projekt besser kennen, was Fehler im Code minimiert.
 
 * Umsetzungsschritte & Prompts
 
 ** Schritt 1: Das Rust-Projekt initialisieren & Datenstrukturen
+
 Bevor Code übersetzt wird, muss das Fundament stehen. Initialisiere ein leeres Cargo-Projekt (=cargo init=).
 
 *** Prompt für die KI:
+
 #+BEGIN_SRC text
 Ich möchte mein bestehendes Emacs-Lisp-Package `woerterbuch` in ein hocheffizientes Rust-CLI-Tool umwandeln. Die alten Elisp-Dateien liegen im Projektordner.
 
@@ -42,32 +53,45 @@ Bitte erstelle mir als ersten Schritt eine passende `Cargo.toml`. Das Tool soll:
 2. HTTP-Anfragen senden (mit `reqwest`).
 3. HTML parsen (mit `scraper`).
 4. CLI-Argumente verarbeiten (mit `clap`).
-5. Ergebnisse als strukturiertes JSON ausgeben können (mit `serde` und `serde_json`).
+5. Ergebnisse als structured JSON ausgeben können (mit `serde` und `serde_json`).
 
-Generiere ausserdem die grundlegende Datenstruktur (`struct`) in `src/main.rs`, die ein Abfrageergebnis abbildet. Orientiere dich dabei an meinen Elisp-Sektionen: `definitions`, `examples`, `synonyms`, `origin` und `idioms`. Da beim Scraping nicht immer alles gefunden wird, verwende bitte `Option` oder `Vec`.
+Generiere ausserdem die grundlegende Datenstruktur (`struct`) in `src/main.rs`, die ein Abfrageergebnis abbildet. Orientiere dich dabei an meinen Elisp-Sektionen: `definitions`, `examples`, `synonyms`, `origin` und `idioms` mittels `Option` oder `Vec`.
+
+Bitte integriere hier direkt einen unauffälligen Standard-Linux-Desktop User-Agent für den `reqwest`-Client, damit die Live-Anfragen stabil durchgehen.
 #+END_SRC
 
 ** Schritt 2: Die Parser einzeln übersetzen (Der Kern)
-Jetzt nimmst du dir eine Plattform nach der anderen vor. Fang mit der einfachsten an (meistens Openthesaurus).
+
+Jetzt übersetzen wir die Scraping-Logik der Backends nacheinander von Elisp nach Rust. Wir starten mit Openthesaurus.
 
 *** Prompt für die KI (Beispiel Openthesaurus):
+
 #+BEGIN_SRC text
 Schau dir meine Datei `woerterbuch-openthesaurus.el` an. Dort siehst du, wie die Daten extrahiert werden.
 
 Bitte übersetze diese Parsing-Logik in eine eigenständige Rust-Funktion (oder ein Modul `mod openthesaurus`). Die Funktion soll das HTML als String entgegennehmen und die gefundenen Synonyme in unsere Datenstruktur einpflegen. Nutze den `scraper`-Crate mit sauberen CSS-Selectoren anstelle von regulären Ausdrücken, wo es Sinn macht.
 #+END_SRC
 
-/Hinweis: Wiederhole diesen Schritt anschliessend nacheinander für `dwds`, `duden` und `wiktionary`, indem du der KI die jeweilige Datei vorgibst./
+/Hinweis für das Wiederholen bei den anderen Quellen (insb. Wiktionary):/
+Wenn du bei =woerterbuch-wiktionary.el= ankommst, gib der KI folgenden Prompt:
+
+#+BEGIN_SRC text
+Schau dir meine Datei `woerterbuch-wiktionary.el` an. Im Gegensatz zum alten Elisp-Code, wo die normale Webseite gescraped wurde, nutzen wir in Rust nun die offizielle deutsche HTML-API unter `https://de.wiktionary.org/api/rest_v1/page/html/{wort}`. Das liefert uns das nackte Inhalts-HTML ohne den Wikipedia-Seitenballast.
+
+Bitte übersetze die Parsing-Logik für dieses API-Format. Achtung: Die API liefert bei Homonymen (wie dem Wort "Bank") mehrere Wortarten und Bedeutungen auf einer einzigen Seite untereinander. Bitte baue den Parser so auf, dass er alle Sektionen (z. B. alle `<h3>Wortart...` Blöcke) über eine Schleife sauber in einem Vektor (`Vec`) sammelt, statt nach dem ersten Treffer aufzuhören.
+#+END_SRC
 
 ** Schritt 3: Asynchrones Zusammenspiel & CLI-Interface
-Wenn alle Parser stehen, bringst du die Konfiguration aus deiner =woerterbuch-core.el= ein (Reihenfolge der Quellen und Sektionen) und führst alles in der Hauptfunktion zusammen.
+
+Nun führen wir die Konfigurationen und die parallele Ausführung in der Hauptfunktion zusammen.
 
 *** Prompt für die KI:
+
 #+BEGIN_SRC text
 Nun führen wir alles zusammen. In meinem Elisp-Code gibt es `woerterbuch-sources` (Reihenfolge der Quellen) und `woerterbuch-default-sections` (welche Inhalte standardmässig gewünscht sind).
 
 Bitte baue die `main`-Funktion so um, dass:
 1. Über `clap` das Suchwort direkt entgegengenommen wird, zusammen mit optionalen Flags (wie `--json` oder `--sources`).
-2. Die aktivierten Quellen (Duden, DWDS, etc.) vollkommen parallel mit `tokio::spawn` oder `tokio::join!` abgefragt und geparst werden.
+2. Die aktivierten Quellen (Duden via AMP, Wiktionary via REST-HTML, etc.) vollkommen parallel mit `tokio::join!` abgefragt und geparst werden.
 3. Die Ergebnisse gemäss der gewünschten Sektionen gefiltert, zusammengeführt und entweder schön formatiert im Terminal oder als JSON auf stdout ausgegeben werden.
 #+END_SRC
