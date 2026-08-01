@@ -1,11 +1,11 @@
 ---
 title: "<Short Task Title>"
-template_version: "0.7.0"
+template_version: "0.8.0"
 task_started: null
 task_completed: null
 ---
 
-# Input & Todo Task
+# Original Task (User only)
 
 # Planning
 

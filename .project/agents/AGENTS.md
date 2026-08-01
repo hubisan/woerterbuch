@@ -1,6 +1,6 @@
 # AI Agent Instructions
 
-Version: 0.18.0
+Version: 0.19.0
 
 All paths are relative to this file.
 
@@ -32,19 +32,17 @@ Tasks use Markdown with Org-style states.
 
 - Chat in user's language. Write all repository content in English.
 - Match user's language in chat. Use English for code, comments, docs, commits, and files.
-- Match user's language in chat. Use English for code, comments, docs, commits, and files.
-- If task complexity/risk mismatches the current model, pause and ask whether to switch model.
-- Keep changes small and focused. No unrelated refactors.
-- Do not commit, amend, squash, merge, or change dependencies unless explicitly asked.
-- Do not modify secrets, `.env`, production configs, deployment credentials, `AGENTS.md`, or task templates unless explicitly asked.
-- Ask only for unclear scope, risky choices, or irreversible changes. Otherwise make a small documented assumption and continue.
+- Small, focused changes only. No unrelated refactors.
+- Do not git commit, amend, squash, merge, or change dependencies unless explicitly asked.
+- Never modify secrets, `.env`, production configs, deployment credentials, `AGENTS.md`, or task templates unless explicitly instructed.
+- Ask the user only for unclear scope, risky choices, or irreversible changes; otherwise make a small documented assumption and continue.
 
 ## Workflow
 
 ### 1. Prepare
 
 1. Work only on `PLAN`, `BUILD`, `NEXT`, or `CONTINUE` tasks.
-2. Create or reuse `../tasks/YYYY-MM-DD--slug.md` from `../tasks/template.md`. In the task file under `# Input & Todo Task`, summarize relevant chat input and copy the task entry from `todo.md`. Remove inapplicable sections from the task file.
+2. Create or reuse `../tasks/YYYY-MM-DD--slug.md` from `../tasks/template.md`. Remove inapplicable sections from the task file.
 3. Add `task_started: YYYY-MM-DD Day HH:MM` near the top.
 4. Link the task file below the task heading in `todo.md`.
 5. If on `main`, create a branch `type/description` using `feat`, `fix`, `hotfix`, `refactor`, `perf`, `docs`, `test`, `release`, `ci`, or `chore`; otherwise continue on the current branch.
@@ -65,15 +63,15 @@ User approves by setting `BUILD`, or requests revisions with `CONTINUE`.
 
 For status `BUILD` or `NEXT`:
 
-1. Read the active task file first.
-2. Follow `# Planning` if present.
-3. Read `./repository.md`.
-4. Implement only the active task scope.
-5. Run relevant tests and linters.
-6. Update docs, README, CHANGELOG.md if needed.
-7. Record results under `# Results` in the task file, following the task template.
-8. Set the task state in `todo.md` to `REVIEW`.
-9. Notify the user and stop.
+1. Read the active task file. Follow `# Planning` if present.
+2. Read `./repository.org` for repo-specific rules.
+3. Implement only the active task scope.
+4. Run relevant tests and linters. 
+5. Update documentation or CHANGELOG if needed.
+6. Write `# Build` in the task file, following the task template.
+7. Set the task to `REVIEW`.
+8. Notify the user and stop. 
+9. Suggested Conventional Commit message with body.
 
 ### 4. CONTINUE Mode
 
@@ -87,13 +85,7 @@ For status `CONTINUE`:
 
 If approved:
 
-1. Set the task state in `todo.md` to `DONE`.
-2. Add completion date to the `todo.md` heading.
-3. Add `task_completed: YYYY-MM-DD Day HH:MM` near the top of the task file.
-4. Move the task file to `../tasks/archive/`.
-5. Update the task link in `todo.md`.
-6. Suggest Conventional Commit message in a copyable code block.
-7. Do not commit unless instructed.
+1. User completes the task.
 
 If not approved:
 

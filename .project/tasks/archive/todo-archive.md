@@ -1,22 +1,6 @@
-# TODOs
+# TODOs Archive
 
-This file is inspired by Org mode. Task headings may use these TODO keywords:
-`TODO`, `NEXT`, `WAIT`, `REVIEW`, `CONTINUE`, `D#ONE`, `CANCEL`.
-
-This repository uses AI agents to assist with development.
-
-Important files:
-
-- [../agents/AGENTS.md](../agents/AGENTS.md): AI agent instructions and workflow rules
-- [./todo.md](./todo.md): Active task index & statuses.
-- [../agents/ai-notes.md](../agents/ai-notes.md): Cross-task context, notes, blockers, and decisions.
-- [../../CHANGELOG.md](../../CHANGELOG.md): Approved/completed user-visible changes.
-
-# Ziel des Projektes
-
-Das bestehende Emacs-Lisp-Package, welches Wörterbuch-Daten von vier verschiedenen Quellen — Duden, DWDS, Wiktionary und OpenThesaurus — via Scraping aggregiert, wird in ein performantes, asynchrones Rust-CLI-Tool umgewandelt.
-
-# Completed
+Those are alle finished tasks.
 
 ## DONE Fix: Examples as headings breaks structure
 
@@ -62,15 +46,15 @@ Wichtig:
 
 Bitte ändere den Code minimal-invasiv und achte darauf, dass `cargo fmt --all --check`, `cargo clippy --all-targets --all-features -- -D warnings` und die Tests durchlaufen.
 
-## DONE 2026-06-14 [Format: Examples as Heading Instead of Plain](./archive/2026-06-14--format-examples-as-heading.md)
+## DONE 2026-06-14 [Format: Examples as Heading Instead of Plain](./2026-06-14--format-examples-as-heading.md)
 
-## DONE 2026-06-14 [Fix source URLs, Swiss `ss`, sharp S candidates, and provider quirks](./archive/2026-06-14--fix-source-urls-swiss-ss-provider-quirks.md)
+## DONE 2026-06-14 [Fix source URLs, Swiss `ss`, sharp S candidates, and provider quirks](./2026-06-14--fix-source-urls-swiss-ss-provider-quirks.md)
 
-## DONE 2026-06-13 [Add timestamps/headers to dictionary output formats](./archive/2026-06-13--add-timestamps-headers-output-formats.md)
+## DONE 2026-06-13 [Add timestamps/headers to dictionary output formats](./2026-06-13--add-timestamps-headers-output-formats.md)
 
-## DONE 2026-06-13 [Bei Human Format 'nr' statt `nr` verwenden](./archive/2026-06-13--human-format-single-quotes.md)
+## DONE 2026-06-13 [Bei Human Format 'nr' statt `nr` verwenden](./2026-06-13--human-format-single-quotes.md)
 
-## DONE 2026-06-13 [Omit redundant single-entry headings](./archive/2026-06-13--omit-redundant-single-entry-headings.md)
+## DONE 2026-06-13 [Omit redundant single-entry headings](./2026-06-13--omit-redundant-single-entry-headings.md)
 
 Improve text rendering by omitting `Entry 1` headings when a source has only one entry.
 
@@ -97,7 +81,7 @@ Acceptance criteria:
 - `cargo test` passes.
 - `cargo clippy --all-targets --all-features -- -D warnings` passes.
 
-## DONE 2026-06-13 [Fix Duden Umlaute](./archive/2026-06-12--fix-duden-umlaute.md)
+## DONE 2026-06-13 [Fix Duden Umlaute](./2026-06-12--fix-duden-umlaute.md)
 
 Dies gibt aktuell kein Ergebnis:
 Gerüst: https://www.duden.de/rechtschreibung/Geruest
@@ -133,7 +117,7 @@ sections-sources to by-section
 
 Default is by-source
 
-## DONE 2026-06-12 [Fix newlines](./archive/2026-06-12--output-layout-naming-and-spacing.md)
+## DONE 2026-06-12 [Fix newlines](./2026-06-12--output-layout-naming-and-spacing.md)
 
 Make the output use newlines as shown in the examples:
 
@@ -142,7 +126,7 @@ Make the output use newlines as shown in the examples:
 - by-section
   Example for markdown [example-output-markdown--by-section.md](example-output-markdown--by-section.md)
 
-## DONE 2026-06-12 [Org-mode use ~nr~ instead of `nr`](./archive/2026-06-12--json-layout-org-labels-and-max-examples.md)
+## DONE 2026-06-12 [Org-mode use ~nr~ instead of `nr`](./2026-06-12--json-layout-org-labels-and-max-examples.md)
 
 ## DONE 2026-06-12 [JSON should not accept layout](./2026-06-12--json-layout-org-labels-and-max-examples.md)
 
@@ -236,18 +220,18 @@ Add a CLI option to limit the number of rendered examples per definition.
 * `cargo test` passes.
 * `cargo clippy --all-targets --all-features -- -D warnings` passes.
 
-## DONE 2026-06-12 [Refresh source fixtures and expected JSON output](./archive/2026-06-12--refresh-source-fixtures-and-json-expected-output.md)
+## DONE 2026-06-12 [Refresh source fixtures and expected JSON output](./2026-06-12--refresh-source-fixtures-and-json-expected-output.md)
 
   - Download and store repo-local source fixtures for the existing test words.
   - Generate canonical expected JSON outputs from the current Rust implementation.
   - Update parser tests to consume those local fixtures and expected JSON files.
 
-## DONE [Fix remaining Clippy warnings](./archive/2026-06-12--fix-remaining-clippy-warnings.md)
+## DONE [Fix remaining Clippy warnings](./2026-06-12--fix-remaining-clippy-warnings.md)
 
   - Replace DWDS manual `iter().any(...)` check with `contains(...)`.
   - Move `dedupe(...)` before the test module in `models.rs`.
 
-## DONE [Konsistente Statusdarstellung im Human-Output](./archive/2026-06-11--human-output-statuses.md)
+## DONE [Konsistente Statusdarstellung im Human-Output](./2026-06-11--human-output-statuses.md)
 
 Ja, das ist aktuell tatsächlich missverständlich.
 Im Human-Output gibt es heute nur diese grobe Unterscheidung in src/format.rs (line 16):
@@ -267,7 +251,7 @@ No entry found on source.
 Error: HTTP 404 ... oder allgemeiner Error: ...
 Der aktuelle Text ist also eher ein UI-Problem als ein Datenmodell-Problem. Wenn du willst, mache ich als nächsten kleinen Follow-up genau diese Statusdarstellung im Human-Output konsistent.
 
-## DONE [Clarify and fix section filtering semantics](./archive/2026-06-11--section-filtering-semantics.md)
+## DONE [Clarify and fix section filtering semantics](./2026-06-11--section-filtering-semantics.md)
 
 ### Context
 
@@ -448,7 +432,7 @@ Add at least one integration/snapshot-style test for CLI JSON behavior if the ex
 
 ## DONE DWDS: HTML-Parser + Snapshot-Tests
 
-Task file: [./archive/2026-06-09--dwds-parser.md](./archive/2026-06-09--dwds-parser.md)
+Task file: [./2026-06-09--dwds-parser.md](./2026-06-09--dwds-parser.md)
 
 Portiere die alte DWDS-Scraping-Logik aus Emacs Lisp nach Rust und ersetze den aktuellen groben DWDS-Stub durch einen robusten Parser mit deterministischen Offline-Snapshot-Tests.
 
@@ -1173,7 +1157,7 @@ Beim Umsetzen:
 
 ## DONE Duden: HTML-Parser + Snapshot-Tests
 
-Task file: [./archive/2026-06-09--duden-parser.md](./archive/2026-06-09--duden-parser.md)
+Task file: [./2026-06-09--duden-parser.md](./2026-06-09--duden-parser.md)
 
 Portiere die alte Duden-Scraping-Logik aus Emacs Lisp nach Rust und ersetze den aktuellen groben Duden-Stub durch einen robusten AMP-HTML-Parser mit deterministischen Offline-Snapshot-Tests.
 
@@ -1979,4 +1963,3 @@ Bitte übernehme einfach die Logik, aber mache es so wie in Rust normal. Wenn du
   - `v0.1.0`
 
 - Confirm README, CHANGELOG, CI, and basic Emacs usage are all in sync.
-
