@@ -1,11 +1,11 @@
 [package]
-name = "rust-woerterbuch"
+name = "woerterbuch"
 version = "0.1.0"
 edition = "2021"
 description = "Async Rust CLI for German dictionary lookups"
 license = "GPL-3.0-only"
 default-run = "woerterbuch"
-repository = "https://github.com/hubisan/rust-woerterbuch"
+repository = "https://github.com/hubisan/woerterbuch"
 readme = "README.md"
 keywords = ["dictionary", "german", "cli"]
 categories = ["command-line-utilities"]

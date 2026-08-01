@@ -1,12 +1,12 @@
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use reqwest::{Client, StatusCode};
-use rust_woerterbuch::http;
-use rust_woerterbuch::models::{Source, SourceResult, UrlValue};
-use rust_woerterbuch::sources;
 use scraper::Html;
 use std::fs;
 use std::path::{Path, PathBuf};
+use woerterbuch::http;
+use woerterbuch::models::{Source, SourceResult, UrlValue};
+use woerterbuch::sources;
 
 const WORDS: &[&str] = &[
     "Bank",

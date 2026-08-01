@@ -246,6 +246,129 @@ src/
     openthesaurus.rs      OpenThesaurus fetcher and parser
 ```
 
+## Emacs-Lisp Wrapper
+
+This was originally an Emacs-Lisp package. I converted it to Rust and added the possibility to use Org-mode as output format.
+
+These Emacs-Lisp wrappers come in handy:
+
+``` emacs-lisp
+(cl-defun woerterbuch
+    (&optional query
+     &key
+     (command "woerterbuch")
+     (sources '("openthesaurus" "dwds" "duden" "wiktionary"))
+     (sections '("definitions" "examples" "synonyms" "origin" "idioms"))
+     (layout "by-source")
+     max-examples
+     (display-function #'pop-to-buffer))
+  "Lookup QUERY with woerterbuch asynchronously and display Org output.
+
+When called interactively without prefix argument, ask for QUERY.
+When called interactively with prefix argument, use word at point.
+
+When called from Lisp with QUERY non-nil, use QUERY directly.
+When called from Lisp with QUERY nil, read QUERY according to
+`current-prefix-arg'."
+  (interactive)
+  (let* ((query
+          (or query
+              (if current-prefix-arg
+                  (let ((word (thing-at-point 'word t)))
+                    (unless (and word (not (string-empty-p word)))
+                      (user-error "Kein Wort an Punkt gefunden"))
+                    word)
+                (read-string "Wort/Redewendung: "))))
+         (buffer (generate-new-buffer (format "*woerterbuch: %s*" query)))
+         (process
+          (apply #'start-process
+                 "woerterbuch"
+                 buffer
+                 command
+                 (append
+                  (list "--format" "org")
+                  (when layout
+                    (list "--layout" layout))
+                  (when sources
+                    (list "--sources" (mapconcat #'identity sources ",")))
+                  (when sections
+                    (list "--sections" (mapconcat #'identity sections ",")))
+                  (when max-examples
+                    (list "--max-examples" (number-to-string max-examples)))
+                  (list query)))))
+    (message "woerterbuch: async lookup started for %S" query)
+    (set-process-query-on-exit-flag process nil)
+    (set-process-sentinel
+     process
+     (lambda (proc _event)
+       (when (memq (process-status proc) '(exit signal))
+         (when-let* ((buf (process-buffer proc)))
+           (with-current-buffer buf
+             (goto-char (point-min))
+             (org-mode))
+           (funcall display-function buf)))))))
+
+(defun woerterbuch-all-by-source ()
+  "Lookup all sections by source.
+Without prefix argument, ask for a word or phrase.
+With prefix argument, use word at point."
+  (interactive)
+  (woerterbuch
+   nil
+   :sections '("definitions" "examples" "synonyms" "origin" "idioms")
+   :layout "by-source"))
+
+(defun woerterbuch-all-by-section ()
+  "Lookup all sections by section.
+Without prefix argument, ask for a word or phrase.
+With prefix argument, use word at point."
+  (interactive)
+  (woerterbuch
+   nil
+   :sections '("definitions" "examples" "synonyms" "origin" "idioms")
+   :layout "by-section"))
+
+(defun woerterbuch-synonyms-by-source ()
+  "Lookup synonyms by source.
+Without prefix argument, ask for a word or phrase.
+With prefix argument, use word at point."
+  (interactive)
+  (woerterbuch
+   nil
+   :sections '("synonyms")
+   :layout "by-source"))
+
+(defun woerterbuch-definitions-by-source ()
+  "Lookup definitions including examples by source.
+Without prefix argument, ask for a word or phrase.
+With prefix argument, use word at point."
+  (interactive)
+  (woerterbuch
+   nil
+   :sections '("definitions" "examples")
+   :layout "by-source"))
+
+(defun woerterbuch-origin-by-source ()
+  "Lookup origin by source.
+Without prefix argument, ask for a word or phrase.
+With prefix argument, use word at point."
+  (interactive)
+  (woerterbuch
+   nil
+   :sections '("origin")
+   :layout "by-source"))
+
+(defun woerterbuch-idioms-by-source ()
+  "Lookup idioms by source.
+Without prefix argument, ask for a word or phrase.
+With prefix argument, use word at point."
+  (interactive)
+  (woerterbuch
+   nil
+   :sections '("idioms")
+   :layout "by-source"))
+```
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0. See [`LICENSE`](LICENSE) for details.
